@@ -92,7 +92,7 @@ class _DebateScreenState extends State<DebateScreen> {
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('🧠', style: TextStyle(fontSize: 52)),
+            Icon(Icons.psychology, color: AppTheme.primary, size: 52),
             const SizedBox(height: 16),
             Text('Challenge Completed!',
                 style: Theme.of(context).textTheme.titleLarge,
@@ -200,7 +200,7 @@ class _DebateScreenState extends State<DebateScreen> {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          'Difficulty: ${'●' * challenge.difficulty}${'○' * (5 - challenge.difficulty)}',
+                          'Difficulty: ${challenge.difficulty}/5',
                           style: TextStyle(color: typeColor, fontSize: 12),
                         ),
                         const Spacer(),
@@ -239,7 +239,7 @@ class _DebateScreenState extends State<DebateScreen> {
                   secondChild: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
                     child: Text(
-                      '"${challenge.title}" — Tap to show full question',
+                      '"${challenge.title}" - Tap to show full question',
                       style: TextStyle(
                           color: AppTheme.textSecondary,
                           fontSize: 12,
@@ -283,14 +283,14 @@ class _DebateScreenState extends State<DebateScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Text('🤔', style: TextStyle(fontSize: 48)),
+            Icon(Icons.psychology_outlined, color: typeColor, size: 48),
             const SizedBox(height: 16),
             Text('The Challenge Awaits',
                 style: Theme.of(context).textTheme.titleMedium,
                 textAlign: TextAlign.center),
             const SizedBox(height: 8),
             Text(
-              'Read the challenge above carefully. Then share your initial thoughts — even if you\'re unsure. The debate begins with your first word.',
+              'Read the challenge above carefully. Then share your initial thoughts - even if you\'re unsure. The debate begins with your first word.',
               style: Theme.of(context).textTheme.bodyMedium,
               textAlign: TextAlign.center,
             ),

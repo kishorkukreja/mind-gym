@@ -90,7 +90,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   children: [
                     _buildInfoRow('Username', user.username),
-                    _buildInfoRow('Level', '${user.level} — ${user.levelTitle}'),
+                    _buildInfoRow('Level', '${user.level} - ${user.levelTitle}'),
                     _buildInfoRow('Total XP', '${user.xp}'),
                     _buildInfoRow('Member since',
                         _formatDate(user.createdAt)),

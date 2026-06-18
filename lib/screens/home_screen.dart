@@ -96,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             child: Row(
               children: [
-                const Text('🔥', style: TextStyle(fontSize: 14)),
+                const Icon(Icons.local_fire_department, size: 14),
                 const SizedBox(width: 4),
                 Text('${user.currentStreak}',
                     style: TextStyle(
@@ -455,7 +455,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _statCard('Skipped', '${user.totalChallengesSkipped}',
             Icons.cancel_outlined, AppTheme.errorColor, context),
         const SizedBox(width: 10),
-        _statCard('Best Streak', '${user.bestStreak}🔥',
+        _statCard('Best Streak', '${user.bestStreak}',
             Icons.local_fire_department_outlined, AppTheme.warningColor, context),
       ],
     );

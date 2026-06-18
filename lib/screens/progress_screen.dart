@@ -118,7 +118,7 @@ class ProgressScreen extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-              '${user.currentLevelXp} / ${user.xpForNextLevel} XP · Level ${user.level} → ${user.level + 1}',
+              '${user.currentLevelXp} / ${user.xpForNextLevel} XP - Level ${user.level} -> ${user.level + 1}',
               style: const TextStyle(color: Colors.white60, fontSize: 11)),
         ],
       ),
@@ -210,7 +210,8 @@ class ProgressScreen extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text('💀', style: TextStyle(fontSize: 18)),
+              Icon(Icons.rate_review_outlined,
+                  color: AppTheme.textSecondary, size: 18),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(brutalComment,

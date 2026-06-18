@@ -196,11 +196,11 @@ class ScheduleService {
 
   static String getBrutalComment(String grade, int skipped) {
     if (grade == 'F') {
-      return "You didn't even try. Your brain is collecting dust. Seriously — a sea slug has more neural activity than you showed this week. Come back when you're ready to actually think.";
+      return "You didn't even try. Your brain is collecting dust. Seriously - a sea slug has more neural activity than you showed this week. Come back when you're ready to actually think.";
     } else if (grade == 'D') {
-      return "Barely breathing. $skipped challenge${skipped == 1 ? '' : 's'} skipped — which means $skipped times this week you chose comfort over growth. Mediocrity doesn't announce itself. It just silently wins.";
+      return "Barely breathing. $skipped challenge${skipped == 1 ? '' : 's'} skipped - which means $skipped times this week you chose comfort over growth. Mediocrity doesn't announce itself. It just silently wins.";
     } else if (grade == 'C') {
-      return "Average. Congratulations on being statistically unremarkable. You did the minimum. Your brain deserves better — and frankly, so do you.";
+      return "Average. Congratulations on being statistically unremarkable. You did the minimum. Your brain deserves better - and frankly, so do you.";
     } else if (grade == 'B' || grade == 'B+') {
       return "Getting there, but you're still leaving gains on the table. The difference between good and sharp is consistency. Don't celebrate yet.";
     } else if (grade == 'A') {

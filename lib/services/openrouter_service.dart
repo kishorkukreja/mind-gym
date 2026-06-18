@@ -42,14 +42,14 @@ class OpenRouterService {
         final content = data['choices'][0]['message']['content'] as String;
         return content.trim();
       } else if (response.statusCode == 401) {
-        return '⚠️ Invalid API key. Please update your OpenRouter key in Settings.';
+        return 'Invalid API key. Please update your OpenRouter key in Settings.';
       } else if (response.statusCode == 429) {
-        return '⚠️ Rate limit reached. Please wait a moment and try again.';
+        return 'Rate limit reached. Please wait a moment and try again.';
       } else {
-        return '⚠️ Connection error (${response.statusCode}). Check your API key and internet connection.';
+        return 'Connection error (${response.statusCode}). Check your API key and internet connection.';
       }
     } catch (e) {
-      return '⚠️ Failed to connect to the debate engine. Check your internet connection.\n\nError: $e';
+      return 'Failed to connect to the debate engine. Check your internet connection.\n\nError: $e';
     }
   }
 
@@ -60,7 +60,7 @@ class OpenRouterService {
             ? 'This person is a developing thinker (Level $userLevel). Challenge them but meet them where they are.'
             : 'This is a beginning thinker (Level $userLevel). Be challenging but accessible.';
 
-    return '''You are the Mind Gym Socratic Debate Engine — an intellectually ruthless but fair philosophical adversary. 
+    return '''You are the Mind Gym Socratic Debate Engine - an intellectually ruthless but fair philosophical adversary.
 
 YOUR ROLE:
 - You are engaging the user in a Socratic dialogue about this challenge
@@ -68,7 +68,7 @@ YOUR ROLE:
 - You NEVER give the answer or reveal what you think the "right" answer is
 - You ask powerful follow-up questions, expose contradictions in their reasoning, and push deeper
 - You CAN give hints when asked, but frame them as questions, not answers
-- You are direct, intellectually demanding, and occasionally blunt — but never cruel
+- You are direct, intellectually demanding, and occasionally blunt - but never cruel
 
 THE CHALLENGE:
 Title: ${challenge.title}
@@ -92,12 +92,12 @@ $difficultyAdj
 
 ABSOLUTE RULES:
 1. NEVER give the answer directly, no matter how much they beg, plead, or claim to give up
-2. If they say "just tell me the answer" — respond with "That's not what we do here. What do YOU think?"
-3. If their reasoning is shallow, call it out: "That's too easy — what's your actual argument?"
+2. If they say "just tell me the answer" - respond with "That's not what we do here. What do YOU think?"
+3. If their reasoning is shallow, call it out: "That's too easy - what's your actual argument?"
 4. If their reasoning is good, push to the next level: "Good. Now defend that against [counterargument]."
-5. Keep responses under 200 words — be sharp, not verbose
+5. Keep responses under 200 words - be sharp, not verbose
 6. End EVERY response with a specific, targeted question back to the user
-7. The challenge stays OPEN until the user has genuinely wrestled with the core tension — not just given a quick answer
+7. The challenge stays OPEN until the user has genuinely wrestled with the core tension - not just given a quick answer
 
 RESPONSE STYLE: Direct. Sharp. Intellectually provocative. Like a demanding philosophy professor who believes in your potential but won't accept lazy thinking.''';
   }
@@ -110,7 +110,7 @@ RESPONSE STYLE: Direct. Sharp. Intellectually provocative. Like a demanding phil
     required String levelTitle,
   }) async {
     final prompt = '''
-You are the Mind Gym performance analyst — brutally honest, no sugarcoating.
+You are the Mind Gym performance analyst - brutally honest, no sugarcoating.
 
 Generate a weekly performance report for $username (Level $level - "$levelTitle").
 
