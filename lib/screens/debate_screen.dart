@@ -152,7 +152,7 @@ class _DebateScreenState extends State<DebateScreen> {
       );
     }
 
-    final isPhilo = challenge.type == ChallengeType.philosophy;
+    final isPhilo = challenge.isPhilosophyStyle;
     final typeColor = isPhilo ? AppTheme.philosophyColor : AppTheme.biasColor;
     final isCompleted = uc.status == ChallengeStatus.completed;
     final hintsLeft = challenge.hintTiers.length - uc.hintsUsed;
@@ -213,6 +213,10 @@ class _DebateScreenState extends State<DebateScreen> {
                       ],
                     ),
                   ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: _metadataChips(challenge, typeColor),
                 ),
                 AnimatedCrossFade(
                   duration: const Duration(milliseconds: 300),
@@ -306,6 +310,44 @@ class _DebateScreenState extends State<DebateScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _metadataChips(Challenge challenge, Color color) {
+    final labels = <String>[
+      challenge.category,
+      challenge.difficultyLabel,
+      '${challenge.estimatedTimeMinutes} min',
+      ...challenge.tags.take(2),
+    ];
+
+    return Align(
+      alignment: Alignment.centerLeft,
+      child: Wrap(
+        spacing: 6,
+        runSpacing: 6,
+        children: labels
+            .map(
+              (label) => Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.08),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(color: color.withValues(alpha: 0.18)),
+                ),
+                child: Text(
+                  label,
+                  style: TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 10,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            )
+            .toList(),
       ),
     );
   }

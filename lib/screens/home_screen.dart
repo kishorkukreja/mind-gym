@@ -212,7 +212,7 @@ class _HomeScreenState extends State<HomeScreen> {
         uc.status == ChallengeStatus.inProgress;
     final isCompleted = uc.status == ChallengeStatus.completed;
     final isSkipped = uc.status == ChallengeStatus.skipped;
-    final isPhilo = challenge.type == ChallengeType.philosophy;
+    final isPhilo = challenge.isPhilosophyStyle;
     final typeColor = isPhilo ? AppTheme.philosophyColor : AppTheme.biasColor;
 
     return Container(
@@ -286,6 +286,8 @@ class _HomeScreenState extends State<HomeScreen> {
                           decoration: isSkipped ? TextDecoration.lineThrough : null,
                         )),
                 const SizedBox(height: 6),
+                _metadataChips(challenge, typeColor),
+                const SizedBox(height: 8),
                 Text(
                   challenge.question.length > 120
                       ? '${challenge.question.substring(0, 120)}...'
@@ -366,6 +368,40 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       }),
+    );
+  }
+
+  Widget _metadataChips(Challenge challenge, Color color) {
+    final labels = <String>[
+      challenge.category,
+      challenge.difficultyLabel,
+      '${challenge.estimatedTimeMinutes} min',
+      ...challenge.tags.take(2),
+    ];
+
+    return Wrap(
+      spacing: 6,
+      runSpacing: 6,
+      children: labels
+          .map(
+            (label) => Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: color.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: color.withValues(alpha: 0.18)),
+              ),
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontSize: 10,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          )
+          .toList(),
     );
   }
 

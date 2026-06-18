@@ -538,6 +538,150 @@ class ChallengeLibrary {
         'the base rate of biased coins',
       ],
     ),
+    Challenge(
+      id: 'log_001',
+      title: 'The Hidden Assumption',
+      question:
+          'An editorial argues: "Students who use laptops in class score lower on exams. Therefore, universities should ban laptops from lectures."\n\nBefore agreeing or disagreeing, identify the hidden assumptions. Does laptop use cause lower scores, or do struggling students use laptops differently? Would a ban improve learning, or just remove a visible symptom?\n\nChallenge: Rebuild the argument so every premise is explicit, then decide which premise is weakest.',
+      type: ChallengeType.logic,
+      sourceName: 'Mind Gym Logic Lab',
+      sourceDescription: 'Argument reconstruction and hidden premise analysis',
+      category: 'Argument Structure',
+      tags: ['logic', 'assumptions', 'causation'],
+      difficulty: 2,
+      estimatedTimeMinutes: 14,
+      hintTiers: [
+        'Separate the evidence from the conclusion. The evidence is correlation; the conclusion is a policy recommendation.',
+        'Look for the bridge premise: "If a behavior correlates with bad outcomes, banning it will improve outcomes." Is that always true?',
+        'Test alternative explanations: prior ability, course difficulty, multitasking, note-taking style, or instructor policy.',
+      ],
+      thinkingAngles: [
+        'premise conclusion structure',
+        'correlation vs causation',
+        'policy inference',
+        'alternative explanations',
+      ],
+      variants: [
+        ChallengeVariant(
+          id: 'log_001_variant_remote_work',
+          title: 'The Remote Work Assumption',
+          question:
+              'A manager says: "Teams in the office ship faster, so remote work should end." Reconstruct the argument and identify the hidden assumptions before taking a side.',
+        ),
+      ],
+    ),
+    Challenge(
+      id: 'dec_001',
+      title: 'The Reversible Door',
+      question:
+          'You must choose between two jobs. Job A pays more and has a known culture. Job B pays less today but offers faster learning. You can leave either job after six months, but switching has emotional and reputational costs.\n\nChallenge: Decide using expected value, reversibility, and regret. Which information would change your choice most, and how much would you pay in time or effort to learn it?',
+      type: ChallengeType.decisionTheory,
+      sourceName: 'Mind Gym Decision Lab',
+      sourceDescription: 'Expected value, optionality, and decision reversibility',
+      category: 'Decision Theory',
+      tags: ['expected value', 'optionality', 'regret'],
+      difficulty: 3,
+      estimatedTimeMinutes: 18,
+      hintTiers: [
+        'Do not compare only salary. Compare learning rate, future options, downside, and reversibility.',
+        'Ask which uncertainty dominates the decision. Culture, manager quality, skill growth, or market value?',
+        'A reversible decision may justify faster action. An irreversible decision may justify buying more information first.',
+      ],
+      thinkingAngles: [
+        'expected value',
+        'value of information',
+        'optionality',
+        'regret minimization',
+      ],
+      variants: [
+        ChallengeVariant(
+          id: 'dec_001_variant_product_bet',
+          title: 'The Product Bet',
+          question:
+              'A team can ship a safe feature or run a risky experiment with higher upside. Use expected value and reversibility to decide what to do first.',
+        ),
+      ],
+    ),
+    Challenge(
+      id: 'stat_001',
+      title: 'The Base Rate Trap',
+      question:
+          'A screening test for a rare condition is 99% accurate. The condition affects 1 in 1,000 people. You test positive.\n\nMost people jump to "I probably have it." Slow down. Out of 1,000 people, about 1 has the condition. A 1% false positive rate means about 10 healthy people still test positive.\n\nChallenge: Explain the result in natural language without hiding behind formulas. What should a rational next step be?',
+      type: ChallengeType.statistics,
+      sourceName: 'Mind Gym Statistics Lab',
+      sourceDescription: 'Base rates, false positives, and Bayesian reasoning',
+      category: 'Base Rates',
+      tags: ['statistics', 'bayes', 'risk'],
+      difficulty: 3,
+      estimatedTimeMinutes: 16,
+      hintTiers: [
+        'Convert percentages into counts. Counts make the false positives visible.',
+        'Ask how common the condition was before the test. That prior probability matters.',
+        'A positive screen is evidence, not a verdict. The rational next step is confirmatory testing or better information.',
+      ],
+      thinkingAngles: [
+        'base rates',
+        'false positives',
+        'Bayesian updating',
+        'communicating risk clearly',
+      ],
+      variants: [
+        ChallengeVariant(
+          id: 'stat_001_variant_startup_metric',
+          title: 'The Startup Metric Trap',
+          question:
+              'A dashboard flags "high-risk churn" with 90% accuracy, but only 2% of users churn monthly. Explain what a flag really means before the team panics.',
+        ),
+      ],
+    ),
+    Challenge(
+      id: 'rhe_001',
+      title: 'The Loaded Question',
+      question:
+          'A debate moderator asks: "When will your company stop exploiting customers with hidden fees?" Any direct answer seems to concede wrongdoing.\n\nChallenge: Identify the rhetorical move, rewrite the question in a fair form, and answer without accepting the trap. Where is the line between forceful questioning and manipulation?',
+      type: ChallengeType.rhetoric,
+      sourceName: 'Mind Gym Rhetoric Lab',
+      sourceDescription: 'Loaded questions, framing, and fair argument norms',
+      category: 'Rhetorical Traps',
+      tags: ['rhetoric', 'framing', 'loaded question'],
+      difficulty: 2,
+      estimatedTimeMinutes: 12,
+      hintTiers: [
+        'A loaded question embeds an accusation inside the premise.',
+        'A fair version separates the factual question from the accusation.',
+        'A strong answer rejects the premise, clarifies the facts, and avoids a defensive spiral.',
+      ],
+      thinkingAngles: [
+        'loaded questions',
+        'framing control',
+        'burden of proof',
+        'charitable reformulation',
+      ],
+    ),
+    Challenge(
+      id: 'med_001',
+      title: 'The Viral Chart',
+      question:
+          'A viral chart shows a dramatic rise in crime after a new policy. The y-axis starts at 94 instead of 0, the chart uses monthly counts without population adjustment, and it omits the previous five years.\n\nChallenge: Decide what the chart proves, what it merely suggests, and what you would need before sharing it. How could the same data be visualized honestly?',
+      type: ChallengeType.mediaLiteracy,
+      sourceName: 'Mind Gym Media Lab',
+      sourceDescription: 'Chart literacy, missing context, and sharing discipline',
+      category: 'Media Literacy',
+      tags: ['media literacy', 'charts', 'context'],
+      difficulty: 2,
+      estimatedTimeMinutes: 13,
+      hintTiers: [
+        'Look at axes, denominators, time windows, and source incentives before interpreting the claim.',
+        'Ask whether counts should be rates. Population size can change the story.',
+        'Before sharing, write the strongest cautious version of the claim. If it sounds weaker, the original may be overstated.',
+      ],
+      thinkingAngles: [
+        'misleading charts',
+        'missing denominators',
+        'source evaluation',
+        'responsible sharing',
+      ],
+    ),
   ];
 
   static List<Challenge> getPhilosophyChallenges() =>
@@ -545,6 +689,12 @@ class ChallengeLibrary {
 
   static List<Challenge> getCognitiveBiasChallenges() =>
       allChallenges.where((c) => c.type == ChallengeType.cognitiveBias).toList();
+
+  static List<Challenge> getPhilosophyStyleChallenges() =>
+      allChallenges.where((c) => c.isPhilosophyStyle).toList();
+
+  static List<Challenge> getCognitiveBiasStyleChallenges() =>
+      allChallenges.where((c) => c.isCognitiveBiasStyle).toList();
 
   static Challenge? getById(String id) {
     try {
@@ -554,27 +704,64 @@ class ChallengeLibrary {
     }
   }
 
-  /// Picks two challenges for the week: one philosophy, one cognitive bias
-  /// Avoids recently used challenges
+  /// Picks two challenges for the week: one philosophy-style and one
+  /// cognitive-bias-style challenge. Metadata is used to prefer challenges
+  /// with richer tags, moderate difficulty, and distinct categories.
   static List<Challenge> pickWeeklyChallenges(List<String> recentIds) {
-    var philo = getPhilosophyChallenges()
-        .where((c) => !recentIds.contains(c.id))
-        .toList();
-    var cogn = getCognitiveBiasChallenges()
-        .where((c) => !recentIds.contains(c.id))
-        .toList();
+    final recent = recentIds.toSet();
+    final first = _pickFromPool(
+      getPhilosophyStyleChallenges(),
+      recent,
+      const {},
+    );
+    final second = _pickFromPool(
+      getCognitiveBiasStyleChallenges(),
+      recent,
+      {first.category},
+    );
 
-    // Fallback to full list if all have been used
-    if (philo.isEmpty) {
-      philo = getPhilosophyChallenges();
-    }
-    if (cogn.isEmpty) {
-      cogn = getCognitiveBiasChallenges();
-    }
-
-    philo.shuffle();
-    cogn.shuffle();
-
-    return [philo.first, cogn.first];
+    return [first, second];
   }
+
+  static Challenge _pickFromPool(
+    List<Challenge> pool,
+    Set<String> recentIds,
+    Set<String> usedCategories,
+  ) {
+    var eligible = pool.where((challenge) {
+      if (recentIds.contains(challenge.id)) return false;
+      return !challenge.variantIds.any(recentIds.contains);
+    }).toList();
+
+    if (eligible.isEmpty) {
+      eligible = List<Challenge>.from(pool);
+    }
+
+    eligible.sort((a, b) {
+      final categoryCompare = _categoryScore(a, usedCategories)
+          .compareTo(_categoryScore(b, usedCategories));
+      if (categoryCompare != 0) return categoryCompare;
+
+      final difficultyCompare =
+          _difficultyScore(a).compareTo(_difficultyScore(b));
+      if (difficultyCompare != 0) return difficultyCompare;
+
+      final tagCompare = b.tags.length.compareTo(a.tags.length);
+      if (tagCompare != 0) return tagCompare;
+
+      final timeCompare =
+          a.estimatedTimeMinutes.compareTo(b.estimatedTimeMinutes);
+      if (timeCompare != 0) return timeCompare;
+
+      return a.id.compareTo(b.id);
+    });
+
+    return eligible.first;
+  }
+
+  static int _categoryScore(Challenge challenge, Set<String> usedCategories) =>
+      usedCategories.contains(challenge.category) ? 1 : 0;
+
+  static int _difficultyScore(Challenge challenge) =>
+      (challenge.difficulty - 3).abs();
 }

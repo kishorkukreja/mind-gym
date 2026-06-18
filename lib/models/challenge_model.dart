@@ -1,5 +1,32 @@
-enum ChallengeType { philosophy, cognitiveBias }
+enum ChallengeType {
+  philosophy,
+  cognitiveBias,
+  logic,
+  decisionTheory,
+  statistics,
+  rhetoric,
+  mediaLiteracy,
+}
+
 enum ChallengeStatus { pending, open, inProgress, completed, skipped }
+
+class ChallengeVariant {
+  final String id;
+  final String title;
+  final String question;
+
+  const ChallengeVariant({
+    required this.id,
+    required this.title,
+    required this.question,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'question': question,
+      };
+}
 
 class ChallengeMessage {
   final String role; // 'user' or 'assistant'
@@ -34,9 +61,12 @@ class Challenge {
   final String sourceName;
   final String sourceDescription;
   final List<String> hintTiers; // 3 hints, progressively revealing
-  final String category; // e.g. "Trolley Problem", "Confirmation Bias"
+  final String category;
+  final List<String> tags;
   final int difficulty; // 1-5
+  final int estimatedTimeMinutes;
   final List<String> thinkingAngles; // Socratic angles the LLM can explore
+  final List<ChallengeVariant> variants;
 
   Challenge({
     required this.id,
@@ -47,9 +77,15 @@ class Challenge {
     required this.sourceDescription,
     required this.hintTiers,
     required this.category,
+    List<String>? tags,
     required this.difficulty,
+    int? estimatedTimeMinutes,
     required this.thinkingAngles,
-  });
+    List<ChallengeVariant>? variants,
+  })  : tags = tags ?? _defaultTags(category, type),
+        estimatedTimeMinutes =
+            estimatedTimeMinutes ?? _defaultEstimatedTime(difficulty),
+        variants = variants ?? const [];
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -60,12 +96,74 @@ class Challenge {
         'sourceDescription': sourceDescription,
         'hintTiers': hintTiers,
         'category': category,
+        'tags': tags,
         'difficulty': difficulty,
+        'estimatedTimeMinutes': estimatedTimeMinutes,
         'thinkingAngles': thinkingAngles,
+        'variants': variants.map((variant) => variant.toJson()).toList(),
       };
 
-  String get typeLabel =>
-      type == ChallengeType.philosophy ? '🏛️ Philosophy' : '🧠 Cognitive Bias';
+  bool get isPhilosophyStyle =>
+      type == ChallengeType.philosophy ||
+      type == ChallengeType.logic ||
+      type == ChallengeType.decisionTheory;
+
+  bool get isCognitiveBiasStyle => !isPhilosophyStyle;
+
+  List<String> get variantIds => variants.map((variant) => variant.id).toList();
+
+  String get typeLabel {
+    switch (type) {
+      case ChallengeType.philosophy:
+        return 'Philosophy';
+      case ChallengeType.cognitiveBias:
+        return 'Cognitive Bias';
+      case ChallengeType.logic:
+        return 'Logic';
+      case ChallengeType.decisionTheory:
+        return 'Decision Theory';
+      case ChallengeType.statistics:
+        return 'Statistics';
+      case ChallengeType.rhetoric:
+        return 'Rhetoric';
+      case ChallengeType.mediaLiteracy:
+        return 'Media Literacy';
+    }
+  }
+
+  String get difficultyLabel {
+    final normalizedDifficulty = difficulty.clamp(1, 5).toInt();
+    switch (normalizedDifficulty) {
+      case 1:
+        return 'Intro';
+      case 2:
+        return 'Light';
+      case 3:
+        return 'Medium';
+      case 4:
+        return 'Hard';
+      default:
+        return 'Expert';
+    }
+  }
+
+  List<String> get metadataLabels => [
+        typeLabel,
+        difficultyLabel,
+        '$estimatedTimeMinutes min',
+        ...tags.take(2),
+      ];
+
+  static List<String> _defaultTags(String category, ChallengeType type) {
+    final normalized = category
+        .split(RegExp(r'[^A-Za-z0-9]+'))
+        .where((part) => part.isNotEmpty)
+        .map((part) => part.toLowerCase())
+        .toList();
+    return normalized.isEmpty ? [type.name] : normalized;
+  }
+
+  static int _defaultEstimatedTime(int difficulty) => 8 + (difficulty * 4);
 }
 
 class UserChallenge {
@@ -99,9 +197,14 @@ class UserChallenge {
     this.qualityScore,
   }) : conversation = conversation ?? [];
 
-  bool get isOpen => status == ChallengeStatus.open || status == ChallengeStatus.inProgress;
+  bool get isOpen =>
+      status == ChallengeStatus.open || status == ChallengeStatus.inProgress;
+
   bool get isExpired {
-    if (status == ChallengeStatus.completed || status == ChallengeStatus.skipped) return false;
+    if (status == ChallengeStatus.completed ||
+        status == ChallengeStatus.skipped) {
+      return false;
+    }
     return DateTime.now().isAfter(scheduledFor.add(const Duration(days: 4)));
   }
 
