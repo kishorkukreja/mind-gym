@@ -84,6 +84,19 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     }
   }
 
+  Future<void> _signInWithGoogle() async {
+    final provider = context.read<AppProvider>();
+    provider.clearError();
+
+    final success = await provider.signInWithGoogle();
+    if (!success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(provider.error ?? 'Google sign-in failed'),
+        backgroundColor: AppTheme.errorColor,
+      ));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = context.watch<AppProvider>();
@@ -148,6 +161,30 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 24),
+                      SizedBox(
+                        height: 52,
+                        child: OutlinedButton.icon(
+                          onPressed: provider.isLoading ? null : _signInWithGoogle,
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: AppTheme.textPrimary,
+                            side: BorderSide(color: AppTheme.border),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(14),
+                            ),
+                          ),
+                          icon: const Icon(Icons.login, size: 20),
+                          label: const Text(
+                            'Continue with Google',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      _buildDivider('or use local PIN'),
+                      const SizedBox(height: 16),
                       _buildField(
                         controller: _usernameCtrl,
                         label: 'Username',

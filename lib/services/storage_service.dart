@@ -62,6 +62,15 @@ class StorageService {
     }
   }
 
+  static UserModel? getUserById(String userId) {
+    final users = getAllUsers();
+    try {
+      return users.firstWhere((u) => u.id == userId);
+    } catch (_) {
+      return null;
+    }
+  }
+
   static bool usernameExists(String username) {
     return getUserByUsername(username) != null;
   }
