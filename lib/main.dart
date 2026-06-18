@@ -29,6 +29,7 @@ class MindGymApp extends StatefulWidget {
 
 class _MindGymAppState extends State<MindGymApp> {
   bool _initialized = false;
+  String? _initializationError;
 
   @override
   void initState() {
@@ -37,26 +38,74 @@ class _MindGymAppState extends State<MindGymApp> {
   }
 
   Future<void> _init() async {
-    await context.read<AppProvider>().init();
+    try {
+      await context.read<AppProvider>().init();
+    } catch (error) {
+      _initializationError = error.toString();
+    }
     if (mounted) setState(() => _initialized = true);
   }
 
   @override
   Widget build(BuildContext context) {
+    final Widget home;
+    if (!_initialized) {
+      home = const SplashScreen();
+    } else if (_initializationError != null) {
+      home = InitializationErrorScreen(message: _initializationError!);
+    } else {
+      home = Consumer<AppProvider>(
+        builder: (context, provider, _) {
+          if (provider.isLoggedIn) {
+            return const MainShell();
+          }
+          return const AuthScreen();
+        },
+      );
+    }
+
     return MaterialApp(
       title: 'Mind Gym',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.theme,
-      home: !_initialized
-          ? const SplashScreen()
-          : Consumer<AppProvider>(
-              builder: (context, provider, _) {
-                if (provider.isLoggedIn) {
-                  return const MainShell();
-                }
-                return const AuthScreen();
-              },
+      home: home,
+    );
+  }
+}
+
+class InitializationErrorScreen extends StatelessWidget {
+  final String message;
+
+  const InitializationErrorScreen({super.key, required this.message});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppTheme.background,
+      body: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.error_outline, color: AppTheme.errorColor, size: 40),
+                const SizedBox(height: 16),
+                Text(
+                  'Mind Gym could not start',
+                  style: Theme.of(context).textTheme.titleLarge,
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  message,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ],
             ),
+          ),
+        ),
+      ),
     );
   }
 }

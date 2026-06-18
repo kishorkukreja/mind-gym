@@ -51,6 +51,47 @@ class Challenge {
     required this.thinkingAngles,
   });
 
+  factory Challenge.fromJson(Map<String, dynamic> json,
+      {String source = 'content'}) {
+    final id = _requiredString(json, 'id', source);
+    final typeValue = _requiredString(json, 'type', source, id);
+    final difficultyValue = json['difficulty'];
+    if (difficultyValue is! int || difficultyValue < 1 || difficultyValue > 5) {
+      throw ChallengeContentException(
+        'Challenge "$id" in $source has invalid difficulty. Expected an integer from 1 to 5.',
+      );
+    }
+
+    final hintTiers = _requiredStringList(json, 'hintTiers', source, id);
+    if (hintTiers.length < 3) {
+      throw ChallengeContentException(
+        'Challenge "$id" in $source must include at least 3 hintTiers.',
+      );
+    }
+
+    final thinkingAngles =
+        _requiredStringList(json, 'thinkingAngles', source, id);
+    if (thinkingAngles.isEmpty) {
+      throw ChallengeContentException(
+        'Challenge "$id" in $source must include at least one thinking angle.',
+      );
+    }
+
+    return Challenge(
+      id: id,
+      title: _requiredString(json, 'title', source, id),
+      question: _requiredString(json, 'question', source, id),
+      type: _parseChallengeType(typeValue, source, id),
+      sourceName: _requiredString(json, 'sourceName', source, id),
+      sourceDescription:
+          _requiredString(json, 'sourceDescription', source, id),
+      hintTiers: hintTiers,
+      category: _requiredString(json, 'category', source, id),
+      difficulty: difficultyValue,
+      thinkingAngles: thinkingAngles,
+    );
+  }
+
   Map<String, dynamic> toJson() => {
         'id': id,
         'title': title,
@@ -66,6 +107,67 @@ class Challenge {
 
   String get typeLabel =>
       type == ChallengeType.philosophy ? '🏛️ Philosophy' : '🧠 Cognitive Bias';
+}
+
+class ChallengeContentException implements Exception {
+  final String message;
+
+  const ChallengeContentException(this.message);
+
+  @override
+  String toString() => 'ChallengeContentException: $message';
+}
+
+String _requiredString(
+  Map<String, dynamic> json,
+  String field,
+  String source, [
+  String? challengeId,
+]) {
+  final value = json[field];
+  if (value is String && value.trim().isNotEmpty) return value;
+  final prefix = challengeId == null ? 'Challenge' : 'Challenge "$challengeId"';
+  throw ChallengeContentException(
+    '$prefix in $source has invalid "$field". Expected a non-empty string.',
+  );
+}
+
+List<String> _requiredStringList(
+  Map<String, dynamic> json,
+  String field,
+  String source,
+  String challengeId,
+) {
+  final value = json[field];
+  if (value is! List) {
+    throw ChallengeContentException(
+      'Challenge "$challengeId" in $source has invalid "$field". Expected a list of strings.',
+    );
+  }
+
+  final result = <String>[];
+  for (final item in value) {
+    if (item is! String || item.trim().isEmpty) {
+      throw ChallengeContentException(
+        'Challenge "$challengeId" in $source has invalid "$field". Expected only non-empty strings.',
+      );
+    }
+    result.add(item);
+  }
+  return result;
+}
+
+ChallengeType _parseChallengeType(
+  String value,
+  String source,
+  String challengeId,
+) {
+  for (final type in ChallengeType.values) {
+    if (type.name == value) return type;
+  }
+  throw ChallengeContentException(
+    'Challenge "$challengeId" in $source has invalid type "$value".',
+  );
 }
 
 class UserChallenge {

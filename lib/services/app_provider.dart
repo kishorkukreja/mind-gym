@@ -24,6 +24,7 @@ class AppProvider extends ChangeNotifier {
   bool get isDebating => _isDebating;
 
   Future<void> init() async {
+    await ChallengeLibrary.load();
     await StorageService.init();
     final user = StorageService.getCurrentUser();
     if (user != null) {
