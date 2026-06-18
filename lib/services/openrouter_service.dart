@@ -42,14 +42,14 @@ class OpenRouterService {
         final content = data['choices'][0]['message']['content'] as String;
         return content.trim();
       } else if (response.statusCode == 401) {
-        return '⚠️ Invalid API key. Please update your OpenRouter key in Settings.';
+        return 'Warning: Invalid API key. Please update your OpenRouter key in Settings.';
       } else if (response.statusCode == 429) {
-        return '⚠️ Rate limit reached. Please wait a moment and try again.';
+        return 'Warning: Rate limit reached. Please wait a moment and try again.';
       } else {
-        return '⚠️ Connection error (${response.statusCode}). Check your API key and internet connection.';
+        return 'Warning: Connection error (${response.statusCode}). Check your API key and internet connection.';
       }
     } catch (e) {
-      return '⚠️ Failed to connect to the debate engine. Check your internet connection.\n\nError: $e';
+      return 'Warning: Failed to connect to the debate engine. Check your internet connection.\n\nError: $e';
     }
   }
 

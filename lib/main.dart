@@ -89,12 +89,7 @@ class SplashScreen extends StatelessWidget {
             const SizedBox(height: 24),
             Text(
               'MIND GYM',
-              style: TextStyle(
-                color: AppTheme.primary,
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 4,
-              ),
+              style: AppTheme.brandTextStyle.copyWith(fontSize: 20),
             ),
           ],
         ),

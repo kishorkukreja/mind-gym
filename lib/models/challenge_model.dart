@@ -65,7 +65,7 @@ class Challenge {
       };
 
   String get typeLabel =>
-      type == ChallengeType.philosophy ? '🏛️ Philosophy' : '🧠 Cognitive Bias';
+      type == ChallengeType.philosophy ? 'Philosophy' : 'Cognitive Bias';
 }
 
 class UserChallenge {

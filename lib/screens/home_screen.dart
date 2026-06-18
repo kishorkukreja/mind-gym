@@ -48,12 +48,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 20),
                 if (countdown != null) _buildCountdown(countdown),
                 if (countdown != null) const SizedBox(height: 20),
-                Text('THIS WEEK\'S CHALLENGES',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          letterSpacing: 1.5,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.textSecondary,
-                        )),
+                Text(
+                  'THIS WEEK\'S CHALLENGES',
+                  style: AppTheme.sectionLabelStyle,
+                ),
                 const SizedBox(height: 12),
                 if (challenges.isEmpty)
                   _buildNoChallenges()
@@ -91,12 +89,16 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
               color: AppTheme.warningColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(AppTheme.pillRadius),
               border: Border.all(color: AppTheme.warningColor.withValues(alpha: 0.3)),
             ),
             child: Row(
               children: [
-                const Text('🔥', style: TextStyle(fontSize: 14)),
+                Icon(
+                  Icons.local_fire_department,
+                  color: AppTheme.warningColor,
+                  size: 14,
+                ),
                 const SizedBox(width: 4),
                 Text('${user.currentStreak}',
                     style: TextStyle(
@@ -119,7 +121,7 @@ class _HomeScreenState extends State<HomeScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppTheme.radius),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -136,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(AppTheme.pillRadius),
                 ),
                 child: Text('${user.xp} XP',
                     style: const TextStyle(
@@ -187,7 +189,7 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: AppTheme.primaryLight.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppTheme.radius),
         border: Border.all(color: AppTheme.primaryLight.withValues(alpha: 0.3)),
       ),
       child: Row(
@@ -219,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
         color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppTheme.radius),
         border: Border.all(
           color: isAvailable && !isCompleted && !isSkipped
               ? typeColor.withValues(alpha: 0.4)
@@ -237,9 +239,9 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppTheme.radius),
         child: InkWell(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(AppTheme.radius),
           onTap: isCompleted || isSkipped
               ? null
               : () {
@@ -265,13 +267,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: typeColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius:
+                            BorderRadius.circular(AppTheme.pillRadius),
                       ),
                       child: Text(challenge.typeLabel,
-                          style: TextStyle(
+                          style: AppTheme.sectionLabelStyle.copyWith(
                               color: typeColor,
                               fontSize: 11,
-                              fontWeight: FontWeight.w700)),
+                              letterSpacing: 0)),
                     ),
                     const SizedBox(width: 8),
                     _difficultyDots(challenge.difficulty, typeColor),
@@ -290,9 +293,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   challenge.question.length > 120
                       ? '${challenge.question.substring(0, 120)}...'
                       : challenge.question,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  style: AppTheme.readingTextStyle.copyWith(
                         color: AppTheme.textSecondary,
                         fontSize: 13,
+                        height: 1.45,
                       ),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
@@ -376,7 +380,7 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
             color: AppTheme.successColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppTheme.pillRadius),
           ),
           child: Text('Done',
               style: TextStyle(
@@ -387,7 +391,7 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
             color: AppTheme.errorColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppTheme.pillRadius),
           ),
           child: Text('Skipped',
               style: TextStyle(
@@ -398,7 +402,7 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
             color: AppTheme.warningColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppTheme.pillRadius),
           ),
           child: Text('Open',
               style: TextStyle(
@@ -411,7 +415,7 @@ class _HomeScreenState extends State<HomeScreen> {
             color: isAvailable
                 ? AppTheme.primary.withValues(alpha: 0.1)
                 : AppTheme.border,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppTheme.pillRadius),
           ),
           child: Text(isAvailable ? 'Ready' : 'Upcoming',
               style: TextStyle(
@@ -427,7 +431,7 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppTheme.radius),
         border: Border.all(color: AppTheme.border),
       ),
       child: Column(
@@ -455,7 +459,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _statCard('Skipped', '${user.totalChallengesSkipped}',
             Icons.cancel_outlined, AppTheme.errorColor, context),
         const SizedBox(width: 10),
-        _statCard('Best Streak', '${user.bestStreak}🔥',
+        _statCard('Best Streak', '${user.bestStreak}',
             Icons.local_fire_department_outlined, AppTheme.warningColor, context),
       ],
     );
@@ -468,7 +472,7 @@ class _HomeScreenState extends State<HomeScreen> {
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: AppTheme.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppTheme.radius),
           border: Border.all(color: AppTheme.border),
         ),
         child: Column(
@@ -476,11 +480,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Icon(icon, color: color, size: 18),
             const SizedBox(height: 8),
-            Text(value,
-                style: TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 18)),
+            Text(value, style: AppTheme.metricStyle),
             Text(label,
                 style: TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
           ],
@@ -493,7 +493,9 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radius),
+        ),
         title: const Row(
           children: [
             Icon(Icons.lock_outline, color: AppTheme.primary),

@@ -133,7 +133,7 @@ class AppProvider extends ChangeNotifier {
     if (uc == null || _currentUser == null) return 'Challenge not found';
     if (_currentUser!.openRouterApiKey == null ||
         _currentUser!.openRouterApiKey!.isEmpty) {
-      return '⚠️ No API key set. Please add your OpenRouter key in Settings.';
+      return 'Warning: No API key set. Please add your OpenRouter key in Settings.';
     }
 
     // Add user message
@@ -154,7 +154,7 @@ class AppProvider extends ChangeNotifier {
     if (challenge == null) {
       _isDebating = false;
       notifyListeners();
-      return '⚠️ Challenge definition not found.';
+      return 'Warning: Challenge definition not found.';
     }
 
     final aiResponse = await OpenRouterService.getSocraticResponse(
@@ -184,11 +184,11 @@ class AppProvider extends ChangeNotifier {
     if (challenge == null) return 'Challenge definition not found';
 
     if (uc.hintsUsed >= challenge.hintTiers.length) {
-      return '💡 No more hints available. You have all the clues you need — now THINK.';
+      return 'No more hints available. You have all the clues you need — now THINK.';
     }
 
     final hintMessage =
-        '💡 Hint ${uc.hintsUsed + 1} of ${challenge.hintTiers.length}:\n\n${challenge.hintTiers[uc.hintsUsed]}';
+        'Hint ${uc.hintsUsed + 1} of ${challenge.hintTiers.length}:\n\n${challenge.hintTiers[uc.hintsUsed]}';
     uc.hintsUsed++;
     uc.conversation.add(ChallengeMessage(
       role: 'assistant',

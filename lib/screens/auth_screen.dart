@@ -107,18 +107,22 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                 // Brain Logo
                 const BrainLogo(size: 90),
                 const SizedBox(height: 16),
-                Text('MIND GYM',
-                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                          color: AppTheme.primary,
-                          letterSpacing: 4,
-                          fontWeight: FontWeight.w900,
-                        )),
+                Text('MIND GYM', style: AppTheme.brandTextStyle),
                 Text('Sharpen Your Thinking',
                     style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppTheme.textSecondary,
-                          letterSpacing: 1.5,
+                          letterSpacing: 0,
                         )),
-                const SizedBox(height: 40),
+                const SizedBox(height: 14),
+                Text(
+                  'Scheduled reasoning challenges, Socratic debate, and progress you can actually read.',
+                  style: AppTheme.readingTextStyle.copyWith(
+                    color: AppTheme.textSecondary,
+                    fontSize: 14,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
 
                 // User switcher if users exist
                 if (users.isNotEmpty && _isLogin) ...[
@@ -133,7 +137,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                   padding: const EdgeInsets.all(24),
                   decoration: BoxDecoration(
                     color: AppTheme.surface,
-                    borderRadius: BorderRadius.circular(20),
+                    borderRadius: BorderRadius.circular(AppTheme.radius),
                     border: Border.all(color: AppTheme.border),
                   ),
                   child: Column(
@@ -206,7 +210,9 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                             backgroundColor: AppTheme.primary,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(14)),
+                              borderRadius:
+                                  BorderRadius.circular(AppTheme.radius),
+                            ),
                           ),
                           child: provider.isLoading
                               ? const SizedBox(
@@ -216,10 +222,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                                       color: Colors.white, strokeWidth: 2))
                               : Text(
                                   _isLogin ? 'Enter the Gym' : 'Begin Training',
-                                  style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      letterSpacing: 1),
+                                  style: AppTheme.ctaTextStyle,
                                 ),
                         ),
                       ),
@@ -250,10 +253,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Quick Login',
-            style: TextStyle(
-                color: AppTheme.textSecondary,
-                fontSize: 12,
-                letterSpacing: 1)),
+            style: AppTheme.sectionLabelStyle),
         const SizedBox(height: 10),
         SizedBox(
           height: 70,
@@ -269,7 +269,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                   width: 70,
                   decoration: BoxDecoration(
                     color: AppTheme.surface,
-                    borderRadius: BorderRadius.circular(14),
+                    borderRadius: BorderRadius.circular(AppTheme.radius),
                     border: Border.all(color: AppTheme.border),
                   ),
                   child: Column(
@@ -339,15 +339,15 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
         filled: true,
         fillColor: AppTheme.background,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppTheme.radius),
           borderSide: BorderSide(color: AppTheme.border),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppTheme.radius),
           borderSide: BorderSide(color: AppTheme.border),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppTheme.radius),
           borderSide: BorderSide(color: AppTheme.primary, width: 2),
         ),
       ),

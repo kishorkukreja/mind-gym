@@ -60,7 +60,7 @@ class _MainShellState extends State<MainShell> {
     return Expanded(
       child: InkWell(
         onTap: () => setState(() => _currentIndex = index),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(AppTheme.radius),
         child: Padding(
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Column(
@@ -73,7 +73,7 @@ class _MainShellState extends State<MainShell> {
                   color: isActive
                       ? AppTheme.primary.withValues(alpha: 0.12)
                       : Colors.transparent,
-                  borderRadius: BorderRadius.circular(30),
+                  borderRadius: BorderRadius.circular(AppTheme.pillRadius),
                 ),
                 child: Icon(
                   isActive ? activeIcon : icon,
@@ -84,10 +84,11 @@ class _MainShellState extends State<MainShell> {
               const SizedBox(height: 2),
               Text(
                 label,
-                style: TextStyle(
+                style: AppTheme.sectionLabelStyle.copyWith(
                   color: isActive ? AppTheme.primary : AppTheme.textSecondary,
                   fontSize: 11,
                   fontWeight: isActive ? FontWeight.w700 : FontWeight.normal,
+                  letterSpacing: 0,
                 ),
               ),
             ],
