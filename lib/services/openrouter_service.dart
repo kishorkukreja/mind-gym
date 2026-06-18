@@ -4,7 +4,8 @@ import '../models/challenge_model.dart';
 import 'schedule_service.dart';
 
 class OpenRouterService {
-  static const String _baseUrl = 'https://openrouter.ai/api/v1/chat/completions';
+  static const String _baseUrl =
+      'https://openrouter.ai/api/v1/chat/completions';
   static const String _model = 'anthropic/claude-3.5-sonnet';
 
   static Future<String> getSocraticResponse({
@@ -53,12 +54,16 @@ class OpenRouterService {
     }
   }
 
-  static String _buildSystemPrompt(Challenge challenge, int hintsUsed, int userLevel) {
+  static String _buildSystemPrompt(
+    Challenge challenge,
+    int hintsUsed,
+    int userLevel,
+  ) {
     final difficultyAdj = userLevel >= 8
         ? 'This person is an advanced thinker (Level $userLevel). Push them hard. Use technical philosophical terminology. Expect rigorous arguments.'
         : userLevel >= 4
-            ? 'This person is a developing thinker (Level $userLevel). Challenge them but meet them where they are.'
-            : 'This is a beginning thinker (Level $userLevel). Be challenging but accessible.';
+        ? 'This person is a developing thinker (Level $userLevel). Challenge them but meet them where they are.'
+        : 'This is a beginning thinker (Level $userLevel). Be challenging but accessible.';
 
     return '''You are the Mind Gym Socratic Debate Engine - an intellectually ruthless but fair philosophical adversary.
 
@@ -109,7 +114,8 @@ RESPONSE STYLE: Direct. Sharp. Intellectually provocative. Like a demanding phil
     required int level,
     required String levelTitle,
   }) async {
-    final prompt = '''
+    final prompt =
+        '''
 You are the Mind Gym performance analyst - brutally honest, no sugarcoating.
 
 Generate a weekly performance report for $username (Level $level - "$levelTitle").
@@ -144,7 +150,7 @@ Tone: Like a brilliant, ruthless mentor who genuinely wants them to succeed but 
         body: jsonEncode({
           'model': _model,
           'messages': [
-            {'role': 'user', 'content': prompt}
+            {'role': 'user', 'content': prompt},
           ],
           'max_tokens': 300,
           'temperature': 0.9,
@@ -156,6 +162,9 @@ Tone: Like a brilliant, ruthless mentor who genuinely wants them to succeed but 
         return (data['choices'][0]['message']['content'] as String).trim();
       }
     } catch (_) {}
-    return ScheduleService.getBrutalComment(stats['grade'] as String, stats['thisSkipped'] as int);
+    return ScheduleService.getBrutalComment(
+      stats['grade'] as String,
+      stats['thisSkipped'] as int,
+    );
   }
 }
