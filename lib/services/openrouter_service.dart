@@ -62,7 +62,8 @@ class OpenRouterService {
 
   final AiClient _client;
 
-  OpenRouterService({AiClient? client}) : _client = client ?? OpenRouterHttpClient();
+  OpenRouterService({AiClient? client})
+      : _client = client ?? OpenRouterHttpClient();
 
   Future<SocraticResponse> getSocraticResponse({
     required String apiKey,

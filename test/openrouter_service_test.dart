@@ -34,7 +34,9 @@ void main() {
     thinkingAngles: const ['clarity', 'counterargument'],
   );
 
-  test('parses structured evaluation metadata and strips it from chat text', () async {
+  test(
+    'parses structured evaluation metadata and strips it from chat text',
+    () async {
     final client = FakeAiClient('''Your claim is clearer. Now test it against the strongest objection.
 
 <mind_gym_evaluation>
@@ -73,15 +75,19 @@ void main() {
     expect(response.evaluation, isNotNull);
     expect(response.evaluation!.completionReadiness, isTrue);
     expect(response.evaluation!.qualityScore, 4);
-    expect(response.evaluation!.summary,
-        'Strong clarity with a real counterargument to explore next.');
+    expect(
+      response.evaluation!.summary,
+      'Strong clarity with a real counterargument to explore next.',
+    );
     expect(
       client.capturedMessages!.first['content'],
       contains('<mind_gym_evaluation>'),
     );
   });
 
-  test('invalid evaluation metadata falls back without leaking hidden block', () async {
+  test(
+    'invalid evaluation metadata falls back without leaking hidden block',
+    () async {
     final client = FakeAiClient('''Keep going. What would make your answer false?
 
 <mind_gym_evaluation>
