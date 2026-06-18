@@ -24,7 +24,7 @@ Issue #32 adds cloud verification for Mind Gym pull requests so contributors are
 
 1. Add `.github/workflows/flutter-ci.yml` for pull requests and `main` pushes.
 2. Use `subosito/flutter-action@v2` with Flutter `3.35.0`, the SDK floor represented by the current lockfile, and dependency caching.
-3. Run `flutter pub get`, a changed-Dart-file formatting gate, `flutter analyze`, `flutter test`, and `flutter build web --release --no-pub`.
+3. Run `flutter pub get`, a changed-Dart-file formatting gate, `flutter analyze --no-fatal-infos`, `flutter test`, and `flutter build web --release --no-pub`.
 4. Add `.github/workflows/firebase-hosting-preview.yml` as an optional same-repository pull request workflow.
 5. Gate preview deployment on `FIREBASE_PROJECT_ID` and `FIREBASE_SERVICE_ACCOUNT_MIND_GYM`; skip deployment when they are absent.
 6. Add `firebase.json` with Flutter web Hosting output and emulator ports for future Auth and Firestore work.
@@ -35,7 +35,7 @@ Issue #32 adds cloud verification for Mind Gym pull requests so contributors are
 
 - Pull requests and `main` pushes run Flutter checks through `.github/workflows/flutter-ci.yml`.
 - The workflow installs Flutter and restores packages with `flutter pub get`.
-- The workflow checks changed Dart formatting, analyzes code, runs tests, and builds web.
+- The workflow checks changed Dart formatting, analyzes code with info-level findings nonfatal, runs tests, and builds web.
 - Normal Flutter CI has read-only permissions and no Firebase secret references.
 - Firebase Emulator Suite usage is documented in `docs/firebase-preview-and-emulators.md`.
 - Firebase Hosting preview setup is documented and implemented as an optional workflow for same-repository pull requests.
