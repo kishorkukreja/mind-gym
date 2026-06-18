@@ -248,7 +248,8 @@ class _DebateScreenState extends State<DebateScreen> {
               onPressed: _completingChallenge ? null : _markComplete,
               icon: const Icon(Icons.check, size: 16),
               label: Text(_completingChallenge ? 'Completing' : 'Complete'),
-              style: TextButton.styleFrom(foregroundColor: AppTheme.successColor),
+              style:
+                  TextButton.styleFrom(foregroundColor: AppTheme.successColor),
             ),
         ],
       ),

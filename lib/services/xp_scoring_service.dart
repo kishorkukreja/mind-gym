@@ -16,8 +16,9 @@ class XpScoringService {
     final normalizedDifficulty = difficulty.clamp(1, 5).toInt();
     final difficultyPoints = normalizedDifficulty * 40;
     final hintPenalty = -(hintsUsed.clamp(0, 99).toInt() * 15);
-    final onTime =
-        !completedAt.isAfter(scheduledFor.add(const Duration(days: _onTimeWindowDays)));
+    final onTime = !completedAt.isAfter(
+      scheduledFor.add(const Duration(days: _onTimeWindowDays)),
+    );
     final timelinessPoints = onTime ? 20 : -20;
 
     final userMessages = conversation
@@ -25,7 +26,8 @@ class XpScoringService {
         .map((message) => message.content)
         .toList();
     final substantiveMessages = _substantiveMessages(userMessages);
-    final engagementPoints = substantiveMessages.length.clamp(0, 4).toInt() * 18;
+    final engagementPoints =
+        substantiveMessages.length.clamp(0, 4).toInt() * 18;
 
     final factors = <XpFactor>[
       XpFactor(
@@ -64,11 +66,12 @@ class XpScoringService {
       (total, factor) => total + factor.points,
     );
     final antiFarmingTriggered = _isFarming(userMessages, substantiveMessages);
-    final cappedBeforeFloor = antiFarmingTriggered && preliminaryTotal > _antiFarmingCap
-        ? _antiFarmingCap
-        : !antiFarmingTriggered && preliminaryTotal > _maximumXp
-            ? _maximumXp
-            : preliminaryTotal;
+    final cappedBeforeFloor =
+        antiFarmingTriggered && preliminaryTotal > _antiFarmingCap
+            ? _antiFarmingCap
+            : !antiFarmingTriggered && preliminaryTotal > _maximumXp
+                ? _maximumXp
+                : preliminaryTotal;
     final antiFarmingAdjustment = cappedBeforeFloor - preliminaryTotal;
     final cappedTotal = cappedBeforeFloor.clamp(_minimumXp, _maximumXp).toInt();
     final minimumFloorAdjustment = cappedTotal - cappedBeforeFloor;
@@ -109,7 +112,8 @@ class XpScoringService {
       final normalized = _normalize(message);
       if (normalized.isEmpty || seen.contains(normalized)) continue;
 
-      final wordCount = normalized.split(' ').where((word) => word.isNotEmpty).length;
+      final wordCount =
+          normalized.split(' ').where((word) => word.isNotEmpty).length;
       final longEnough = wordCount >= 10 || normalized.length >= 80;
       if (longEnough) {
         seen.add(normalized);
@@ -120,11 +124,16 @@ class XpScoringService {
     return substantive;
   }
 
-  static bool _isFarming(List<String> userMessages, List<String> substantiveMessages) {
+  static bool _isFarming(
+    List<String> userMessages,
+    List<String> substantiveMessages,
+  ) {
     if (userMessages.isEmpty) return true;
     if (substantiveMessages.length < 2) return true;
 
-    final normalized = userMessages.map(_normalize).where((message) => message.isNotEmpty);
+    final normalized = userMessages
+        .map(_normalize)
+        .where((message) => message.isNotEmpty);
     final uniqueMessages = normalized.toSet().length;
     return userMessages.length >= 3 && uniqueMessages <= 1;
   }

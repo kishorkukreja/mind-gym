@@ -14,11 +14,19 @@ void main() {
         scheduledFor: scheduledFor,
         completedAt: completedAt,
         conversation: [
-          _user('I think the central issue is whether outcomes or duties matter more here.'),
+          _user(
+            'I think the central issue is whether outcomes or duties matter more here.',
+          ),
           _assistant('Push that distinction harder.'),
-          _user('If I prioritize outcomes, saving five people outweighs causing one death.'),
-          _user('The objection is that directly using someone as a means changes the moral category.'),
-          _user('My conclusion is tentative: consequences matter, but intent and agency constrain them.'),
+          _user(
+            'If I prioritize outcomes, saving five people outweighs causing one death.',
+          ),
+          _user(
+            'The objection is that directly using someone as a means changes the moral category.',
+          ),
+          _user(
+            'My conclusion is tentative: consequences matter, but intent and agency constrain them.',
+          ),
         ],
       );
 
@@ -60,7 +68,9 @@ void main() {
       expect(breakdown.totalXp, 40);
       expect(breakdown.antiFarmingTriggered, isTrue);
       expect(
-        breakdown.factors.firstWhere((factor) => factor.key == 'anti_farming').points,
+        breakdown.factors
+            .firstWhere((factor) => factor.key == 'anti_farming')
+            .points,
         isNegative,
       );
     });
@@ -83,11 +93,15 @@ void main() {
       expect(breakdown.totalXp, 10);
       expect(breakdown.antiFarmingTriggered, isTrue);
       expect(
-        breakdown.factors.firstWhere((factor) => factor.key == 'anti_farming').points,
+        breakdown.factors
+            .firstWhere((factor) => factor.key == 'anti_farming')
+            .points,
         lessThanOrEqualTo(0),
       );
       expect(
-        breakdown.factors.firstWhere((factor) => factor.key == 'minimum_floor').points,
+        breakdown.factors
+            .firstWhere((factor) => factor.key == 'minimum_floor')
+            .points,
         isPositive,
       );
     });
