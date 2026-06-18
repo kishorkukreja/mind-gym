@@ -19,6 +19,7 @@ class _DebateScreenState extends State<DebateScreen> {
   final _scrollCtrl = ScrollController();
   bool _showChallenge = true;
   bool _sendingMessage = false;
+  bool _completingChallenge = false;
 
   @override
   void dispose() {
@@ -66,6 +67,7 @@ class _DebateScreenState extends State<DebateScreen> {
   }
 
   Future<void> _markComplete() async {
+    if (_completingChallenge) return;
     final provider = context.read<AppProvider>();
     final uc = provider.getChallenge(widget.ucId);
     if (uc == null || uc.responseCount < 2) {
@@ -76,45 +78,71 @@ class _DebateScreenState extends State<DebateScreen> {
       return;
     }
 
-    final xp = await provider.markChallengeComplete(widget.ucId);
-    if (mounted) {
-      _showCompletionDialog(xp);
+    setState(() => _completingChallenge = true);
+    try {
+      final xp = await provider.markChallengeComplete(widget.ucId);
+      if (mounted) {
+        final completed = provider.getChallenge(widget.ucId);
+        _showCompletionDialog(xp, completed?.xpBreakdown);
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _completingChallenge = false);
+      }
     }
   }
 
-  void _showCompletionDialog(int xp) {
+  void _showCompletionDialog(int xp, XpBreakdown? breakdown) {
     showDialog(
       context: context,
       barrierDismissible: false,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         contentPadding: const EdgeInsets.all(28),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('🧠', style: TextStyle(fontSize: 52)),
-            const SizedBox(height: 16),
-            Text('Challenge Completed!',
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.center),
-            const SizedBox(height: 8),
-            Text('Your mind grew stronger today.',
-                style: Theme.of(context).textTheme.bodyMedium,
-                textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                color: AppTheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(30),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('🧠', style: TextStyle(fontSize: 52)),
+              const SizedBox(height: 16),
+              Text('Challenge Completed!',
+                  style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.center),
+              const SizedBox(height: 8),
+              Text('Your mind grew stronger today.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  textAlign: TextAlign.center),
+              const SizedBox(height: 16),
+              Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppTheme.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Text('+$xp XP',
+                    style: TextStyle(
+                        color: AppTheme.primary,
+                        fontWeight: FontWeight.w900,
+                        fontSize: 24)),
               ),
-              child: Text('+$xp XP',
-                  style: TextStyle(
-                      color: AppTheme.primary,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 24)),
-            ),
-          ],
+              if (breakdown != null) ...[
+                const SizedBox(height: 18),
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'XP breakdown',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppTheme.textSecondary,
+                          fontWeight: FontWeight.w800,
+                        ),
+                  ),
+                ),
+                const SizedBox(height: 8),
+                ...breakdown.factors.map(_buildXpFactorRow),
+              ],
+            ],
+          ),
         ),
         actions: [
           SizedBox(
@@ -125,6 +153,58 @@ class _DebateScreenState extends State<DebateScreen> {
                 Navigator.pop(context);
               },
               child: const Text('Back to Training'),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildXpFactorRow(XpFactor factor) {
+    final isPositive = factor.points >= 0;
+    final color = isPositive ? AppTheme.successColor : AppTheme.errorColor;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(
+            isPositive ? Icons.add_circle_outline : Icons.remove_circle_outline,
+            size: 16,
+            color: color,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  factor.label,
+                  style: TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 12,
+                  ),
+                ),
+                Text(
+                  factor.description,
+                  style: TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 11,
+                    height: 1.3,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            '${isPositive ? '+' : ''}${factor.points}',
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w800,
+              fontSize: 12,
             ),
           ),
         ],
@@ -165,9 +245,9 @@ class _DebateScreenState extends State<DebateScreen> {
         actions: [
           if (!isCompleted && uc.responseCount >= 2)
             TextButton.icon(
-              onPressed: _markComplete,
+              onPressed: _completingChallenge ? null : _markComplete,
               icon: const Icon(Icons.check, size: 16),
-              label: const Text('Complete'),
+              label: Text(_completingChallenge ? 'Completing' : 'Complete'),
               style: TextButton.styleFrom(foregroundColor: AppTheme.successColor),
             ),
         ],

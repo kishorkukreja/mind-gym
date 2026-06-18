@@ -26,6 +26,60 @@ class ChallengeMessage {
       );
 }
 
+class XpFactor {
+  final String key;
+  final String label;
+  final int points;
+  final String description;
+
+  const XpFactor({
+    required this.key,
+    required this.label,
+    required this.points,
+    required this.description,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'key': key,
+        'label': label,
+        'points': points,
+        'description': description,
+      };
+
+  factory XpFactor.fromJson(Map<String, dynamic> json) => XpFactor(
+        key: json['key'] as String,
+        label: json['label'] as String,
+        points: (json['points'] as int?) ?? 0,
+        description: json['description'] as String? ?? '',
+      );
+}
+
+class XpBreakdown {
+  final int totalXp;
+  final bool antiFarmingTriggered;
+  final List<XpFactor> factors;
+
+  const XpBreakdown({
+    required this.totalXp,
+    required this.antiFarmingTriggered,
+    required this.factors,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'totalXp': totalXp,
+        'antiFarmingTriggered': antiFarmingTriggered,
+        'factors': factors.map((factor) => factor.toJson()).toList(),
+      };
+
+  factory XpBreakdown.fromJson(Map<String, dynamic> json) => XpBreakdown(
+        totalXp: (json['totalXp'] as int?) ?? 0,
+        antiFarmingTriggered: (json['antiFarmingTriggered'] as bool?) ?? false,
+        factors: ((json['factors'] as List?) ?? [])
+            .map((factor) => XpFactor.fromJson(factor as Map<String, dynamic>))
+            .toList(),
+      );
+}
+
 class Challenge {
   final String id;
   final String title;
@@ -78,6 +132,7 @@ class UserChallenge {
   DateTime? completedAt;
   int hintsUsed;
   int xpEarned;
+  XpBreakdown? xpBreakdown;
   int responseCount; // number of user messages
   List<ChallengeMessage> conversation;
   String? selfAssessmentNote;
@@ -93,6 +148,7 @@ class UserChallenge {
     this.completedAt,
     this.hintsUsed = 0,
     this.xpEarned = 0,
+    this.xpBreakdown,
     this.responseCount = 0,
     List<ChallengeMessage>? conversation,
     this.selfAssessmentNote,
@@ -115,6 +171,7 @@ class UserChallenge {
         'completedAt': completedAt?.toIso8601String(),
         'hintsUsed': hintsUsed,
         'xpEarned': xpEarned,
+        'xpBreakdown': xpBreakdown?.toJson(),
         'responseCount': responseCount,
         'conversation': conversation.map((m) => m.toJson()).toList(),
         'selfAssessmentNote': selfAssessmentNote,
@@ -138,6 +195,9 @@ class UserChallenge {
             : null,
         hintsUsed: (json['hintsUsed'] as int?) ?? 0,
         xpEarned: (json['xpEarned'] as int?) ?? 0,
+        xpBreakdown: json['xpBreakdown'] != null
+            ? XpBreakdown.fromJson(json['xpBreakdown'] as Map<String, dynamic>)
+            : null,
         responseCount: (json['responseCount'] as int?) ?? 0,
         conversation: ((json['conversation'] as List?) ?? [])
             .map((m) => ChallengeMessage.fromJson(m as Map<String, dynamic>))
