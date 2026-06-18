@@ -1,7 +1,36 @@
 import '../models/challenge_model.dart';
 
 class ChallengeLibrary {
+  static const String starterChallengeId = 'starter_001';
+
+  static final Challenge starterChallenge = Challenge(
+    id: starterChallengeId,
+    title: 'The Belief Stress Test',
+    question:
+        'Pick one belief you hold with confidence. It can be personal, political, professional, or philosophical.\n\n'
+        'Your task: name the strongest objection to that belief, then explain what evidence would make you change your mind.\n\n'
+        'This is the Mind Gym starter challenge: not proving you are right, but proving your thinking can survive contact with a serious counterargument.',
+    type: ChallengeType.cognitiveBias,
+    sourceName: 'Mind Gym',
+    sourceDescription: 'Starter challenge for first-run critical thinking practice',
+    category: 'First-Run Training',
+    difficulty: 1,
+    hintTiers: [
+      'Choose a belief specific enough that someone could disagree with it. "I value honesty" is too broad; "remote work makes teams more effective" is testable.',
+      'Steelman the objection. Write it as someone thoughtful would, not as a weak version that is easy to dismiss.',
+      'Name a concrete update trigger: data, lived evidence, expert consensus, or a repeatable result that would actually move your confidence.',
+    ],
+    thinkingAngles: [
+      'belief confidence',
+      'steelman reasoning',
+      'falsifiability',
+      'evidence thresholds',
+      'intellectual honesty',
+    ],
+  );
+
   static final List<Challenge> allChallenges = [
+    starterChallenge,
     // =================== PHILOSOPHY CHALLENGES ===================
     Challenge(
       id: 'phi_001',
@@ -541,10 +570,17 @@ class ChallengeLibrary {
   ];
 
   static List<Challenge> getPhilosophyChallenges() =>
-      allChallenges.where((c) => c.type == ChallengeType.philosophy).toList();
+      allChallenges
+          .where((c) =>
+              c.type == ChallengeType.philosophy && c.id != starterChallengeId)
+          .toList();
 
   static List<Challenge> getCognitiveBiasChallenges() =>
-      allChallenges.where((c) => c.type == ChallengeType.cognitiveBias).toList();
+      allChallenges
+          .where((c) =>
+              c.type == ChallengeType.cognitiveBias &&
+              c.id != starterChallengeId)
+          .toList();
 
   static Challenge? getById(String id) {
     try {

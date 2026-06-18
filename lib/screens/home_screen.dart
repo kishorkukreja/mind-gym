@@ -28,6 +28,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final provider = context.watch<AppProvider>();
     final user = provider.currentUser!;
     final challenges = provider.weekChallenges;
+    final starterChallenges = challenges
+        .where((uc) => uc.challengeId == ChallengeLibrary.starterChallengeId)
+        .toList();
+    final scheduledChallenges = challenges
+        .where((uc) => uc.challengeId != ChallengeLibrary.starterChallengeId)
+        .toList();
     final countdown = provider.getCountdownToNextChallenge();
 
     return Scaffold(
@@ -46,6 +52,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 20),
                 _buildXpCard(user, context),
                 const SizedBox(height: 20),
+                if (starterChallenges.isNotEmpty) ...[
+                  Text('STARTER CHALLENGE',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            letterSpacing: 1.5,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.textSecondary,
+                          )),
+                  const SizedBox(height: 12),
+                  ...starterChallenges
+                      .map((uc) => _buildChallengeCard(uc, context, provider)),
+                  const SizedBox(height: 20),
+                ],
                 if (countdown != null) _buildCountdown(countdown),
                 if (countdown != null) const SizedBox(height: 20),
                 Text('THIS WEEK\'S CHALLENGES',
@@ -55,10 +73,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: AppTheme.textSecondary,
                         )),
                 const SizedBox(height: 12),
-                if (challenges.isEmpty)
+                if (scheduledChallenges.isEmpty)
                   _buildNoChallenges()
                 else
-                  ...challenges.map((uc) => _buildChallengeCard(uc, context, provider)),
+                  ...scheduledChallenges
+                      .map((uc) => _buildChallengeCard(uc, context, provider)),
                 const SizedBox(height: 20),
                 _buildQuickStats(user, context),
               ],
