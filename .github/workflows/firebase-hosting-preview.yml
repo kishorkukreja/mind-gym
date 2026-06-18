@@ -1,0 +1,53 @@
+name: Firebase Hosting Preview
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: firebase-preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  hosting-preview:
+    name: Build web and deploy preview channel
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: ${{ github.event.pull_request.head.repo.full_name == github.repository }}
+    env:
+      FIREBASE_PROJECT_ID: ${{ vars.FIREBASE_PROJECT_ID }}
+      FIREBASE_SERVICE_ACCOUNT_CONFIGURED: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MIND_GYM != '' }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Restore dependencies
+        run: flutter pub get
+
+      - name: Build Flutter web
+        run: flutter build web --release --no-pub
+
+      - name: Skip when Firebase preview is not configured
+        if: ${{ env.FIREBASE_PROJECT_ID == '' || env.FIREBASE_SERVICE_ACCOUNT_CONFIGURED != 'true' }}
+        run: |
+          echo "Firebase Hosting preview is skipped because FIREBASE_PROJECT_ID or FIREBASE_SERVICE_ACCOUNT_MIND_GYM is not configured."
+
+      - name: Deploy Firebase Hosting preview
+        if: ${{ env.FIREBASE_PROJECT_ID != '' && env.FIREBASE_SERVICE_ACCOUNT_CONFIGURED == 'true' }}
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_MIND_GYM }}
+          projectId: ${{ vars.FIREBASE_PROJECT_ID }}
+          channelId: pr-${{ github.event.pull_request.number }}
+          expires: 7d
