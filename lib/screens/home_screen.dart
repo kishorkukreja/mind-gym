@@ -76,7 +76,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 if (challenges.isEmpty)
                   _buildNoChallenges()
                 else
-                  ...challenges.map((uc) => _buildChallengeCard(uc, context, provider)),
+                  ...challenges.map(
+                    (uc) => _buildChallengeCard(uc, context, provider),
+                  ),
                 const SizedBox(height: 20),
                 _buildQuickStats(user, context),
               ],
@@ -110,7 +112,9 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: BoxDecoration(
               color: AppTheme.warningColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.warningColor.withValues(alpha: 0.3)),
+              border: Border.all(
+                color: AppTheme.warningColor.withValues(alpha: 0.3),
+              ),
             ),
             child: Row(
               children: [
@@ -151,7 +155,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       fontWeight: FontWeight.w900,
                       fontSize: 22)),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(20),
@@ -180,14 +187,19 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-              '${user.currentLevelXp} / ${user.xpForNextLevel} XP to Level ${user.level + 1}',
+              '${user.currentLevelXp} / ${user.xpForNextLevel} XP to Level '
+              '${user.level + 1}',
               style: const TextStyle(color: Colors.white60, fontSize: 11)),
         ],
       ),
     );
   }
 
-  Widget _buildStreakLoopCard(user, AppProvider provider, BuildContext context) {
+  Widget _buildStreakLoopCard(
+    user,
+    AppProvider provider,
+    BuildContext context,
+  ) {
     final isAtRisk = provider.isWeeklyStreakAtRisk;
     final label = provider.perfectWeekLabel;
     final statusColor = label == 'Perfect week'
@@ -260,7 +272,8 @@ class _HomeScreenState extends State<HomeScreen> {
           if (isAtRisk) ...[
             const SizedBox(height: 12),
             Text(
-              'A ready challenge is waiting. Finish it before it expires to protect the weekly streak.',
+              'A ready challenge is waiting. Finish it before it expires to '
+              'protect the weekly streak.',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: AppTheme.warningColor,
                     height: 1.4,
@@ -351,7 +364,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildChallengeCard(UserChallenge uc, BuildContext context, AppProvider provider) {
+  Widget _buildChallengeCard(
+    UserChallenge uc,
+    BuildContext context,
+    AppProvider provider,
+  ) {
     final challenge = ChallengeLibrary.getById(uc.challengeId);
     if (challenge == null) return const SizedBox.shrink();
 
@@ -412,7 +429,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: typeColor.withValues(alpha: 0.1),
                         borderRadius: BorderRadius.circular(20),
@@ -471,7 +491,9 @@ class _HomeScreenState extends State<HomeScreen> {
                               label: const Text('Skip'),
                               style: TextButton.styleFrom(
                                 foregroundColor: AppTheme.errorColor,
-                                padding: const EdgeInsets.symmetric(horizontal: 6),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                ),
                                 minimumSize: const Size(0, 32),
                                 tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
@@ -489,16 +511,23 @@ class _HomeScreenState extends State<HomeScreen> {
                                     fontSize: 12)),
                           const SizedBox(width: 4),
                           Icon(
-                            isAvailable ? Icons.arrow_forward : Icons.lock_outline,
+                            isAvailable
+                                ? Icons.arrow_forward
+                                : Icons.lock_outline,
                             size: 14,
-                            color: isAvailable ? typeColor : AppTheme.textSecondary,
+                            color:
+                                isAvailable ? typeColor : AppTheme.textSecondary,
                           ),
                         ],
                       ),
                     if (isCompleted)
                       Row(
                         children: [
-                          Icon(Icons.check_circle, color: AppTheme.successColor, size: 16),
+                          Icon(
+                            Icons.check_circle,
+                            color: AppTheme.successColor,
+                            size: 16,
+                          ),
                           const SizedBox(width: 4),
                           Text('+${uc.xpEarned} XP',
                               style: TextStyle(
@@ -559,7 +588,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           child: Text('Done',
               style: TextStyle(
-                  color: AppTheme.successColor, fontSize: 11, fontWeight: FontWeight.w700)),
+                  color: AppTheme.successColor,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                )),
         );
       case ChallengeStatus.skipped:
       case ChallengeStatus.expired:
@@ -571,7 +603,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           child: Text(status == ChallengeStatus.expired ? 'Expired' : 'Skipped',
               style: TextStyle(
-                  color: AppTheme.errorColor, fontSize: 11, fontWeight: FontWeight.w700)),
+                  color: AppTheme.errorColor,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                )),
         );
       case ChallengeStatus.inProgress:
         return Container(
@@ -582,7 +617,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           child: Text('Open',
               style: TextStyle(
-                  color: AppTheme.warningColor, fontSize: 11, fontWeight: FontWeight.w700)),
+                  color: AppTheme.warningColor,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                )),
         );
       default:
         return Container(
@@ -595,7 +633,8 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           child: Text(isAvailable ? 'Ready' : 'Upcoming',
               style: TextStyle(
-                  color: isAvailable ? AppTheme.primary : AppTheme.textSecondary,
+                  color:
+                      isAvailable ? AppTheme.primary : AppTheme.textSecondary,
                   fontSize: 11,
                   fontWeight: FontWeight.w700)),
         );
@@ -636,7 +675,9 @@ class _HomeScreenState extends State<HomeScreen> {
             Icons.cancel_outlined, AppTheme.errorColor, context),
         const SizedBox(width: 10),
         _statCard('Best Activity', '${user.bestActivityStreak}d',
-            Icons.local_fire_department_outlined, AppTheme.warningColor, context),
+            Icons.local_fire_department_outlined,
+            AppTheme.warningColor,
+            context),
       ],
     );
   }
@@ -712,7 +753,8 @@ class _HomeScreenState extends State<HomeScreen> {
     final hour = dt.hour;
     final ampm = hour >= 12 ? 'pm' : 'am';
     final h = hour > 12 ? hour - 12 : (hour == 0 ? 12 : hour);
-    return '${days[dt.weekday - 1]}, ${months[dt.month - 1]} ${dt.day} at $h:00$ampm';
+    return '${days[dt.weekday - 1]}, ${months[dt.month - 1]} ${dt.day} at '
+        '$h:00$ampm';
   }
 
   String _timeUntil(DateTime dt) {

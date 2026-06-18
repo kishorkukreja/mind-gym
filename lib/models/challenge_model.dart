@@ -99,7 +99,8 @@ class UserChallenge {
     this.qualityScore,
   }) : conversation = conversation ?? [];
 
-  bool get isOpen => status == ChallengeStatus.open || status == ChallengeStatus.inProgress;
+  bool get isOpen =>
+      status == ChallengeStatus.open || status == ChallengeStatus.inProgress;
   bool get isExpired {
     if (status == ChallengeStatus.completed ||
         status == ChallengeStatus.skipped ||

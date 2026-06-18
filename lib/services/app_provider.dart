@@ -120,7 +120,8 @@ class AppProvider extends ChangeNotifier {
   Future<void> openChallenge(String ucId) async {
     final uc = getChallenge(ucId);
     if (uc == null || _currentUser == null) return;
-    if (uc.status == ChallengeStatus.pending || uc.status == ChallengeStatus.open) {
+    if (uc.status == ChallengeStatus.pending ||
+        uc.status == ChallengeStatus.open) {
       uc.status = ChallengeStatus.inProgress;
       uc.openedAt = DateTime.now();
       await StorageService.saveUserChallenge(uc);

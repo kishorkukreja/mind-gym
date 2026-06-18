@@ -14,9 +14,13 @@ class StreakService {
     final completedAt = now ?? DateTime.now();
     _recordActivity(user, completedAt);
 
-    final completedWeekKey = ScheduleService.weekKey(completedChallenge.scheduledFor);
+    final completedWeekKey = ScheduleService.weekKey(
+      completedChallenge.scheduledFor,
+    );
     final challengesForWeek = weekChallenges
-        .where((uc) => ScheduleService.weekKey(uc.scheduledFor) == completedWeekKey)
+        .where(
+          (uc) => ScheduleService.weekKey(uc.scheduledFor) == completedWeekKey,
+        )
         .toList();
 
     if (challengesForWeek.isEmpty ||
@@ -50,7 +54,9 @@ class StreakService {
         uc.status == ChallengeStatus.expired)) {
       return PerfectWeekStatus.broken;
     }
-    if (currentChallenges.every((uc) => uc.status == ChallengeStatus.completed)) {
+    if (currentChallenges.every(
+      (uc) => uc.status == ChallengeStatus.completed,
+    )) {
       return PerfectWeekStatus.perfect;
     }
     return PerfectWeekStatus.inProgress;
@@ -70,16 +76,25 @@ class StreakService {
   }
 
   static void _recordActivity(UserModel user, DateTime completedAt) {
-    final activityDate = DateTime(completedAt.year, completedAt.month, completedAt.day);
+    final activityDate = DateTime(
+      completedAt.year,
+      completedAt.month,
+      completedAt.day,
+    );
     final lastDate = user.lastActivityDate ?? user.lastActiveDate;
 
     if (lastDate == null) {
       user.activityStreak = 1;
     } else {
-      final normalizedLast = DateTime(lastDate.year, lastDate.month, lastDate.day);
+      final normalizedLast = DateTime(
+        lastDate.year,
+        lastDate.month,
+        lastDate.day,
+      );
       final dayDiff = activityDate.difference(normalizedLast).inDays;
       if (dayDiff == 0) {
-        user.activityStreak = user.activityStreak == 0 ? 1 : user.activityStreak;
+        user.activityStreak =
+            user.activityStreak == 0 ? 1 : user.activityStreak;
       } else if (dayDiff == 1) {
         user.activityStreak++;
       } else {

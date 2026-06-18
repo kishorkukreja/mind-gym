@@ -45,7 +45,8 @@ class ProgressScreen extends StatelessWidget {
                               color: AppTheme.primary,
                             ),
                         textAlign: TextAlign.center),
-                    Text('${(user.brainDevelopmentPercent * 100).toStringAsFixed(0)}% Brain Development',
+                    Text(
+                        '${(user.brainDevelopmentPercent * 100).toStringAsFixed(0)}% Brain Development',
                         style: Theme.of(context).textTheme.bodyMedium,
                         textAlign: TextAlign.center),
                   ],
@@ -88,7 +89,8 @@ class ProgressScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text('Total XP',
-                      style: const TextStyle(color: Colors.white60, fontSize: 13)),
+                      style: const TextStyle(
+                          color: Colors.white60, fontSize: 13)),
                   Text('${user.xp}',
                       style: const TextStyle(
                           color: Colors.white,
@@ -100,7 +102,8 @@ class ProgressScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text('Next Level',
-                      style: const TextStyle(color: Colors.white60, fontSize: 13)),
+                      style: const TextStyle(
+                          color: Colors.white60, fontSize: 13)),
                   Text('${user.xpForNextLevel - user.currentLevelXp} XP away',
                       style: const TextStyle(
                           color: Colors.white, fontWeight: FontWeight.w700)),
@@ -174,7 +177,10 @@ class ProgressScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: gradeColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: gradeColor.withValues(alpha: 0.3), width: 2),
+                  border: Border.all(
+                    color: gradeColor.withValues(alpha: 0.3),
+                    width: 2,
+                  ),
                 ),
                 alignment: Alignment.center,
                 child: Text(grade,
@@ -190,12 +196,16 @@ class ProgressScreen extends StatelessWidget {
           // Stats row
           Row(
             children: [
-              _weekStat('Done', '${stats['thisCompleted']}', AppTheme.successColor, context),
-              _weekStat('Skipped', '${stats['thisSkipped']}', AppTheme.errorColor, context),
-              _weekStat('Total', '${stats['thisTotal']}', AppTheme.primary, context),
+              _weekStat('Done', '${stats['thisCompleted']}',
+                  AppTheme.successColor, context),
+              _weekStat('Skipped', '${stats['thisSkipped']}',
+                  AppTheme.errorColor, context),
+              _weekStat(
+                  'Total', '${stats['thisTotal']}', AppTheme.primary, context),
               _weekStat(
                 'vs Last Wk',
-                '${((stats['thisRate'] as double) * 100).toStringAsFixed(0)}% vs ${((stats['prevRate'] as double) * 100).toStringAsFixed(0)}%',
+                '${((stats['thisRate'] as double) * 100).toStringAsFixed(0)}% '
+                'vs ${((stats['prevRate'] as double) * 100).toStringAsFixed(0)}%',
                 (stats['thisRate'] as double) >= (stats['prevRate'] as double)
                     ? AppTheme.successColor
                     : AppTheme.errorColor,
@@ -347,7 +357,12 @@ class ProgressScreen extends StatelessWidget {
     );
   }
 
-  Widget _weekStat(String label, String value, Color color, BuildContext context) {
+  Widget _weekStat(
+    String label,
+    String value,
+    Color color,
+    BuildContext context,
+  ) {
     return Expanded(
       child: Column(
         children: [
@@ -386,8 +401,11 @@ class ProgressScreen extends StatelessWidget {
             _allTimeStat('Challenges Skipped', '${user.totalChallengesSkipped}',
                 Icons.cancel_outlined, AppTheme.errorColor, context),
             _allTimeStat('Activity Streak', '${user.activityStreak} days',
-                Icons.local_fire_department_outlined, AppTheme.warningColor, context),
-            _allTimeStat('Weekly Streak', '${user.weeklyCompletionStreak} weeks',
+                Icons.local_fire_department_outlined,
+                AppTheme.warningColor,
+                context),
+            _allTimeStat(
+                'Weekly Streak', '${user.weeklyCompletionStreak} weeks',
                 Icons.emoji_events_outlined, AppTheme.primary, context),
           ],
         ),
