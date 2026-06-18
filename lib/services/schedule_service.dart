@@ -128,12 +128,17 @@ class ScheduleService {
     required int responseCount,
     required int difficulty,
     required bool onTime,
+    int? qualityScore,
   }) {
     int base = difficulty * 40;
     int hintPenalty = hintsUsed * 10;
-    int depthBonus = (responseCount.clamp(1, 6) * 5);
+    final depthBonus = qualityScore != null
+        ? qualityScore.clamp(1, 5).toInt() * 12
+        : responseCount.clamp(1, 6).toInt() * 5;
     int timePenalty = onTime ? 0 : -20;
-    return (base - hintPenalty + depthBonus + timePenalty).clamp(10, 300);
+    return (base - hintPenalty + depthBonus + timePenalty)
+        .clamp(10, 300)
+        .toInt();
   }
 
   /// Get countdown to next challenge

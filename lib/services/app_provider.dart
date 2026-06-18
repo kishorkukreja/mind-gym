@@ -10,11 +10,15 @@ import 'challenge_library.dart';
 class AppProvider extends ChangeNotifier {
   static const _uuid = Uuid();
 
+  final OpenRouterService _debateService;
   UserModel? _currentUser;
   List<UserChallenge> _weekChallenges = [];
   bool _isLoading = false;
   String? _error;
   bool _isDebating = false;
+
+  AppProvider({OpenRouterService? debateService})
+      : _debateService = debateService ?? OpenRouterService();
 
   UserModel? get currentUser => _currentUser;
   List<UserChallenge> get weekChallenges => _weekChallenges;
@@ -157,7 +161,7 @@ class AppProvider extends ChangeNotifier {
       return '⚠️ Challenge definition not found.';
     }
 
-    final aiResponse = await OpenRouterService.getSocraticResponse(
+    final aiResponse = await _debateService.getSocraticResponse(
       apiKey: _currentUser!.openRouterApiKey!,
       challenge: challenge,
       conversation: uc.conversation,
@@ -167,14 +171,18 @@ class AppProvider extends ChangeNotifier {
 
     uc.conversation.add(ChallengeMessage(
       role: 'assistant',
-      content: aiResponse,
+      content: aiResponse.message,
       timestamp: DateTime.now(),
     ));
+    if (aiResponse.evaluation != null) {
+      uc.evaluation = aiResponse.evaluation;
+      uc.qualityScore = aiResponse.evaluation!.qualityScore;
+    }
     await StorageService.saveUserChallenge(uc);
 
     _isDebating = false;
     notifyListeners();
-    return aiResponse;
+    return aiResponse.message;
   }
 
   Future<String> requestHint(String ucId) async {
@@ -211,6 +219,7 @@ class AppProvider extends ChangeNotifier {
       difficulty: challenge?.difficulty ?? 3,
       onTime: DateTime.now()
           .isBefore(uc.scheduledFor.add(const Duration(days: 2))),
+      qualityScore: uc.qualityScore,
     );
 
     uc.status = ChallengeStatus.completed;

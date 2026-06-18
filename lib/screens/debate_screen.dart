@@ -68,7 +68,7 @@ class _DebateScreenState extends State<DebateScreen> {
   Future<void> _markComplete() async {
     final provider = context.read<AppProvider>();
     final uc = provider.getChallenge(widget.ucId);
-    if (uc == null || uc.responseCount < 2) {
+    if (uc == null || !uc.canComplete) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('You need to engage more before completing. Keep thinking!'),
         backgroundColor: AppTheme.warningColor,
@@ -77,12 +77,13 @@ class _DebateScreenState extends State<DebateScreen> {
     }
 
     final xp = await provider.markChallengeComplete(widget.ucId);
+    final completedChallenge = provider.getChallenge(widget.ucId);
     if (mounted) {
-      _showCompletionDialog(xp);
+      _showCompletionDialog(xp, summary: completedChallenge?.evaluation?.summary);
     }
   }
 
-  void _showCompletionDialog(int xp) {
+  void _showCompletionDialog(int xp, {String? summary}) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -98,7 +99,7 @@ class _DebateScreenState extends State<DebateScreen> {
                 style: Theme.of(context).textTheme.titleLarge,
                 textAlign: TextAlign.center),
             const SizedBox(height: 8),
-            Text('Your mind grew stronger today.',
+            Text(summary ?? 'Your mind grew stronger today.',
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center),
             const SizedBox(height: 16),
@@ -163,7 +164,7 @@ class _DebateScreenState extends State<DebateScreen> {
         title: Text(challenge.title,
             style: const TextStyle(fontSize: 16), overflow: TextOverflow.ellipsis),
         actions: [
-          if (!isCompleted && uc.responseCount >= 2)
+          if (!isCompleted && uc.canComplete)
             TextButton.icon(
               onPressed: _markComplete,
               icon: const Icon(Icons.check, size: 16),
