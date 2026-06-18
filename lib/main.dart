@@ -90,7 +90,11 @@ class InitializationErrorScreen extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Icon(Icons.error_outline, color: AppTheme.errorColor, size: 40),
+                Icon(
+                  Icons.error_outline,
+                  color: AppTheme.errorColor,
+                  size: 40,
+                ),
                 const SizedBox(height: 16),
                 Text(
                   'Mind Gym could not start',

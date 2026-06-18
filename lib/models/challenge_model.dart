@@ -51,8 +51,10 @@ class Challenge {
     required this.thinkingAngles,
   });
 
-  factory Challenge.fromJson(Map<String, dynamic> json,
-      {String source = 'content'}) {
+  factory Challenge.fromJson(
+    Map<String, dynamic> json, {
+    String source = 'content',
+  }) {
     final id = _requiredString(json, 'id', source);
     final typeValue = _requiredString(json, 'type', source, id);
     final difficultyValue = json['difficulty'];
@@ -83,8 +85,12 @@ class Challenge {
       question: _requiredString(json, 'question', source, id),
       type: _parseChallengeType(typeValue, source, id),
       sourceName: _requiredString(json, 'sourceName', source, id),
-      sourceDescription:
-          _requiredString(json, 'sourceDescription', source, id),
+      sourceDescription: _requiredString(
+        json,
+        'sourceDescription',
+        source,
+        id,
+      ),
       hintTiers: hintTiers,
       category: _requiredString(json, 'category', source, id),
       difficulty: difficultyValue,

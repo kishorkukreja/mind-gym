@@ -111,7 +111,9 @@ void main() {
     expect(ChallengeLibrary.isLoaded, isTrue);
 
     await expectLater(
-      ChallengeLibrary.load(repository: const _FailingChallengeContentRepository()),
+      ChallengeLibrary.load(
+        repository: const _FailingChallengeContentRepository(),
+      ),
       throwsA(isA<ChallengeContentException>()),
     );
 
@@ -119,39 +121,57 @@ void main() {
     expect(() => ChallengeLibrary.allChallenges, throwsStateError);
   });
 
-  test('weekly picks preserve one philosophy and one cognitive bias challenge', () async {
-    await ChallengeLibrary.load(
-      repository: InMemoryChallengeContentRepository([
-        _challenge(id: 'phi_001', type: ChallengeType.philosophy),
-        _challenge(id: 'phi_002', type: ChallengeType.philosophy),
-        _challenge(id: 'cog_001', type: ChallengeType.cognitiveBias),
-        _challenge(id: 'cog_002', type: ChallengeType.cognitiveBias),
-      ]),
-    );
+  test(
+    'weekly picks preserve one philosophy and one cognitive bias challenge',
+    () async {
+      await ChallengeLibrary.load(
+        repository: InMemoryChallengeContentRepository([
+          _challenge(id: 'phi_001', type: ChallengeType.philosophy),
+          _challenge(id: 'phi_002', type: ChallengeType.philosophy),
+          _challenge(id: 'cog_001', type: ChallengeType.cognitiveBias),
+          _challenge(id: 'cog_002', type: ChallengeType.cognitiveBias),
+        ]),
+      );
 
-    final picks = ChallengeLibrary.pickWeeklyChallenges(['phi_001', 'cog_001']);
+      final picks = ChallengeLibrary.pickWeeklyChallenges([
+        'phi_001',
+        'cog_001',
+      ]);
 
-    expect(picks, hasLength(2));
-    expect(picks.map((challenge) => challenge.type), [
-      ChallengeType.philosophy,
-      ChallengeType.cognitiveBias,
-    ]);
-    expect(picks.map((challenge) => challenge.id), isNot(contains('phi_001')));
-    expect(picks.map((challenge) => challenge.id), isNot(contains('cog_001')));
-  });
+      expect(picks, hasLength(2));
+      expect(picks.map((challenge) => challenge.type), [
+        ChallengeType.philosophy,
+        ChallengeType.cognitiveBias,
+      ]);
+      expect(
+        picks.map((challenge) => challenge.id),
+        isNot(contains('phi_001')),
+      );
+      expect(
+        picks.map((challenge) => challenge.id),
+        isNot(contains('cog_001')),
+      );
+    },
+  );
 
-  test('weekly picks fall back when recent ids exhaust a challenge type', () async {
-    await ChallengeLibrary.load(
-      repository: InMemoryChallengeContentRepository([
-        _challenge(id: 'phi_001', type: ChallengeType.philosophy),
-        _challenge(id: 'cog_001', type: ChallengeType.cognitiveBias),
-      ]),
-    );
+  test(
+    'weekly picks fall back when recent ids exhaust a challenge type',
+    () async {
+      await ChallengeLibrary.load(
+        repository: InMemoryChallengeContentRepository([
+          _challenge(id: 'phi_001', type: ChallengeType.philosophy),
+          _challenge(id: 'cog_001', type: ChallengeType.cognitiveBias),
+        ]),
+      );
 
-    final picks = ChallengeLibrary.pickWeeklyChallenges(['phi_001', 'cog_001']);
+      final picks = ChallengeLibrary.pickWeeklyChallenges([
+        'phi_001',
+        'cog_001',
+      ]);
 
-    expect(picks.map((challenge) => challenge.id), ['phi_001', 'cog_001']);
-  });
+      expect(picks.map((challenge) => challenge.id), ['phi_001', 'cog_001']);
+    },
+  );
 }
 
 Map<String, Object> _challengeJson({
