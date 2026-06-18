@@ -9,8 +9,8 @@ void main() {
     expect(declaredAssets, isNotEmpty);
 
     for (final assetPath in declaredAssets) {
-      final exists = Directory(assetPath).existsSync() ||
-          File(assetPath).existsSync();
+      final exists =
+          Directory(assetPath).existsSync() || File(assetPath).existsSync();
       expect(
         exists,
         isTrue,
