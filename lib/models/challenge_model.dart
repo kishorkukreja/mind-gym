@@ -207,9 +207,13 @@ class UserChallenge {
     this.qualityScore,
   }) : conversation = conversation ?? [];
 
-  bool get isOpen => status == ChallengeStatus.open || status == ChallengeStatus.inProgress;
+  bool get isOpen =>
+      status == ChallengeStatus.open || status == ChallengeStatus.inProgress;
   bool get isExpired {
-    if (status == ChallengeStatus.completed || status == ChallengeStatus.skipped) return false;
+    if (status == ChallengeStatus.completed ||
+        status == ChallengeStatus.skipped) {
+      return false;
+    }
     return DateTime.now().isAfter(scheduledFor.add(const Duration(days: 4)));
   }
 
