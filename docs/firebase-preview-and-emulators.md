@@ -9,7 +9,7 @@ Mind Gym is still a local-first Flutter app. The normal CI workflow does not req
 It performs:
 
 - `flutter pub get`
-- `dart format --output=none --set-exit-if-changed .`
+- `dart format --output=none --set-exit-if-changed` for Dart files changed by the pull request or push
 - `flutter analyze`
 - `flutter test`
 - `flutter build web --release --no-pub`
