@@ -6,6 +6,7 @@ import 'storage_service.dart';
 import 'schedule_service.dart';
 import 'openrouter_service.dart';
 import 'challenge_library.dart';
+import 'streak_service.dart';
 
 class AppProvider extends ChangeNotifier {
   static const _uuid = Uuid();
@@ -203,54 +204,68 @@ class AppProvider extends ChangeNotifier {
   Future<int> markChallengeComplete(String ucId) async {
     final uc = getChallenge(ucId);
     if (uc == null || _currentUser == null) return 0;
+    if (!canCompleteChallenge(uc)) return 0;
+    final now = DateTime.now();
 
     final challenge = ChallengeLibrary.getById(uc.challengeId);
     final xp = ScheduleService.calculateXpReward(
       hintsUsed: uc.hintsUsed,
       responseCount: uc.responseCount,
       difficulty: challenge?.difficulty ?? 3,
-      onTime: DateTime.now()
-          .isBefore(uc.scheduledFor.add(const Duration(days: 2))),
+      onTime: now.isBefore(uc.scheduledFor.add(const Duration(days: 2))),
     );
 
     uc.status = ChallengeStatus.completed;
-    uc.completedAt = DateTime.now();
+    uc.completedAt = now;
     uc.xpEarned = xp;
 
     _currentUser!.xp += xp;
     _currentUser!.totalChallengesCompleted++;
-
-    // Streak logic
-    final now = DateTime.now();
-    final lastActive = _currentUser!.lastActiveDate;
-    if (lastActive != null) {
-      final diff = now.difference(lastActive).inDays;
-      if (diff <= 1) {
-        _currentUser!.currentStreak++;
-      } else {
-        _currentUser!.currentStreak = 1;
-      }
-    } else {
-      _currentUser!.currentStreak = 1;
-    }
-    _currentUser!.lastActiveDate = now;
-
-    if (_currentUser!.currentStreak > _currentUser!.bestStreak) {
-      _currentUser!.bestStreak = _currentUser!.currentStreak;
-    }
 
     // Level up
     while (_currentUser!.xp >= (_currentUser!.level * 150)) {
       _currentUser!.level++;
     }
 
-    _currentUser!.completedChallengeIds.add(ucId);
+    if (!_currentUser!.completedChallengeIds.contains(ucId)) {
+      _currentUser!.completedChallengeIds.add(ucId);
+    }
+    StreakService.recordCompletion(
+      user: _currentUser!,
+      completedChallenge: uc,
+      weekChallenges: _weekChallenges,
+      now: now,
+    );
 
     await StorageService.saveUserChallenge(uc);
     await StorageService.saveUser(_currentUser!);
     notifyListeners();
     return xp;
   }
+
+  Future<void> skipChallenge(String ucId) async {
+    final uc = getChallenge(ucId);
+    if (uc == null || _currentUser == null) return;
+    if (_isTerminal(uc)) return;
+
+    uc.status = ChallengeStatus.skipped;
+    _currentUser!.totalChallengesSkipped++;
+    if (!_currentUser!.skippedChallengeIds.contains(ucId)) {
+      _currentUser!.skippedChallengeIds.add(ucId);
+    }
+    StreakService.recordMissedChallenge(user: _currentUser!);
+
+    await StorageService.saveUserChallenge(uc);
+    await StorageService.saveUser(_currentUser!);
+    notifyListeners();
+  }
+
+  bool canCompleteChallenge(UserChallenge uc) => !_isTerminal(uc);
+
+  bool _isTerminal(UserChallenge uc) =>
+      uc.status == ChallengeStatus.completed ||
+      uc.status == ChallengeStatus.skipped ||
+      uc.status == ChallengeStatus.expired;
 
   // ===== SETTINGS =====
   Future<void> updateApiKey(String apiKey) async {
@@ -283,6 +298,24 @@ class AppProvider extends ChangeNotifier {
   Duration? getCountdownToNextChallenge() {
     return ScheduleService.getCountdownToNextChallenge(_weekChallenges);
   }
+
+  PerfectWeekStatus get perfectWeekStatus =>
+      StreakService.getPerfectWeekStatus(_weekChallenges);
+
+  bool get isWeeklyStreakAtRisk {
+    final now = DateTime.now();
+    return _weekChallenges.any((uc) {
+      final isTerminal = uc.status == ChallengeStatus.completed ||
+          uc.status == ChallengeStatus.skipped ||
+          uc.status == ChallengeStatus.expired;
+      return !isTerminal &&
+          now.isAfter(uc.scheduledFor) &&
+          now.isBefore(uc.scheduledFor.add(const Duration(days: 4)));
+    });
+  }
+
+  String get perfectWeekLabel =>
+      StreakService.perfectWeekLabel(perfectWeekStatus);
 
   List<UserChallenge> getAllUserChallenges() {
     if (_currentUser == null) return [];

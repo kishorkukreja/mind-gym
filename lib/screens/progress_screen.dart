@@ -55,6 +55,8 @@ class ProgressScreen extends StatelessWidget {
               const SizedBox(height: 28),
               _buildXpSection(user, context),
               const SizedBox(height: 20),
+              _buildStreakSection(user, stats, context),
+              const SizedBox(height: 20),
               _buildWeeklyReport(stats, context),
               const SizedBox(height: 20),
               _buildAllTimeStats(user, context),
@@ -227,6 +229,124 @@ class ProgressScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildStreakSection(
+    user,
+    Map<String, dynamic> stats,
+    BuildContext context,
+  ) {
+    final perfectWeekStatus =
+        (stats['perfectWeekStatus'] as String?) ?? 'Not started';
+
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppTheme.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('STREAKS',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    letterSpacing: 1.5,
+                    fontWeight: FontWeight.w700,
+                    color: AppTheme.textSecondary,
+                  )),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              _streakStat(
+                'Activity',
+                '${user.activityStreak} days',
+                'Best ${user.bestActivityStreak}',
+                Icons.local_fire_department_outlined,
+                AppTheme.warningColor,
+                context,
+              ),
+              const SizedBox(width: 10),
+              _streakStat(
+                'Weekly',
+                '${user.weeklyCompletionStreak} weeks',
+                'Best ${user.bestWeeklyCompletionStreak}',
+                Icons.calendar_view_week_outlined,
+                AppTheme.primary,
+                context,
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: AppTheme.successColor.withValues(alpha: 0.08),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.verified_outlined,
+                    color: AppTheme.successColor, size: 20),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Perfect Week',
+                          style: TextStyle(
+                              color: AppTheme.textPrimary,
+                              fontWeight: FontWeight.w800,
+                              fontSize: 13)),
+                      Text(perfectWeekStatus,
+                          style: TextStyle(
+                              color: AppTheme.textSecondary, fontSize: 12)),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _streakStat(
+    String label,
+    String value,
+    String detail,
+    IconData icon,
+    Color color,
+    BuildContext context,
+  ) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(14),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(icon, color: color, size: 20),
+            const SizedBox(height: 10),
+            Text(value,
+                style: TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16)),
+            Text(label,
+                style: TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
+            const SizedBox(height: 4),
+            Text(detail,
+                style: TextStyle(color: color, fontSize: 11)),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _weekStat(String label, String value, Color color, BuildContext context) {
     return Expanded(
       child: Column(
@@ -265,9 +385,9 @@ class ProgressScreen extends StatelessWidget {
                 Icons.check_circle_outline, AppTheme.successColor, context),
             _allTimeStat('Challenges Skipped', '${user.totalChallengesSkipped}',
                 Icons.cancel_outlined, AppTheme.errorColor, context),
-            _allTimeStat('Current Streak', '${user.currentStreak} weeks',
+            _allTimeStat('Activity Streak', '${user.activityStreak} days',
                 Icons.local_fire_department_outlined, AppTheme.warningColor, context),
-            _allTimeStat('Best Streak', '${user.bestStreak} weeks',
+            _allTimeStat('Weekly Streak', '${user.weeklyCompletionStreak} weeks',
                 Icons.emoji_events_outlined, AppTheme.primary, context),
           ],
         ),

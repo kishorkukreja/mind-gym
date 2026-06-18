@@ -68,7 +68,14 @@ class _DebateScreenState extends State<DebateScreen> {
   Future<void> _markComplete() async {
     final provider = context.read<AppProvider>();
     final uc = provider.getChallenge(widget.ucId);
-    if (uc == null || uc.responseCount < 2) {
+    if (uc == null || !provider.canCompleteChallenge(uc)) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text('This challenge is already closed.'),
+        backgroundColor: AppTheme.errorColor,
+      ));
+      return;
+    }
+    if (uc.responseCount < 2) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('You need to engage more before completing. Keep thinking!'),
         backgroundColor: AppTheme.warningColor,
@@ -155,6 +162,7 @@ class _DebateScreenState extends State<DebateScreen> {
     final isPhilo = challenge.type == ChallengeType.philosophy;
     final typeColor = isPhilo ? AppTheme.philosophyColor : AppTheme.biasColor;
     final isCompleted = uc.status == ChallengeStatus.completed;
+    final isClosed = !provider.canCompleteChallenge(uc);
     final hintsLeft = challenge.hintTiers.length - uc.hintsUsed;
 
     return Scaffold(
@@ -163,7 +171,7 @@ class _DebateScreenState extends State<DebateScreen> {
         title: Text(challenge.title,
             style: const TextStyle(fontSize: 16), overflow: TextOverflow.ellipsis),
         actions: [
-          if (!isCompleted && uc.responseCount >= 2)
+          if (!isClosed && uc.responseCount >= 2)
             TextButton.icon(
               onPressed: _markComplete,
               icon: const Icon(Icons.check, size: 16),
@@ -270,7 +278,7 @@ class _DebateScreenState extends State<DebateScreen> {
           ),
 
           // Bottom bar
-          _buildBottomBar(isCompleted, hintsLeft, typeColor),
+          _buildBottomBar(isClosed, hintsLeft, typeColor),
         ],
       ),
     );
@@ -411,8 +419,8 @@ class _DebateScreenState extends State<DebateScreen> {
     );
   }
 
-  Widget _buildBottomBar(bool isCompleted, int hintsLeft, Color typeColor) {
-    if (isCompleted) {
+  Widget _buildBottomBar(bool isClosed, int hintsLeft, Color typeColor) {
+    if (isClosed) {
       return Container(
         padding: const EdgeInsets.all(16),
         color: AppTheme.surface,
@@ -421,7 +429,7 @@ class _DebateScreenState extends State<DebateScreen> {
           children: [
             Icon(Icons.check_circle, color: AppTheme.successColor),
             const SizedBox(width: 8),
-            Text('Challenge Completed!',
+            Text('Challenge Closed',
                 style: TextStyle(
                     color: AppTheme.successColor, fontWeight: FontWeight.bold)),
           ],

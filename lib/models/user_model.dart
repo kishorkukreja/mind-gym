@@ -8,7 +8,13 @@ class UserModel {
   int totalChallengesSkipped;
   int currentStreak;
   int bestStreak;
+  int activityStreak;
+  int bestActivityStreak;
+  int weeklyCompletionStreak;
+  int bestWeeklyCompletionStreak;
   DateTime? lastActiveDate;
+  DateTime? lastActivityDate;
+  String? lastCompletedWeekKey;
   List<String> completedChallengeIds;
   List<String> skippedChallengeIds;
   Map<String, dynamic> weeklyStats;
@@ -30,7 +36,13 @@ class UserModel {
     this.totalChallengesSkipped = 0,
     this.currentStreak = 0,
     this.bestStreak = 0,
+    this.activityStreak = 0,
+    this.bestActivityStreak = 0,
+    this.weeklyCompletionStreak = 0,
+    this.bestWeeklyCompletionStreak = 0,
     this.lastActiveDate,
+    this.lastActivityDate,
+    this.lastCompletedWeekKey,
     List<String>? completedChallengeIds,
     List<String>? skippedChallengeIds,
     Map<String, dynamic>? weeklyStats,
@@ -55,7 +67,13 @@ class UserModel {
         'totalChallengesSkipped': totalChallengesSkipped,
         'currentStreak': currentStreak,
         'bestStreak': bestStreak,
+        'activityStreak': activityStreak,
+        'bestActivityStreak': bestActivityStreak,
+        'weeklyCompletionStreak': weeklyCompletionStreak,
+        'bestWeeklyCompletionStreak': bestWeeklyCompletionStreak,
         'lastActiveDate': lastActiveDate?.toIso8601String(),
+        'lastActivityDate': lastActivityDate?.toIso8601String(),
+        'lastCompletedWeekKey': lastCompletedWeekKey,
         'completedChallengeIds': completedChallengeIds,
         'skippedChallengeIds': skippedChallengeIds,
         'weeklyStats': weeklyStats,
@@ -75,11 +93,26 @@ class UserModel {
         level: (json['level'] as int?) ?? 1,
         totalChallengesCompleted: (json['totalChallengesCompleted'] as int?) ?? 0,
         totalChallengesSkipped: (json['totalChallengesSkipped'] as int?) ?? 0,
-        currentStreak: (json['currentStreak'] as int?) ?? 0,
-        bestStreak: (json['bestStreak'] as int?) ?? 0,
+        currentStreak:
+            (json['currentStreak'] as int?) ?? (json['activityStreak'] as int?) ?? 0,
+        bestStreak:
+            (json['bestStreak'] as int?) ?? (json['bestActivityStreak'] as int?) ?? 0,
+        activityStreak:
+            (json['activityStreak'] as int?) ?? (json['currentStreak'] as int?) ?? 0,
+        bestActivityStreak:
+            (json['bestActivityStreak'] as int?) ?? (json['bestStreak'] as int?) ?? 0,
+        weeklyCompletionStreak: (json['weeklyCompletionStreak'] as int?) ?? 0,
+        bestWeeklyCompletionStreak:
+            (json['bestWeeklyCompletionStreak'] as int?) ?? 0,
         lastActiveDate: json['lastActiveDate'] != null
             ? DateTime.parse(json['lastActiveDate'] as String)
             : null,
+        lastActivityDate: json['lastActivityDate'] != null
+            ? DateTime.parse(json['lastActivityDate'] as String)
+            : (json['lastActiveDate'] != null
+                ? DateTime.parse(json['lastActiveDate'] as String)
+                : null),
+        lastCompletedWeekKey: json['lastCompletedWeekKey'] as String?,
         completedChallengeIds:
             List<String>.from((json['completedChallengeIds'] as List?) ?? []),
         skippedChallengeIds:

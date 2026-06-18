@@ -3,6 +3,7 @@ import '../models/user_model.dart';
 import '../models/challenge_model.dart';
 import 'challenge_library.dart';
 import 'storage_service.dart';
+import 'streak_service.dart';
 
 class ScheduleService {
   static const _uuid = Uuid();
@@ -92,17 +93,23 @@ class ScheduleService {
     });
   }
 
-  /// Check and mark expired challenges as skipped (with XP penalty)
+  /// Check and mark expired challenges as missed (with XP penalty)
   static Future<void> processExpiredChallenges(UserModel user) async {
     final challenges = StorageService.getUserChallenges(user.id);
     bool changed = false;
     for (final uc in challenges) {
-      if (uc.isExpired && uc.status == ChallengeStatus.pending) {
-        uc.status = ChallengeStatus.skipped;
+      if (uc.isExpired &&
+          uc.status != ChallengeStatus.completed &&
+          uc.status != ChallengeStatus.skipped &&
+          uc.status != ChallengeStatus.expired) {
+        uc.status = ChallengeStatus.expired;
         user.totalChallengesSkipped++;
+        if (!user.skippedChallengeIds.contains(uc.id)) {
+          user.skippedChallengeIds.add(uc.id);
+        }
         // XP penalty: -50 per skip
         user.xp = (user.xp - 50).clamp(0, 999999);
-        user.currentStreak = 0;
+        StreakService.recordMissedChallenge(user: user);
         changed = true;
         await StorageService.saveUserChallenge(uc);
       }
@@ -137,14 +144,19 @@ class ScheduleService {
   }
 
   /// Get countdown to next challenge
-  static Duration? getCountdownToNextChallenge(List<UserChallenge> weekChallenges) {
-    final now = DateTime.now();
+  static Duration? getCountdownToNextChallenge(
+    List<UserChallenge> weekChallenges, {
+    DateTime? now,
+  }) {
+    final currentTime = now ?? DateTime.now();
     final pending = weekChallenges
-        .where((uc) => uc.status == ChallengeStatus.pending && uc.scheduledFor.isAfter(now))
+        .where((uc) =>
+            uc.status == ChallengeStatus.pending &&
+            uc.scheduledFor.isAfter(currentTime))
         .toList();
     if (pending.isEmpty) return null;
     pending.sort((a, b) => a.scheduledFor.compareTo(b.scheduledFor));
-    return pending.first.scheduledFor.difference(now);
+    return pending.first.scheduledFor.difference(currentTime);
   }
 
   /// Weekly performance stats
@@ -161,7 +173,11 @@ class ScheduleService {
         uc.scheduledFor.isBefore(weekStart)).toList();
 
     int thisCompleted = thisWeekUc.where((uc) => uc.status == ChallengeStatus.completed).length;
-    int thisSkipped = thisWeekUc.where((uc) => uc.status == ChallengeStatus.skipped).length;
+    int thisSkipped = thisWeekUc
+        .where((uc) =>
+            uc.status == ChallengeStatus.skipped ||
+            uc.status == ChallengeStatus.expired)
+        .length;
     int thisTotal = thisWeekUc.length;
 
     int prevCompleted = prevWeekUc.where((uc) => uc.status == ChallengeStatus.completed).length;
@@ -189,7 +205,12 @@ class ScheduleService {
       'prevTotal': prevTotal,
       'prevRate': prevRate,
       'totalXp': user.xp,
-      'streak': user.currentStreak,
+      'activityStreak': user.activityStreak,
+      'weeklyCompletionStreak': user.weeklyCompletionStreak,
+      'perfectWeekStatus': StreakService.perfectWeekLabel(
+        StreakService.getPerfectWeekStatus(thisWeekUc, now: now),
+      ),
+      'streak': user.activityStreak,
       'level': user.level,
     };
   }

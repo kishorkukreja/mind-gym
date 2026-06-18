@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/app_provider.dart';
@@ -15,12 +17,26 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
+  Timer? _countdownTimer;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<AppProvider>().refreshChallenges();
     });
+    _countdownTimer = Timer.periodic(const Duration(minutes: 1), (_) {
+      if (mounted) {
+        setState(() {});
+        context.read<AppProvider>().refreshChallenges();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _countdownTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -45,6 +61,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 _buildHeader(user, context),
                 const SizedBox(height: 20),
                 _buildXpCard(user, context),
+                const SizedBox(height: 20),
+                _buildStreakLoopCard(user, provider, context),
                 const SizedBox(height: 20),
                 if (countdown != null) _buildCountdown(countdown),
                 if (countdown != null) const SizedBox(height: 20),
@@ -86,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ),
-        if (user.currentStreak > 0)
+        if (user.activityStreak > 0)
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
@@ -98,7 +116,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 const Text('🔥', style: TextStyle(fontSize: 14)),
                 const SizedBox(width: 4),
-                Text('${user.currentStreak}',
+                Text('${user.activityStreak}',
                     style: TextStyle(
                         color: AppTheme.warningColor,
                         fontWeight: FontWeight.bold,
@@ -169,6 +187,135 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildStreakLoopCard(user, AppProvider provider, BuildContext context) {
+    final isAtRisk = provider.isWeeklyStreakAtRisk;
+    final label = provider.perfectWeekLabel;
+    final statusColor = label == 'Perfect week'
+        ? AppTheme.successColor
+        : label == 'Broken'
+            ? AppTheme.errorColor
+            : isAtRisk
+                ? AppTheme.warningColor
+                : AppTheme.primary;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: isAtRisk
+              ? AppTheme.warningColor.withValues(alpha: 0.35)
+              : AppTheme.border,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.auto_graph, color: AppTheme.primary, size: 20),
+              const SizedBox(width: 8),
+              Text('Streak Loop',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w800,
+                      )),
+              const Spacer(),
+              Text(label,
+                  style: TextStyle(
+                    color: statusColor,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                  )),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              _miniStreakStat(
+                'Activity',
+                '${user.activityStreak}d',
+                Icons.local_fire_department_outlined,
+                AppTheme.warningColor,
+                context,
+              ),
+              const SizedBox(width: 10),
+              _miniStreakStat(
+                'Weekly',
+                '${user.weeklyCompletionStreak}w',
+                Icons.calendar_view_week_outlined,
+                AppTheme.primary,
+                context,
+              ),
+              const SizedBox(width: 10),
+              _miniStreakStat(
+                'Best week',
+                '${user.bestWeeklyCompletionStreak}w',
+                Icons.emoji_events_outlined,
+                AppTheme.successColor,
+                context,
+              ),
+            ],
+          ),
+          if (isAtRisk) ...[
+            const SizedBox(height: 12),
+            Text(
+              'A ready challenge is waiting. Finish it before it expires to protect the weekly streak.',
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: AppTheme.warningColor,
+                    height: 1.4,
+                    fontWeight: FontWeight.w600,
+                  ),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _miniStreakStat(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+    BuildContext context,
+  ) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.08),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, color: color, size: 16),
+            const SizedBox(width: 6),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(value,
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w800,
+                      )),
+                  Text(label,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 10,
+                      )),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildCountdown(Duration countdown) {
     final hours = countdown.inHours;
     final minutes = countdown.inMinutes % 60;
@@ -209,9 +356,12 @@ class _HomeScreenState extends State<HomeScreen> {
     if (challenge == null) return const SizedBox.shrink();
 
     final isAvailable = DateTime.now().isAfter(uc.scheduledFor) ||
-        uc.status == ChallengeStatus.inProgress;
+        uc.status == ChallengeStatus.inProgress ||
+        uc.status == ChallengeStatus.open;
     final isCompleted = uc.status == ChallengeStatus.completed;
     final isSkipped = uc.status == ChallengeStatus.skipped;
+    final isExpired = uc.status == ChallengeStatus.expired;
+    final isTerminal = isCompleted || isSkipped || isExpired;
     final isPhilo = challenge.type == ChallengeType.philosophy;
     final typeColor = isPhilo ? AppTheme.philosophyColor : AppTheme.biasColor;
 
@@ -221,12 +371,12 @@ class _HomeScreenState extends State<HomeScreen> {
         color: AppTheme.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isAvailable && !isCompleted && !isSkipped
+          color: isAvailable && !isTerminal
               ? typeColor.withValues(alpha: 0.4)
               : AppTheme.border,
-          width: isAvailable && !isCompleted ? 1.5 : 1,
+          width: isAvailable && !isTerminal ? 1.5 : 1,
         ),
-        boxShadow: isAvailable && !isCompleted
+        boxShadow: isAvailable && !isTerminal
             ? [
                 BoxShadow(
                     color: typeColor.withValues(alpha: 0.08),
@@ -240,7 +390,7 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(18),
         child: InkWell(
           borderRadius: BorderRadius.circular(18),
-          onTap: isCompleted || isSkipped
+          onTap: isTerminal
               ? null
               : () {
                   if (isAvailable) {
@@ -282,8 +432,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 12),
                 Text(challenge.title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: isSkipped ? AppTheme.textSecondary : AppTheme.textPrimary,
-                          decoration: isSkipped ? TextDecoration.lineThrough : null,
+                          color: isSkipped || isExpired
+                              ? AppTheme.textSecondary
+                              : AppTheme.textPrimary,
+                          decoration: isSkipped || isExpired
+                              ? TextDecoration.lineThrough
+                              : null,
                         )),
                 const SizedBox(height: 6),
                 Text(
@@ -307,9 +461,21 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                             color: AppTheme.textSecondary, fontSize: 12)),
                     const Spacer(),
-                    if (!isCompleted && !isSkipped)
+                    if (!isTerminal)
                       Row(
                         children: [
+                          if (isAvailable)
+                            TextButton.icon(
+                              onPressed: () => provider.skipChallenge(uc.id),
+                              icon: const Icon(Icons.close, size: 14),
+                              label: const Text('Skip'),
+                              style: TextButton.styleFrom(
+                                foregroundColor: AppTheme.errorColor,
+                                padding: const EdgeInsets.symmetric(horizontal: 6),
+                                minimumSize: const Size(0, 32),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              ),
+                            ),
                           if (isAvailable)
                             Text('Tap to debate',
                                 style: TextStyle(
@@ -337,6 +503,19 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text('+${uc.xpEarned} XP',
                               style: TextStyle(
                                   color: AppTheme.successColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12)),
+                        ],
+                      ),
+                    if (isExpired)
+                      Row(
+                        children: [
+                          Icon(Icons.timer_off_outlined,
+                              color: AppTheme.errorColor, size: 16),
+                          const SizedBox(width: 4),
+                          Text('Expired',
+                              style: TextStyle(
+                                  color: AppTheme.errorColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12)),
                         ],
@@ -383,13 +562,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: AppTheme.successColor, fontSize: 11, fontWeight: FontWeight.w700)),
         );
       case ChallengeStatus.skipped:
+      case ChallengeStatus.expired:
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
             color: AppTheme.errorColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Text('Skipped',
+          child: Text(status == ChallengeStatus.expired ? 'Expired' : 'Skipped',
               style: TextStyle(
                   color: AppTheme.errorColor, fontSize: 11, fontWeight: FontWeight.w700)),
         );
@@ -455,7 +635,7 @@ class _HomeScreenState extends State<HomeScreen> {
         _statCard('Skipped', '${user.totalChallengesSkipped}',
             Icons.cancel_outlined, AppTheme.errorColor, context),
         const SizedBox(width: 10),
-        _statCard('Best Streak', '${user.bestStreak}🔥',
+        _statCard('Best Activity', '${user.bestActivityStreak}d',
             Icons.local_fire_department_outlined, AppTheme.warningColor, context),
       ],
     );
