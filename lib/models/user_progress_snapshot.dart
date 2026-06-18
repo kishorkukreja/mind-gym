@@ -73,10 +73,12 @@ class UserProgressSnapshot {
       lastActiveDate: json['lastActiveDate'] != null
           ? DateTime.parse(json['lastActiveDate'] as String)
           : null,
-      completedChallengeIds:
-          List<String>.from((json['completedChallengeIds'] as List?) ?? []),
-      skippedChallengeIds:
-          List<String>.from((json['skippedChallengeIds'] as List?) ?? []),
+      completedChallengeIds: List<String>.from(
+        (json['completedChallengeIds'] as List?) ?? [],
+      ),
+      skippedChallengeIds: List<String>.from(
+        (json['skippedChallengeIds'] as List?) ?? [],
+      ),
       weeklyStats: Map<String, dynamic>.from(
         (json['weeklyStats'] as Map?) ?? {},
       ),
