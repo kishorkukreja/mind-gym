@@ -200,22 +200,30 @@ class AppProvider extends ChangeNotifier {
     return hintMessage;
   }
 
-  Future<int> markChallengeComplete(String ucId) async {
+  Future<CompletionSummary?> markChallengeComplete(String ucId) async {
     final uc = getChallenge(ucId);
-    if (uc == null || _currentUser == null) return 0;
+    if (uc == null || _currentUser == null) return null;
 
     final challenge = ChallengeLibrary.getById(uc.challengeId);
-    final xp = ScheduleService.calculateXpReward(
+    final xpBreakdown = ScheduleService.calculateXpBreakdown(
       hintsUsed: uc.hintsUsed,
       responseCount: uc.responseCount,
       difficulty: challenge?.difficulty ?? 3,
       onTime: DateTime.now()
           .isBefore(uc.scheduledFor.add(const Duration(days: 2))),
     );
+    final xp = xpBreakdown.totalXp;
+    final summary = CompletionSummary(
+      totalXp: xp,
+      factors: xpBreakdown.factors,
+      feedback: _completionFeedback(uc, challenge),
+      nextStep: _completionNextStep(uc, challenge),
+    );
 
     uc.status = ChallengeStatus.completed;
     uc.completedAt = DateTime.now();
     uc.xpEarned = xp;
+    uc.completionSummary = summary;
 
     _currentUser!.xp += xp;
     _currentUser!.totalChallengesCompleted++;
@@ -249,7 +257,34 @@ class AppProvider extends ChangeNotifier {
     await StorageService.saveUserChallenge(uc);
     await StorageService.saveUser(_currentUser!);
     notifyListeners();
-    return xp;
+    return summary;
+  }
+
+  String _completionFeedback(UserChallenge uc, Challenge? challenge) {
+    if (uc.hintsUsed == 0 && uc.responseCount >= 4) {
+      return 'You stayed with the problem and built your answer without leaning on hints.';
+    }
+    if (uc.responseCount >= 4) {
+      return 'You gave the debate enough material to test your reasoning from multiple angles.';
+    }
+    if (challenge?.type == ChallengeType.cognitiveBias) {
+      return 'You identified the bias pattern and completed the debate with enough engagement to score.';
+    }
+    return 'You formed a position and defended it through the minimum debate loop.';
+  }
+
+  String _completionNextStep(UserChallenge uc, Challenge? challenge) {
+    if (uc.hintsUsed > 0) {
+      return 'Next time, pause before using a hint and write one concrete counterexample first.';
+    }
+    if (uc.responseCount < 4) {
+      return 'Next time, add one more response that directly answers the strongest objection.';
+    }
+    final category = challenge?.category;
+    if (category != null && category.isNotEmpty) {
+      return 'Carry this into your next $category challenge: name the tradeoff before defending your answer.';
+    }
+    return 'For the next challenge, state your best objection before you settle on an answer.';
   }
 
   // ===== SETTINGS =====

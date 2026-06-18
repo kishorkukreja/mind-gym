@@ -4,6 +4,16 @@ import '../models/challenge_model.dart';
 import 'challenge_library.dart';
 import 'storage_service.dart';
 
+class XpBreakdownResult {
+  final int totalXp;
+  final List<XpFactor> factors;
+
+  const XpBreakdownResult({
+    required this.totalXp,
+    required this.factors,
+  });
+}
+
 class ScheduleService {
   static const _uuid = Uuid();
 
@@ -129,11 +139,62 @@ class ScheduleService {
     required int difficulty,
     required bool onTime,
   }) {
-    int base = difficulty * 40;
-    int hintPenalty = hintsUsed * 10;
-    int depthBonus = (responseCount.clamp(1, 6) * 5);
-    int timePenalty = onTime ? 0 : -20;
-    return (base - hintPenalty + depthBonus + timePenalty).clamp(10, 300);
+    return calculateXpBreakdown(
+      hintsUsed: hintsUsed,
+      responseCount: responseCount,
+      difficulty: difficulty,
+      onTime: onTime,
+    ).totalXp;
+  }
+
+  static XpBreakdownResult calculateXpBreakdown({
+    required int hintsUsed,
+    required int responseCount,
+    required int difficulty,
+    required bool onTime,
+  }) {
+    final difficultyPoints = difficulty * 40;
+    final hintPoints = -(hintsUsed * 10);
+    final countedResponses = responseCount.clamp(1, 6).toInt();
+    final engagementPoints = countedResponses * 5;
+    final timelinessPoints = onTime ? 0 : -20;
+    final rawTotal = difficultyPoints +
+        hintPoints +
+        engagementPoints +
+        timelinessPoints;
+    final total = rawTotal.clamp(10, 300).toInt();
+    final clampAdjustment = total - rawTotal;
+
+    return XpBreakdownResult(
+      totalXp: total,
+      factors: [
+        XpFactor(
+          label: 'Difficulty',
+          points: difficultyPoints,
+          detail: 'Difficulty $difficulty challenge',
+        ),
+        XpFactor(
+          label: 'Hints',
+          points: hintPoints,
+          detail: hintsUsed == 0
+              ? 'No hints used'
+              : '$hintsUsed hint${hintsUsed == 1 ? '' : 's'} used',
+        ),
+        XpFactor(
+          label: 'Engagement',
+          points: engagementPoints,
+          detail:
+              '$countedResponses substantive response${countedResponses == 1 ? '' : 's'} counted',
+        ),
+        XpFactor(
+          label: 'Timeliness',
+          points: timelinessPoints + clampAdjustment,
+          detail: onTime
+              ? 'Completed on time'
+              : 'Completed after the ideal window',
+        ),
+      ],
+    );
   }
 
   /// Get countdown to next challenge

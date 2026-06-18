@@ -26,6 +26,61 @@ class ChallengeMessage {
       );
 }
 
+class XpFactor {
+  final String label;
+  final int points;
+  final String detail;
+
+  const XpFactor({
+    required this.label,
+    required this.points,
+    required this.detail,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'label': label,
+        'points': points,
+        'detail': detail,
+      };
+
+  factory XpFactor.fromJson(Map<String, dynamic> json) => XpFactor(
+        label: json['label'] as String,
+        points: (json['points'] as num).toInt(),
+        detail: json['detail'] as String,
+      );
+}
+
+class CompletionSummary {
+  final int totalXp;
+  final List<XpFactor> factors;
+  final String feedback;
+  final String nextStep;
+
+  const CompletionSummary({
+    required this.totalXp,
+    required this.factors,
+    required this.feedback,
+    required this.nextStep,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'totalXp': totalXp,
+        'factors': factors.map((factor) => factor.toJson()).toList(),
+        'feedback': feedback,
+        'nextStep': nextStep,
+      };
+
+  factory CompletionSummary.fromJson(Map<String, dynamic> json) =>
+      CompletionSummary(
+        totalXp: (json['totalXp'] as num).toInt(),
+        factors: ((json['factors'] as List?) ?? [])
+            .map((factor) => XpFactor.fromJson(factor as Map<String, dynamic>))
+            .toList(),
+        feedback: json['feedback'] as String,
+        nextStep: json['nextStep'] as String,
+      );
+}
+
 class Challenge {
   final String id;
   final String title;
@@ -82,6 +137,7 @@ class UserChallenge {
   List<ChallengeMessage> conversation;
   String? selfAssessmentNote;
   int? qualityScore; // 1-5 based on depth
+  CompletionSummary? completionSummary;
 
   UserChallenge({
     required this.id,
@@ -97,6 +153,7 @@ class UserChallenge {
     List<ChallengeMessage>? conversation,
     this.selfAssessmentNote,
     this.qualityScore,
+    this.completionSummary,
   }) : conversation = conversation ?? [];
 
   bool get isOpen => status == ChallengeStatus.open || status == ChallengeStatus.inProgress;
@@ -119,6 +176,7 @@ class UserChallenge {
         'conversation': conversation.map((m) => m.toJson()).toList(),
         'selfAssessmentNote': selfAssessmentNote,
         'qualityScore': qualityScore,
+        'completionSummary': completionSummary?.toJson(),
       };
 
   factory UserChallenge.fromJson(Map<String, dynamic> json) => UserChallenge(
@@ -144,5 +202,10 @@ class UserChallenge {
             .toList(),
         selfAssessmentNote: json['selfAssessmentNote'] as String?,
         qualityScore: json['qualityScore'] as int?,
+        completionSummary: json['completionSummary'] != null
+            ? CompletionSummary.fromJson(
+                json['completionSummary'] as Map<String, dynamic>,
+              )
+            : null,
       );
 }

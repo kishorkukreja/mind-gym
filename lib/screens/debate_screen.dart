@@ -4,6 +4,7 @@ import '../services/app_provider.dart';
 import '../models/challenge_model.dart';
 import '../services/challenge_library.dart';
 import '../utils/theme.dart';
+import 'progress_screen.dart';
 
 class DebateScreen extends StatefulWidget {
   final String ucId;
@@ -76,59 +77,28 @@ class _DebateScreenState extends State<DebateScreen> {
       return;
     }
 
-    final xp = await provider.markChallengeComplete(widget.ucId);
-    if (mounted) {
-      _showCompletionDialog(xp);
+    final summary = await provider.markChallengeComplete(widget.ucId);
+    if (mounted && summary != null) {
+      _showCompletionDialog(summary);
     }
   }
 
-  void _showCompletionDialog(int xp) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        contentPadding: const EdgeInsets.all(28),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('🧠', style: TextStyle(fontSize: 52)),
-            const SizedBox(height: 16),
-            Text('Challenge Completed!',
-                style: Theme.of(context).textTheme.titleLarge,
-                textAlign: TextAlign.center),
-            const SizedBox(height: 8),
-            Text('Your mind grew stronger today.',
-                style: Theme.of(context).textTheme.bodyMedium,
-                textAlign: TextAlign.center),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                color: AppTheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              child: Text('+$xp XP',
-                  style: TextStyle(
-                      color: AppTheme.primary,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 24)),
-            ),
-          ],
-        ),
-        actions: [
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
-              child: const Text('Back to Training'),
-            ),
-          ),
-        ],
-      ),
+  void _showCompletionDialog(CompletionSummary summary) {
+    final navigator = Navigator.of(context);
+    DebateCompletionDialog.show(
+      context,
+      summary,
+      onHome: () {
+        navigator.pop();
+        navigator.pop();
+      },
+      onProgress: () {
+        navigator.pop();
+        navigator.pop();
+        navigator.push(
+          MaterialPageRoute(builder: (_) => const ProgressScreen()),
+        );
+      },
     );
   }
 
@@ -522,5 +492,210 @@ class _DebateScreenState extends State<DebateScreen> {
     final ampm = dt.hour >= 12 ? 'pm' : 'am';
     final m = dt.minute.toString().padLeft(2, '0');
     return '$h:$m $ampm';
+  }
+}
+
+class DebateCompletionDialog extends StatelessWidget {
+  final CompletionSummary summary;
+  final VoidCallback? onHome;
+  final VoidCallback? onProgress;
+
+  const DebateCompletionDialog({
+    super.key,
+    required this.summary,
+    this.onHome,
+    this.onProgress,
+  });
+
+  static Future<void> show(
+    BuildContext context,
+    CompletionSummary summary, {
+    VoidCallback? onHome,
+    VoidCallback? onProgress,
+  }) {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => DebateCompletionDialog(
+        summary: summary,
+        onHome: onHome,
+        onProgress: onProgress,
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      contentPadding: const EdgeInsets.all(24),
+      content: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Icon(Icons.psychology, color: AppTheme.primary, size: 48),
+            const SizedBox(height: 12),
+            Text(
+              'Completion Summary',
+              style: Theme.of(context).textTheme.titleLarge,
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 12),
+            Center(
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+                decoration: BoxDecoration(
+                  color: AppTheme.primary.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Text(
+                  '+${summary.totalXp} XP',
+                  style: TextStyle(
+                    color: AppTheme.primary,
+                    fontWeight: FontWeight.w900,
+                    fontSize: 24,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 18),
+            ...summary.factors.map(_buildFactor),
+            const SizedBox(height: 18),
+            _buildSummaryText(
+              context,
+              icon: Icons.check_circle_outline,
+              title: 'What went well',
+              body: summary.feedback,
+              color: AppTheme.successColor,
+            ),
+            const SizedBox(height: 12),
+            _buildSummaryText(
+              context,
+              icon: Icons.trending_up,
+              title: 'Next step',
+              body: summary.nextStep,
+              color: AppTheme.primary,
+            ),
+          ],
+        ),
+      ),
+      actionsPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      actions: [
+        Row(
+          children: [
+            Expanded(
+              child: OutlinedButton.icon(
+                onPressed: onHome ?? () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.home_outlined, size: 18),
+                label: const Text('Home'),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: ElevatedButton.icon(
+                onPressed: onProgress ?? () => Navigator.of(context).pop(),
+                icon: const Icon(Icons.psychology_outlined, size: 18),
+                label: const Text('Progress'),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildFactor(XpFactor factor) {
+    final isPositive = factor.points >= 0;
+    final color = isPositive ? AppTheme.successColor : AppTheme.errorColor;
+    final prefix = factor.points > 0 ? '+' : '';
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  factor.label,
+                  style: TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 13,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  factor.detail,
+                  style: TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 12,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            '$prefix${factor.points} XP',
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w800,
+              fontSize: 13,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSummaryText(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String body,
+    required Color color,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.18)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(icon, color: color, size: 18),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: color,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  body,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppTheme.textPrimary,
+                        height: 1.4,
+                      ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
