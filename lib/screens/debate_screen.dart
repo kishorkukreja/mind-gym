@@ -68,9 +68,13 @@ class _DebateScreenState extends State<DebateScreen> {
   Future<void> _markComplete() async {
     final provider = context.read<AppProvider>();
     final uc = provider.getChallenge(widget.ucId);
-    if (uc == null || uc.responseCount < 2) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('You need to engage more before completing. Keep thinking!'),
+    if (uc == null) return;
+    final requiredResponses = provider.getCompletionResponseRequirement(uc);
+    if (uc.responseCount < requiredResponses) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(
+          'This mode expects at least $requiredResponses substantive responses before completion.',
+        ),
         backgroundColor: AppTheme.warningColor,
       ));
       return;
@@ -156,6 +160,8 @@ class _DebateScreenState extends State<DebateScreen> {
     final typeColor = isPhilo ? AppTheme.philosophyColor : AppTheme.biasColor;
     final isCompleted = uc.status == ChallengeStatus.completed;
     final hintsLeft = challenge.hintTiers.length - uc.hintsUsed;
+    final activeDifficulty = provider.getActiveDebateDifficulty(uc);
+    final requiredResponses = provider.getCompletionResponseRequirement(uc);
 
     return Scaffold(
       backgroundColor: AppTheme.background,
@@ -163,7 +169,7 @@ class _DebateScreenState extends State<DebateScreen> {
         title: Text(challenge.title,
             style: const TextStyle(fontSize: 16), overflow: TextOverflow.ellipsis),
         actions: [
-          if (!isCompleted && uc.responseCount >= 2)
+          if (!isCompleted && uc.responseCount >= requiredResponses)
             TextButton.icon(
               onPressed: _markComplete,
               icon: const Icon(Icons.check, size: 16),
@@ -184,7 +190,9 @@ class _DebateScreenState extends State<DebateScreen> {
                   onTap: () => setState(() => _showChallenge = !_showChallenge),
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                    child: Row(
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
                       children: [
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -203,7 +211,26 @@ class _DebateScreenState extends State<DebateScreen> {
                           'Difficulty: ${'●' * challenge.difficulty}${'○' * (5 - challenge.difficulty)}',
                           style: TextStyle(color: typeColor, fontSize: 12),
                         ),
-                        const Spacer(),
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primary.withValues(alpha: 0.08),
+                            borderRadius: BorderRadius.circular(20),
+                            border: Border.all(
+                              color: AppTheme.primary.withValues(alpha: 0.18),
+                            ),
+                          ),
+                          child: Text(
+                            '${activeDifficulty.label} debate',
+                            style: TextStyle(
+                              color: AppTheme.primary,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
                         Icon(
                           _showChallenge
                               ? Icons.keyboard_arrow_up
@@ -211,6 +238,7 @@ class _DebateScreenState extends State<DebateScreen> {
                           color: AppTheme.textSecondary,
                         ),
                       ],
+                      ),
                     ),
                   ),
                 ),
@@ -270,7 +298,7 @@ class _DebateScreenState extends State<DebateScreen> {
           ),
 
           // Bottom bar
-          _buildBottomBar(isCompleted, hintsLeft, typeColor),
+          _buildBottomBar(isCompleted, hintsLeft, typeColor, requiredResponses),
         ],
       ),
     );
@@ -411,7 +439,12 @@ class _DebateScreenState extends State<DebateScreen> {
     );
   }
 
-  Widget _buildBottomBar(bool isCompleted, int hintsLeft, Color typeColor) {
+  Widget _buildBottomBar(
+    bool isCompleted,
+    int hintsLeft,
+    Color typeColor,
+    int requiredResponses,
+  ) {
     if (isCompleted) {
       return Container(
         padding: const EdgeInsets.all(16),
@@ -455,7 +488,7 @@ class _DebateScreenState extends State<DebateScreen> {
                           color: AppTheme.textSecondary, fontSize: 12)),
                 const Spacer(),
                 Text(
-                  'Responses: ${context.watch<AppProvider>().getChallenge(widget.ucId)?.responseCount ?? 0}',
+                  'Responses: ${context.watch<AppProvider>().getChallenge(widget.ucId)?.responseCount ?? 0}/$requiredResponses',
                   style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
                 ),
               ],

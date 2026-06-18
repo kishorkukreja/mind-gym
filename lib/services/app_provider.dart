@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 import '../models/user_model.dart';
 import '../models/challenge_model.dart';
+import '../models/debate_difficulty.dart';
 import 'storage_service.dart';
 import 'schedule_service.dart';
 import 'openrouter_service.dart';
@@ -163,6 +164,7 @@ class AppProvider extends ChangeNotifier {
       conversation: uc.conversation,
       hintsUsed: uc.hintsUsed,
       userLevel: _currentUser!.level,
+      debateDifficulty: getActiveDebateDifficulty(uc),
     );
 
     uc.conversation.add(ChallengeMessage(
@@ -203,6 +205,7 @@ class AppProvider extends ChangeNotifier {
   Future<int> markChallengeComplete(String ucId) async {
     final uc = getChallenge(ucId);
     if (uc == null || _currentUser == null) return 0;
+    if (uc.responseCount < getCompletionResponseRequirement(uc)) return 0;
 
     final challenge = ChallengeLibrary.getById(uc.challengeId);
     final xp = ScheduleService.calculateXpReward(
@@ -273,6 +276,30 @@ class AppProvider extends ChangeNotifier {
     _currentUser!.weekendChallengeDay = weekendChallengeDay;
     await StorageService.saveUser(_currentUser!);
     notifyListeners();
+  }
+
+  Future<void> updateDebateDifficultyPreference(
+    DebateDifficultyPreference preference,
+  ) async {
+    if (_currentUser == null) return;
+    _currentUser!.debateDifficultyPreference = preference;
+    await StorageService.saveUser(_currentUser!);
+    notifyListeners();
+  }
+
+  DebateDifficulty getActiveDebateDifficulty(UserChallenge uc) {
+    final challenge = ChallengeLibrary.getById(uc.challengeId);
+    if (challenge == null || _currentUser == null) {
+      return DebateDifficulty.intermediate;
+    }
+    return DebateDifficulty.resolve(
+      preference: _currentUser!.debateDifficultyPreference,
+      challenge: challenge,
+    );
+  }
+
+  int getCompletionResponseRequirement(UserChallenge uc) {
+    return getActiveDebateDifficulty(uc).minimumUserResponses;
   }
 
   Map<String, dynamic> getWeeklyPerformance() {

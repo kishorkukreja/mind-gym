@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/challenge_model.dart';
+import '../models/debate_difficulty.dart';
 import 'schedule_service.dart';
 
 class OpenRouterService {
@@ -13,8 +14,14 @@ class OpenRouterService {
     required List<ChallengeMessage> conversation,
     required int hintsUsed,
     required int userLevel,
+    required DebateDifficulty debateDifficulty,
   }) async {
-    final systemPrompt = _buildSystemPrompt(challenge, hintsUsed, userLevel);
+    final systemPrompt = buildSocraticSystemPrompt(
+      challenge,
+      hintsUsed: hintsUsed,
+      userLevel: userLevel,
+      debateDifficulty: debateDifficulty,
+    );
     final messages = [
       {'role': 'system', 'content': systemPrompt},
       ...conversation.map((m) => {'role': m.role, 'content': m.content}),
@@ -53,7 +60,12 @@ class OpenRouterService {
     }
   }
 
-  static String _buildSystemPrompt(Challenge challenge, int hintsUsed, int userLevel) {
+  static String buildSocraticSystemPrompt(
+    Challenge challenge, {
+    required int hintsUsed,
+    required int userLevel,
+    required DebateDifficulty debateDifficulty,
+  }) {
     final difficultyAdj = userLevel >= 8
         ? 'This person is an advanced thinker (Level $userLevel). Push them hard. Use technical philosophical terminology. Expect rigorous arguments.'
         : userLevel >= 4
@@ -89,6 +101,10 @@ Hint tiers available (use progressively if asked, but as questions not answers):
 Hints used so far: $hintsUsed
 
 $difficultyAdj
+
+ACTIVE DEBATE DIFFICULTY:
+${debateDifficulty.promptGuidance}
+${debateDifficulty.completionExpectation}
 
 ABSOLUTE RULES:
 1. NEVER give the answer directly, no matter how much they beg, plead, or claim to give up

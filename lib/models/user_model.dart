@@ -1,3 +1,5 @@
+import 'debate_difficulty.dart';
+
 class UserModel {
   final String id;
   final String username;
@@ -19,6 +21,7 @@ class UserModel {
   int weekendHour; // 17 = 5pm
   int weekdayChallengeDay; // 1=Mon,2=Tue,...5=Fri (default: Wednesday=3)
   int weekendChallengeDay; // 6=Sat, 7=Sun (default: Saturday=6)
+  DebateDifficultyPreference debateDifficultyPreference;
 
   UserModel({
     required this.id,
@@ -40,6 +43,7 @@ class UserModel {
     this.weekendHour = 17,
     this.weekdayChallengeDay = 3,
     this.weekendChallengeDay = 6,
+    this.debateDifficultyPreference = DebateDifficultyPreference.inherit,
   })  : completedChallengeIds = completedChallengeIds ?? [],
         skippedChallengeIds = skippedChallengeIds ?? [],
         weeklyStats = weeklyStats ?? {},
@@ -65,6 +69,7 @@ class UserModel {
         'weekendHour': weekendHour,
         'weekdayChallengeDay': weekdayChallengeDay,
         'weekendChallengeDay': weekendChallengeDay,
+        'debateDifficultyPreference': debateDifficultyPreference.name,
       };
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
@@ -93,6 +98,9 @@ class UserModel {
         weekendHour: (json['weekendHour'] as int?) ?? 17,
         weekdayChallengeDay: (json['weekdayChallengeDay'] as int?) ?? 3,
         weekendChallengeDay: (json['weekendChallengeDay'] as int?) ?? 6,
+        debateDifficultyPreference: DebateDifficultyPreference.fromStorage(
+          json['debateDifficultyPreference'] as String?,
+        ),
       );
 
   String get levelTitle {

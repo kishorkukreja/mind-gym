@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../models/debate_difficulty.dart';
 import '../services/app_provider.dart';
 import '../utils/theme.dart';
 
@@ -18,6 +19,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   late int _weekendHour;
   late int _weekdayDay;
   late int _weekendDay;
+  late DebateDifficultyPreference _debateDifficultyPreference;
 
   @override
   void initState() {
@@ -28,6 +30,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _weekendHour = user.weekendHour;
     _weekdayDay = user.weekdayChallengeDay;
     _weekendDay = user.weekendChallengeDay;
+    _debateDifficultyPreference = user.debateDifficultyPreference;
   }
 
   @override
@@ -58,6 +61,21 @@ class _SettingsScreenState extends State<SettingsScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text('Schedule saved! New challenges next week.'),
+        backgroundColor: AppTheme.successColor,
+      ));
+    }
+  }
+
+  Future<void> _setDebateDifficulty(
+    DebateDifficultyPreference preference,
+  ) async {
+    setState(() => _debateDifficultyPreference = preference);
+    await context
+        .read<AppProvider>()
+        .updateDebateDifficultyPreference(preference);
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Debate difficulty set to ${preference.label}.'),
         backgroundColor: AppTheme.successColor,
       ));
     }
@@ -162,6 +180,56 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 child: CircularProgressIndicator(
                                     color: Colors.white, strokeWidth: 2))
                             : const Text('Save API Key'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              _buildSection(
+                title: 'Debate Difficulty',
+                icon: Icons.tune_outlined,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Choose how hard the debate engine pushes, or inherit from each challenge.',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                    const SizedBox(height: 12),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 8,
+                      children: DebateDifficultyPreference.values.map((preference) {
+                        final selected = _debateDifficultyPreference == preference;
+                        return ChoiceChip(
+                          label: Text(preference.label),
+                          selected: selected,
+                          onSelected: (_) => _setDebateDifficulty(preference),
+                          selectedColor: AppTheme.primary.withValues(alpha: 0.16),
+                          backgroundColor: AppTheme.background,
+                          checkmarkColor: AppTheme.primary,
+                          labelStyle: TextStyle(
+                            color: selected
+                                ? AppTheme.primary
+                                : AppTheme.textPrimary,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 12,
+                          ),
+                          side: BorderSide(
+                            color: selected ? AppTheme.primary : AppTheme.border,
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      _debateDifficultyPreference.description,
+                      style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 12,
                       ),
                     ),
                   ],
