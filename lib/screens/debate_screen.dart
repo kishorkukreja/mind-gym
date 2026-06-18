@@ -330,8 +330,7 @@ class _DebateScreenState extends State<DebateScreen> {
         children: labels
             .map(
               (label) => Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                 decoration: BoxDecoration(
                   color: color.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(10),

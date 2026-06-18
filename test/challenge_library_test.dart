@@ -31,8 +31,9 @@ void main() {
     });
 
     test('bank covers all issue 11 content domains', () {
-      final representedTypes =
-          ChallengeLibrary.allChallenges.map((challenge) => challenge.type).toSet();
+      final representedTypes = ChallengeLibrary.allChallenges
+          .map((challenge) => challenge.type)
+          .toSet();
 
       expect(
         representedTypes,
@@ -49,8 +50,9 @@ void main() {
     });
 
     test('bank includes prompt variants for repeated concepts', () {
-      final challengesWithVariants =
-          ChallengeLibrary.allChallenges.where((challenge) => challenge.variants.isNotEmpty);
+      final challengesWithVariants = ChallengeLibrary.allChallenges.where(
+        (challenge) => challenge.variants.isNotEmpty,
+      );
 
       expect(challengesWithVariants, isNotEmpty);
       expect(
@@ -61,39 +63,54 @@ void main() {
   });
 
   group('weekly selection', () {
-    test('returns one philosophy-style and one cognitive-bias-style challenge', () {
-      final picks = ChallengeLibrary.pickWeeklyChallenges(const []);
+    test(
+      'returns one philosophy-style and one cognitive-bias-style challenge',
+      () {
+        final picks = ChallengeLibrary.pickWeeklyChallenges(const []);
 
-      expect(picks, hasLength(2));
-      expect(picks.any((challenge) => challenge.isPhilosophyStyle), isTrue);
-      expect(picks.any((challenge) => challenge.isCognitiveBiasStyle), isTrue);
-    });
+        expect(picks, hasLength(2));
+        expect(picks.any((challenge) => challenge.isPhilosophyStyle), isTrue);
+        expect(picks.any((challenge) => challenge.isCognitiveBiasStyle), isTrue);
+      },
+    );
 
-    test('avoids recent challenge and variant IDs when eligible alternatives exist', () {
-      final recentIds = <String>[
-        ...ChallengeLibrary.getPhilosophyStyleChallenges().take(2).map((c) => c.id),
-        ...ChallengeLibrary.getCognitiveBiasStyleChallenges().take(2).map((c) => c.id),
-        ...ChallengeLibrary.allChallenges
-            .where((challenge) => challenge.variants.isNotEmpty)
-            .expand((challenge) => challenge.variants)
-            .take(2)
-            .map((variant) => variant.id),
-      ];
+    test(
+      'avoids recent challenge and variant IDs when eligible alternatives exist',
+      () {
+        final recentIds = <String>[
+          ...ChallengeLibrary.getPhilosophyStyleChallenges()
+              .take(2)
+              .map((c) => c.id),
+          ...ChallengeLibrary.getCognitiveBiasStyleChallenges()
+              .take(2)
+              .map((c) => c.id),
+          ...ChallengeLibrary.allChallenges
+              .where((challenge) => challenge.variants.isNotEmpty)
+              .expand((challenge) => challenge.variants)
+              .take(2)
+              .map((variant) => variant.id),
+        ];
 
-      final picks = ChallengeLibrary.pickWeeklyChallenges(recentIds);
+        final picks = ChallengeLibrary.pickWeeklyChallenges(recentIds);
 
-      expect(picks.any((challenge) => recentIds.contains(challenge.id)), isFalse);
-      expect(
-        picks.any(
-          (challenge) => challenge.variantIds.any(recentIds.contains),
-        ),
-        isFalse,
-      );
-    });
+        expect(
+          picks.any((challenge) => recentIds.contains(challenge.id)),
+          isFalse,
+        );
+        expect(
+          picks.any(
+            (challenge) => challenge.variantIds.any(recentIds.contains),
+          ),
+          isFalse,
+        );
+      },
+    );
 
     test('falls back to balanced lanes when all known IDs are recent', () {
       final allIds = ChallengeLibrary.allChallenges
-          .expand((challenge) => <String>[challenge.id, ...challenge.variantIds])
+          .expand(
+            (challenge) => <String>[challenge.id, ...challenge.variantIds],
+          )
           .toList();
 
       final picks = ChallengeLibrary.pickWeeklyChallenges(allIds);
