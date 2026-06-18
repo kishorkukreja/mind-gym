@@ -15,16 +15,23 @@ class UserProgressSnapshot {
   Map<String, dynamic> toJson() => {
         'userId': user.id,
         'user': _userProgressJson(user),
-        'challenges': challenges.map((challenge) => challenge.toJson()).toList(),
+        'challenges': challenges
+            .map((challenge) => challenge.toJson())
+            .toList(),
         'updatedAt': updatedAt.toIso8601String(),
       };
 
   factory UserProgressSnapshot.fromJson(Map<String, dynamic> json) {
     return UserProgressSnapshot(
-      user: _userFromProgressJson(Map<String, dynamic>.from(json['user'] as Map)),
+      user: _userFromProgressJson(
+        Map<String, dynamic>.from(json['user'] as Map),
+      ),
       challenges: ((json['challenges'] as List?) ?? [])
-          .map((challenge) =>
-              UserChallenge.fromJson(Map<String, dynamic>.from(challenge as Map)))
+          .map(
+            (challenge) => UserChallenge.fromJson(
+              Map<String, dynamic>.from(challenge as Map),
+            ),
+          )
           .toList(),
       updatedAt: json['updatedAt'] != null
           ? DateTime.parse(json['updatedAt'] as String)
@@ -70,7 +77,9 @@ class UserProgressSnapshot {
           List<String>.from((json['completedChallengeIds'] as List?) ?? []),
       skippedChallengeIds:
           List<String>.from((json['skippedChallengeIds'] as List?) ?? []),
-      weeklyStats: Map<String, dynamic>.from((json['weeklyStats'] as Map?) ?? {}),
+      weeklyStats: Map<String, dynamic>.from(
+        (json['weeklyStats'] as Map?) ?? {},
+      ),
       createdAt: json['createdAt'] != null
           ? DateTime.parse(json['createdAt'] as String)
           : DateTime.now(),

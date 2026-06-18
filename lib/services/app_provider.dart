@@ -67,7 +67,11 @@ class AppProvider extends ChangeNotifier {
     return true;
   }
 
-  Future<String?> register(String username, String pin, {String? apiKey}) async {
+  Future<String?> register(
+    String username,
+    String pin, {
+    String? apiKey,
+  }) async {
     _setLoading(true);
     if (username.trim().isEmpty) {
       _setLoading(false);
@@ -132,7 +136,8 @@ class AppProvider extends ChangeNotifier {
   Future<void> openChallenge(String ucId) async {
     final uc = getChallenge(ucId);
     if (uc == null || _currentUser == null) return;
-    if (uc.status == ChallengeStatus.pending || uc.status == ChallengeStatus.open) {
+    if (uc.status == ChallengeStatus.pending ||
+        uc.status == ChallengeStatus.open) {
       uc.status = ChallengeStatus.inProgress;
       uc.openedAt = DateTime.now();
       await StorageService.saveUserChallenge(uc);
@@ -222,8 +227,9 @@ class AppProvider extends ChangeNotifier {
       hintsUsed: uc.hintsUsed,
       responseCount: uc.responseCount,
       difficulty: challenge?.difficulty ?? 3,
-      onTime: DateTime.now()
-          .isBefore(uc.scheduledFor.add(const Duration(days: 2))),
+      onTime: DateTime.now().isBefore(
+        uc.scheduledFor.add(const Duration(days: 2)),
+      ),
     );
 
     uc.status = ChallengeStatus.completed;

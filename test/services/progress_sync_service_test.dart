@@ -17,55 +17,62 @@ void main() {
     service = ProgressSyncService(remoteRepository: repository);
   });
 
-  test('persists XP, streak, completed challenge status, and history remotely',
-      () async {
-    final user = _user(
-      xp: 220,
-      currentStreak: 3,
-      bestStreak: 5,
-      completedChallengeIds: ['uc-1'],
-    );
-    final challenge = _completedChallenge(
-      xpEarned: 140,
-      responseCount: 2,
-      conversation: [
-        ChallengeMessage(
-          role: 'user',
-          content: 'My first answer',
-          timestamp: DateTime.utc(2026, 6, 18, 9),
+  test(
+    'persists XP, streak, completed challenge status, and history remotely',
+    () async {
+      final user = _user(
+        xp: 220,
+        currentStreak: 3,
+        bestStreak: 5,
+        completedChallengeIds: ['uc-1'],
+      );
+      final challenge = _completedChallenge(
+        xpEarned: 140,
+        responseCount: 2,
+        conversation: [
+          ChallengeMessage(
+            role: 'user',
+            content: 'My first answer',
+            timestamp: DateTime.utc(2026, 6, 18, 9),
+          ),
+          ChallengeMessage(
+            role: 'assistant',
+            content: 'Push the argument further.',
+            timestamp: DateTime.utc(2026, 6, 18, 9, 1),
+          ),
+        ],
+      );
+
+      await StorageService.saveUser(user);
+      await StorageService.saveUserChallenge(challenge);
+
+      final result = await service.persistProgress(user);
+
+      expect(result.status, ProgressSyncStatus.synced);
+      expect(repository.savedSnapshot, isNotNull);
+      expect(repository.savedSnapshot!.user.xp, 220);
+      expect(repository.savedSnapshot!.user.currentStreak, 3);
+      expect(repository.savedSnapshot!.user.bestStreak, 5);
+      expect(repository.savedSnapshot!.user.completedChallengeIds, ['uc-1']);
+      expect(
+        repository.savedSnapshot!.challenges.single.status,
+        ChallengeStatus.completed,
+      );
+      expect(repository.savedSnapshot!.challenges.single.xpEarned, 140);
+      expect(
+        repository.savedSnapshot!.challenges.single.conversation.map(
+          (message) => message.content,
         ),
-        ChallengeMessage(
-          role: 'assistant',
-          content: 'Push the argument further.',
-          timestamp: DateTime.utc(2026, 6, 18, 9, 1),
-        ),
-      ],
-    );
-
-    await StorageService.saveUser(user);
-    await StorageService.saveUserChallenge(challenge);
-
-    final result = await service.persistProgress(user);
-
-    expect(result.status, ProgressSyncStatus.synced);
-    expect(repository.savedSnapshot, isNotNull);
-    expect(repository.savedSnapshot!.user.xp, 220);
-    expect(repository.savedSnapshot!.user.currentStreak, 3);
-    expect(repository.savedSnapshot!.user.bestStreak, 5);
-    expect(repository.savedSnapshot!.user.completedChallengeIds, ['uc-1']);
-    expect(repository.savedSnapshot!.challenges.single.status,
-        ChallengeStatus.completed);
-    expect(repository.savedSnapshot!.challenges.single.xpEarned, 140);
-    expect(repository.savedSnapshot!.challenges.single.conversation
-        .map((message) => message.content), [
-      'My first answer',
-      'Push the argument further.',
-    ]);
-  });
+        [
+          'My first answer',
+          'Push the argument further.',
+        ],
+      );
+    },
+  );
 
   test('does not serialize local auth secrets into progress snapshots', () {
-    final user = _user(xp: 220)
-      ..openRouterApiKey = 'sk-secret-openrouter-key';
+    final user = _user(xp: 220)..openRouterApiKey = 'sk-secret-openrouter-key';
     final snapshot = UserProgressSnapshot(
       user: user,
       challenges: [_completedChallenge()],
@@ -104,8 +111,10 @@ void main() {
     expect(StorageService.getCurrentUser()!.currentStreak, 4);
     expect(StorageService.getCurrentUser()!.pinHash, localUser.pinHash);
     expect(StorageService.getCurrentUser()!.openRouterApiKey, 'local-api-key');
-    expect(StorageService.getUserChallenges(localUser.id).single.status,
-        ChallengeStatus.completed);
+    expect(
+      StorageService.getUserChallenges(localUser.id).single.status,
+      ChallengeStatus.completed,
+    );
     expect(StorageService.getUserChallenges(localUser.id).single.xpEarned, 180);
   });
 
