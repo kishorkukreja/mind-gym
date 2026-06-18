@@ -3,18 +3,26 @@ import 'package:uuid/uuid.dart';
 import '../models/user_model.dart';
 import '../models/challenge_model.dart';
 import 'storage_service.dart';
+import 'progress_sync_service.dart';
 import 'schedule_service.dart';
 import 'openrouter_service.dart';
 import 'challenge_library.dart';
 
 class AppProvider extends ChangeNotifier {
   static const _uuid = Uuid();
+  final ProgressSyncService _progressSyncService;
 
   UserModel? _currentUser;
   List<UserChallenge> _weekChallenges = [];
   bool _isLoading = false;
   String? _error;
   bool _isDebating = false;
+  ProgressSyncStatus _progressSyncStatus = ProgressSyncStatus.localOnly;
+  String? _progressSyncError;
+
+  AppProvider({ProgressSyncService? progressSyncService})
+      : _progressSyncService =
+            progressSyncService ?? ProgressSyncService.fromFirebase();
 
   UserModel? get currentUser => _currentUser;
   List<UserChallenge> get weekChallenges => _weekChallenges;
@@ -22,12 +30,15 @@ class AppProvider extends ChangeNotifier {
   String? get error => _error;
   bool get isLoggedIn => _currentUser != null;
   bool get isDebating => _isDebating;
+  ProgressSyncStatus get progressSyncStatus => _progressSyncStatus;
+  String? get progressSyncError => _progressSyncError;
 
   Future<void> init() async {
     await StorageService.init();
     final user = StorageService.getCurrentUser();
     if (user != null) {
       _currentUser = user;
+      await _restoreCurrentUserProgress();
       await _loadWeekChallenges();
     }
   }
@@ -49,6 +60,7 @@ class AppProvider extends ChangeNotifier {
     }
     await StorageService.setCurrentUser(user.id);
     _currentUser = user;
+    await _restoreCurrentUserProgress();
     await _loadWeekChallenges();
     _error = null;
     _setLoading(false);
@@ -79,6 +91,7 @@ class AppProvider extends ChangeNotifier {
     await StorageService.setCurrentUser(user.id);
     _currentUser = user;
     await _loadWeekChallenges();
+    await _persistCurrentProgress();
     _error = null;
     _setLoading(false);
     return null;
@@ -248,6 +261,7 @@ class AppProvider extends ChangeNotifier {
 
     await StorageService.saveUserChallenge(uc);
     await StorageService.saveUser(_currentUser!);
+    await _persistCurrentProgress();
     notifyListeners();
     return xp;
   }
@@ -257,6 +271,7 @@ class AppProvider extends ChangeNotifier {
     if (_currentUser == null) return;
     _currentUser!.openRouterApiKey = apiKey;
     await StorageService.saveUser(_currentUser!);
+    await _persistCurrentProgress();
     notifyListeners();
   }
 
@@ -272,6 +287,7 @@ class AppProvider extends ChangeNotifier {
     _currentUser!.weekdayChallengeDay = weekdayChallengeDay;
     _currentUser!.weekendChallengeDay = weekendChallengeDay;
     await StorageService.saveUser(_currentUser!);
+    await _persistCurrentProgress();
     notifyListeners();
   }
 
@@ -298,5 +314,29 @@ class AppProvider extends ChangeNotifier {
   void clearError() {
     _error = null;
     notifyListeners();
+  }
+
+  Future<void> _restoreCurrentUserProgress() async {
+    final user = _currentUser;
+    if (user == null) return;
+
+    final result = await _progressSyncService.restoreProgress(user.id);
+    _recordProgressSyncResult(result);
+    if (result.snapshot != null) {
+      _currentUser = result.snapshot!.user;
+    }
+  }
+
+  Future<void> _persistCurrentProgress() async {
+    final user = _currentUser;
+    if (user == null) return;
+
+    final result = await _progressSyncService.persistProgress(user);
+    _recordProgressSyncResult(result);
+  }
+
+  void _recordProgressSyncResult(ProgressSyncResult result) {
+    _progressSyncStatus = result.status;
+    _progressSyncError = result.error;
   }
 }
