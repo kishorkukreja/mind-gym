@@ -80,10 +80,9 @@ class _MainShellState extends State<MainShell> {
                   vertical: 6,
                 ),
                 decoration: BoxDecoration(
-                  color:
-                      isActive
-                          ? AppTheme.primary.withValues(alpha: 0.12)
-                          : Colors.transparent,
+                  color: isActive
+                      ? AppTheme.primary.withValues(alpha: 0.12)
+                      : Colors.transparent,
                   borderRadius: BorderRadius.circular(AppTheme.pillRadius),
                 ),
                 child: Icon(

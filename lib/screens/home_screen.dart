@@ -259,44 +259,41 @@ class _HomeScreenState extends State<HomeScreen> {
         color: AppTheme.surface,
         borderRadius: BorderRadius.circular(AppTheme.radius),
         border: Border.all(
-          color:
-              isAvailable && !isCompleted && !isSkipped
-                  ? typeColor.withValues(alpha: 0.4)
-                  : AppTheme.border,
+          color: isAvailable && !isCompleted && !isSkipped
+              ? typeColor.withValues(alpha: 0.4)
+              : AppTheme.border,
           width: isAvailable && !isCompleted ? 1.5 : 1,
         ),
-        boxShadow:
-            isAvailable && !isCompleted
-                ? [
-                  BoxShadow(
-                    color: typeColor.withValues(alpha: 0.08),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4),
-                  ),
-                ]
-                : null,
+        boxShadow: isAvailable && !isCompleted
+            ? [
+                BoxShadow(
+                  color: typeColor.withValues(alpha: 0.08),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
+              ]
+            : null,
       ),
       child: Material(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(AppTheme.radius),
         child: InkWell(
           borderRadius: BorderRadius.circular(AppTheme.radius),
-          onTap:
-              isCompleted || isSkipped
-                  ? null
-                  : () {
-                    if (isAvailable) {
-                      provider.openChallenge(uc.id);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => DebateScreen(ucId: uc.id),
-                        ),
-                      );
-                    } else {
-                      _showLockedDialog(context, uc);
-                    }
-                  },
+          onTap: isCompleted || isSkipped
+              ? null
+              : () {
+                  if (isAvailable) {
+                    provider.openChallenge(uc.id);
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DebateScreen(ucId: uc.id),
+                      ),
+                    );
+                  } else {
+                    _showLockedDialog(context, uc);
+                  }
+                },
           child: Padding(
             padding: const EdgeInsets.all(18),
             child: Column(
@@ -334,10 +331,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   challenge.title,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color:
-                        isSkipped
-                            ? AppTheme.textSecondary
-                            : AppTheme.textPrimary,
+                    color: isSkipped
+                        ? AppTheme.textSecondary
+                        : AppTheme.textPrimary,
                     decoration: isSkipped ? TextDecoration.lineThrough : null,
                   ),
                 ),
@@ -397,10 +393,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ? Icons.arrow_forward
                                 : Icons.lock_outline,
                             size: 14,
-                            color:
-                                isAvailable
-                                    ? typeColor
-                                    : AppTheme.textSecondary,
+                            color: isAvailable
+                                ? typeColor
+                                : AppTheme.textSecondary,
                           ),
                         ],
                       ),
@@ -503,10 +498,9 @@ class _HomeScreenState extends State<HomeScreen> {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
-            color:
-                isAvailable
-                    ? AppTheme.primary.withValues(alpha: 0.1)
-                    : AppTheme.border,
+            color: isAvailable
+                ? AppTheme.primary.withValues(alpha: 0.1)
+                : AppTheme.border,
             borderRadius: BorderRadius.circular(AppTheme.pillRadius),
           ),
           child: Text(
@@ -613,42 +607,41 @@ class _HomeScreenState extends State<HomeScreen> {
   void _showLockedDialog(BuildContext context, UserChallenge uc) {
     showDialog(
       context: context,
-      builder:
-          (_) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppTheme.radius),
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radius),
+        ),
+        title: const Row(
+          children: [
+            Icon(Icons.lock_outline, color: AppTheme.primary),
+            SizedBox(width: 8),
+            Text('Challenge Locked'),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'This challenge opens on ${_formatSchedule(uc.scheduledFor)}.',
             ),
-            title: const Row(
-              children: [
-                Icon(Icons.lock_outline, color: AppTheme.primary),
-                SizedBox(width: 8),
-                Text('Challenge Locked'),
-              ],
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'This challenge opens on ${_formatSchedule(uc.scheduledFor)}.',
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Opens in: ${_timeUntil(uc.scheduledFor)}',
-                  style: TextStyle(
-                    color: AppTheme.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Got it'),
+            const SizedBox(height: 8),
+            Text(
+              'Opens in: ${_timeUntil(uc.scheduledFor)}',
+              style: TextStyle(
+                color: AppTheme.primary,
+                fontWeight: FontWeight.w600,
               ),
-            ],
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Got it'),
           ),
+        ],
+      ),
     );
   }
 

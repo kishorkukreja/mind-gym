@@ -49,17 +49,16 @@ class _MindGymAppState extends State<MindGymApp> {
       title: 'Mind Gym',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.theme,
-      home:
-          !_initialized
-              ? const SplashScreen()
-              : Consumer<AppProvider>(
-                builder: (context, provider, _) {
-                  if (provider.isLoggedIn) {
-                    return const MainShell();
-                  }
-                  return const AuthScreen();
-                },
-              ),
+      home: !_initialized
+          ? const SplashScreen()
+          : Consumer<AppProvider>(
+              builder: (context, provider, _) {
+                if (provider.isLoggedIn) {
+                  return const MainShell();
+                }
+                return const AuthScreen();
+              },
+            ),
     );
   }
 }

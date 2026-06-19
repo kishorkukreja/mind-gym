@@ -62,12 +62,11 @@ class OpenRouterService {
     int hintsUsed,
     int userLevel,
   ) {
-    final difficultyAdj =
-        userLevel >= 8
-            ? 'This person is an advanced thinker (Level $userLevel). Push them hard. Use technical philosophical terminology. Expect rigorous arguments.'
-            : userLevel >= 4
-            ? 'This person is a developing thinker (Level $userLevel). Challenge them but meet them where they are.'
-            : 'This is a beginning thinker (Level $userLevel). Be challenging but accessible.';
+    final difficultyAdj = userLevel >= 8
+        ? 'This person is an advanced thinker (Level $userLevel). Push them hard. Use technical philosophical terminology. Expect rigorous arguments.'
+        : userLevel >= 4
+        ? 'This person is a developing thinker (Level $userLevel). Challenge them but meet them where they are.'
+        : 'This is a beginning thinker (Level $userLevel). Be challenging but accessible.';
 
     return '''You are the Mind Gym Socratic Debate Engine — an intellectually ruthless but fair philosophical adversary. 
 
@@ -118,7 +117,8 @@ RESPONSE STYLE: Direct. Sharp. Intellectually provocative. Like a demanding phil
     required int level,
     required String levelTitle,
   }) async {
-    final prompt = '''
+    final prompt =
+        '''
 You are the Mind Gym performance analyst — brutally honest, no sugarcoating.
 
 Generate a weekly performance report for $username (Level $level - "$levelTitle").
