@@ -37,7 +37,7 @@ void main() {
   test(
     'parses structured evaluation metadata and strips it from chat text',
     () async {
-    final client = FakeAiClient('''Your claim is clearer. Now test it against the strongest objection.
+      final client = FakeAiClient('''Your claim is clearer. Now test it against the strongest objection.
 
 <mind_gym_evaluation>
 {
@@ -52,66 +52,68 @@ void main() {
   "summary": "Strong clarity with a real counterargument to explore next."
 }
 </mind_gym_evaluation>''');
-    final service = OpenRouterService(client: client);
+      final service = OpenRouterService(client: client);
 
-    final response = await service.getSocraticResponse(
-      apiKey: 'test-key',
-      challenge: challenge,
-      conversation: [
-        ChallengeMessage(
-          role: 'user',
-          content: 'I think fairness depends on the rule people could accept.',
-          timestamp: DateTime(2026),
-        ),
-      ],
-      hintsUsed: 0,
-      userLevel: 2,
-    );
+      final response = await service.getSocraticResponse(
+        apiKey: 'test-key',
+        challenge: challenge,
+        conversation: [
+          ChallengeMessage(
+            role: 'user',
+            content: 'I think fairness depends on the rule people could accept.',
+            timestamp: DateTime(2026),
+          ),
+        ],
+        hintsUsed: 0,
+        userLevel: 2,
+      );
 
-    expect(
-      response.message,
-      'Your claim is clearer. Now test it against the strongest objection.',
-    );
-    expect(response.evaluation, isNotNull);
-    expect(response.evaluation!.completionReadiness, isTrue);
-    expect(response.evaluation!.qualityScore, 4);
-    expect(
-      response.evaluation!.summary,
-      'Strong clarity with a real counterargument to explore next.',
-    );
-    expect(
-      client.capturedMessages!.first['content'],
-      contains('<mind_gym_evaluation>'),
-    );
-  });
+      expect(
+        response.message,
+        'Your claim is clearer. Now test it against the strongest objection.',
+      );
+      expect(response.evaluation, isNotNull);
+      expect(response.evaluation!.completionReadiness, isTrue);
+      expect(response.evaluation!.qualityScore, 4);
+      expect(
+        response.evaluation!.summary,
+        'Strong clarity with a real counterargument to explore next.',
+      );
+      expect(
+        client.capturedMessages!.first['content'],
+        contains('<mind_gym_evaluation>'),
+      );
+    },
+  );
 
   test(
     'invalid evaluation metadata falls back without leaking hidden block',
     () async {
-    final client = FakeAiClient('''Keep going. What would make your answer false?
+      final client = FakeAiClient('''Keep going. What would make your answer false?
 
 <mind_gym_evaluation>
 {"reasoningDepth": 8, "completionReadiness": "yes"}
 </mind_gym_evaluation>''');
-    final service = OpenRouterService(client: client);
+      final service = OpenRouterService(client: client);
 
-    final response = await service.getSocraticResponse(
-      apiKey: 'test-key',
-      challenge: challenge,
-      conversation: [
-        ChallengeMessage(
-          role: 'user',
-          content: 'I am not sure yet.',
-          timestamp: DateTime(2026),
-        ),
-      ],
-      hintsUsed: 1,
-      userLevel: 1,
-    );
+      final response = await service.getSocraticResponse(
+        apiKey: 'test-key',
+        challenge: challenge,
+        conversation: [
+          ChallengeMessage(
+            role: 'user',
+            content: 'I am not sure yet.',
+            timestamp: DateTime(2026),
+          ),
+        ],
+        hintsUsed: 1,
+        userLevel: 1,
+      );
 
-    expect(response.message, 'Keep going. What would make your answer false?');
-    expect(response.evaluation, isNull);
-  });
+      expect(response.message, 'Keep going. What would make your answer false?');
+      expect(response.evaluation, isNull);
+    },
+  );
 
   test('metadata-only invalid responses use neutral fallback text', () async {
     final client = FakeAiClient('''<mind_gym_evaluation>
