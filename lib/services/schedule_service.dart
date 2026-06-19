@@ -53,8 +53,16 @@ class ScheduleService {
 
     // Schedule: weekday challenge on user's chosen weekday at chosen hour
     // Weekend challenge on user's chosen weekend day at chosen hour
-    final weekdayDate = _nextOccurrenceOfWeekday(now, user.weekdayChallengeDay, user.weekdayHour);
-    final weekendDate = _nextOccurrenceOfWeekday(now, user.weekendChallengeDay, user.weekendHour);
+    final weekdayDate = _nextOccurrenceOfWeekday(
+      now,
+      user.weekdayChallengeDay,
+      user.weekdayHour,
+    );
+    final weekendDate = _nextOccurrenceOfWeekday(
+      now,
+      user.weekendChallengeDay,
+      user.weekendHour,
+    );
 
     final uc1 = UserChallenge(
       id: _uuid.v4(),
@@ -72,7 +80,13 @@ class ScheduleService {
     );
 
     // Save
-    _saveNewWeeklyAssignment(user.id, wk, [uc1.id, uc2.id], recentIds, picks.map((p) => p.id).toList());
+    _saveNewWeeklyAssignment(
+      user.id,
+      wk,
+      [uc1.id, uc2.id],
+      recentIds,
+      picks.map((p) => p.id).toList(),
+    );
     StorageService.saveUserChallenge(uc1);
     StorageService.saveUserChallenge(uc2);
 
@@ -87,8 +101,13 @@ class ScheduleService {
     return date.add(Duration(days: daysUntil));
   }
 
-  static void _saveNewWeeklyAssignment(String userId, String wk, List<String> ucIds,
-      List<String> oldRecentIds, List<String> newPickIds) {
+  static void _saveNewWeeklyAssignment(
+    String userId,
+    String wk,
+    List<String> ucIds,
+    List<String> oldRecentIds,
+    List<String> newPickIds,
+  ) {
     final updatedRecent = [...oldRecentIds, ...newPickIds];
     // Keep only last 10 to allow rotation
     final trimmed = updatedRecent.length > 10
@@ -196,10 +215,16 @@ class ScheduleService {
   }
 
   /// Get countdown to next challenge
-  static Duration? getCountdownToNextChallenge(List<UserChallenge> weekChallenges) {
+  static Duration? getCountdownToNextChallenge(
+    List<UserChallenge> weekChallenges,
+  ) {
     final now = DateTime.now();
     final pending = weekChallenges
-        .where((uc) => uc.status == ChallengeStatus.pending && uc.scheduledFor.isAfter(now))
+        .where(
+          (uc) =>
+              uc.status == ChallengeStatus.pending &&
+              uc.scheduledFor.isAfter(now),
+        )
         .toList();
     if (pending.isEmpty) return null;
     pending.sort((a, b) => a.scheduledFor.compareTo(b.scheduledFor));
@@ -211,19 +236,35 @@ class ScheduleService {
     final allUc = StorageService.getUserChallenges(user.id);
     final now = DateTime.now();
     final weekStart = now.subtract(Duration(days: now.weekday - 1));
-    final thisWeekUc = allUc.where((uc) =>
-        uc.scheduledFor.isAfter(weekStart.subtract(const Duration(days: 1)))).toList();
+    final thisWeekUc = allUc
+        .where(
+          (uc) => uc.scheduledFor.isAfter(
+            weekStart.subtract(const Duration(days: 1)),
+          ),
+        )
+        .toList();
 
     final prevWeekStart = weekStart.subtract(const Duration(days: 7));
-    final prevWeekUc = allUc.where((uc) =>
-        uc.scheduledFor.isAfter(prevWeekStart.subtract(const Duration(days: 1))) &&
-        uc.scheduledFor.isBefore(weekStart)).toList();
+    final prevWeekUc = allUc
+        .where(
+          (uc) =>
+              uc.scheduledFor.isAfter(
+                prevWeekStart.subtract(const Duration(days: 1)),
+              ) &&
+              uc.scheduledFor.isBefore(weekStart),
+        )
+        .toList();
 
-    int thisCompleted = thisWeekUc.where((uc) => uc.status == ChallengeStatus.completed).length;
-    int thisSkipped = thisWeekUc.where((uc) => uc.status == ChallengeStatus.skipped).length;
+    int thisCompleted = thisWeekUc
+        .where((uc) => uc.status == ChallengeStatus.completed)
+        .length;
+    int thisSkipped =
+        thisWeekUc.where((uc) => uc.status == ChallengeStatus.skipped).length;
     int thisTotal = thisWeekUc.length;
 
-    int prevCompleted = prevWeekUc.where((uc) => uc.status == ChallengeStatus.completed).length;
+    int prevCompleted = prevWeekUc
+        .where((uc) => uc.status == ChallengeStatus.completed)
+        .length;
     int prevTotal = prevWeekUc.length;
 
     double thisRate = thisTotal > 0 ? thisCompleted / thisTotal : 0;
