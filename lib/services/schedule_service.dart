@@ -4,6 +4,13 @@ import '../models/challenge_model.dart';
 import 'challenge_library.dart';
 import 'storage_service.dart';
 
+class XpBreakdownResult {
+  final int totalXp;
+  final List<XpFactor> factors;
+
+  const XpBreakdownResult({required this.totalXp, required this.factors});
+}
+
 class ScheduleService {
   static const _uuid = Uuid();
 
@@ -38,13 +45,23 @@ class ScheduleService {
     }
 
     // Pick new challenges
-    final recentIds = List<String>.from(assignments['recentChallengeIds'] ?? []);
+    final recentIds = List<String>.from(
+      assignments['recentChallengeIds'] ?? [],
+    );
     final picks = ChallengeLibrary.pickWeeklyChallenges(recentIds);
 
     // Schedule: weekday challenge on user's chosen weekday at chosen hour
     // Weekend challenge on user's chosen weekend day at chosen hour
-    final weekdayDate = _nextOccurrenceOfWeekday(now, user.weekdayChallengeDay, user.weekdayHour);
-    final weekendDate = _nextOccurrenceOfWeekday(now, user.weekendChallengeDay, user.weekendHour);
+    final weekdayDate = _nextOccurrenceOfWeekday(
+      now,
+      user.weekdayChallengeDay,
+      user.weekdayHour,
+    );
+    final weekendDate = _nextOccurrenceOfWeekday(
+      now,
+      user.weekendChallengeDay,
+      user.weekendHour,
+    );
 
     final uc1 = UserChallenge(
       id: _uuid.v4(),
@@ -62,14 +79,24 @@ class ScheduleService {
     );
 
     // Save
-    _saveNewWeeklyAssignment(user.id, wk, [uc1.id, uc2.id], recentIds, picks.map((p) => p.id).toList());
+    _saveNewWeeklyAssignment(
+      user.id,
+      wk,
+      [uc1.id, uc2.id],
+      recentIds,
+      picks.map((p) => p.id).toList(),
+    );
     StorageService.saveUserChallenge(uc1);
     StorageService.saveUserChallenge(uc2);
 
     return [uc1, uc2];
   }
 
-  static DateTime _nextOccurrenceOfWeekday(DateTime from, int weekday, int hour) {
+  static DateTime _nextOccurrenceOfWeekday(
+    DateTime from,
+    int weekday,
+    int hour,
+  ) {
     // weekday: 1=Mon...7=Sun
     var date = DateTime(from.year, from.month, from.day, hour, 0);
     int daysUntil = (weekday - from.weekday) % 7;
@@ -77,8 +104,13 @@ class ScheduleService {
     return date.add(Duration(days: daysUntil));
   }
 
-  static void _saveNewWeeklyAssignment(String userId, String wk, List<String> ucIds,
-      List<String> oldRecentIds, List<String> newPickIds) {
+  static void _saveNewWeeklyAssignment(
+    String userId,
+    String wk,
+    List<String> ucIds,
+    List<String> oldRecentIds,
+    List<String> newPickIds,
+  ) {
     final updatedRecent = [...oldRecentIds, ...newPickIds];
     // Keep only last 10 to allow rotation
     final trimmed = updatedRecent.length > 10
@@ -129,18 +161,73 @@ class ScheduleService {
     required int difficulty,
     required bool onTime,
   }) {
-    int base = difficulty * 40;
-    int hintPenalty = hintsUsed * 10;
-    int depthBonus = (responseCount.clamp(1, 6) * 5);
-    int timePenalty = onTime ? 0 : -20;
-    return (base - hintPenalty + depthBonus + timePenalty).clamp(10, 300);
+    return calculateXpBreakdown(
+      hintsUsed: hintsUsed,
+      responseCount: responseCount,
+      difficulty: difficulty,
+      onTime: onTime,
+    ).totalXp;
+  }
+
+  static XpBreakdownResult calculateXpBreakdown({
+    required int hintsUsed,
+    required int responseCount,
+    required int difficulty,
+    required bool onTime,
+  }) {
+    final difficultyPoints = difficulty * 40;
+    final hintPoints = -(hintsUsed * 10);
+    final countedResponses = responseCount.clamp(1, 6).toInt();
+    final engagementPoints = countedResponses * 5;
+    final timelinessPoints = onTime ? 0 : -20;
+    final rawTotal =
+        difficultyPoints + hintPoints + engagementPoints + timelinessPoints;
+    final total = rawTotal.clamp(10, 300).toInt();
+    final clampAdjustment = total - rawTotal;
+
+    return XpBreakdownResult(
+      totalXp: total,
+      factors: [
+        XpFactor(
+          label: 'Difficulty',
+          points: difficultyPoints,
+          detail: 'Difficulty $difficulty challenge',
+        ),
+        XpFactor(
+          label: 'Hints',
+          points: hintPoints,
+          detail: hintsUsed == 0
+              ? 'No hints used'
+              : '$hintsUsed hint${hintsUsed == 1 ? '' : 's'} used',
+        ),
+        XpFactor(
+          label: 'Engagement',
+          points: engagementPoints,
+          detail:
+              '$countedResponses substantive response${countedResponses == 1 ? '' : 's'} counted',
+        ),
+        XpFactor(
+          label: 'Timeliness',
+          points: timelinessPoints + clampAdjustment,
+          detail: onTime
+              ? 'Completed on time'
+              : 'Completed after the ideal window',
+        ),
+      ],
+    );
   }
 
   /// Get countdown to next challenge
-  static Duration? getCountdownToNextChallenge(List<UserChallenge> weekChallenges) {
+  static Duration? getCountdownToNextChallenge(
+    List<UserChallenge> weekChallenges,
+  ) {
     final now = DateTime.now();
     final pending = weekChallenges
-        .where((uc) => uc.status == ChallengeStatus.pending && uc.scheduledFor.isAfter(now))
+        .where(
+          (uc) =>
+              uc.status == ChallengeStatus.pending &&
+              uc.scheduledFor.isAfter(now),
+        )
         .toList();
     if (pending.isEmpty) return null;
     pending.sort((a, b) => a.scheduledFor.compareTo(b.scheduledFor));
@@ -152,32 +239,56 @@ class ScheduleService {
     final allUc = StorageService.getUserChallenges(user.id);
     final now = DateTime.now();
     final weekStart = now.subtract(Duration(days: now.weekday - 1));
-    final thisWeekUc = allUc.where((uc) =>
-        uc.scheduledFor.isAfter(weekStart.subtract(const Duration(days: 1)))).toList();
+    final thisWeekUc = allUc
+        .where(
+          (uc) => uc.scheduledFor.isAfter(
+            weekStart.subtract(const Duration(days: 1)),
+          ),
+        )
+        .toList();
 
     final prevWeekStart = weekStart.subtract(const Duration(days: 7));
-    final prevWeekUc = allUc.where((uc) =>
-        uc.scheduledFor.isAfter(prevWeekStart.subtract(const Duration(days: 1))) &&
-        uc.scheduledFor.isBefore(weekStart)).toList();
+    final prevWeekUc = allUc
+        .where(
+          (uc) =>
+              uc.scheduledFor.isAfter(
+                prevWeekStart.subtract(const Duration(days: 1)),
+              ) &&
+              uc.scheduledFor.isBefore(weekStart),
+        )
+        .toList();
 
-    int thisCompleted = thisWeekUc.where((uc) => uc.status == ChallengeStatus.completed).length;
-    int thisSkipped = thisWeekUc.where((uc) => uc.status == ChallengeStatus.skipped).length;
+    int thisCompleted = thisWeekUc
+        .where((uc) => uc.status == ChallengeStatus.completed)
+        .length;
+    int thisSkipped = thisWeekUc
+        .where((uc) => uc.status == ChallengeStatus.skipped)
+        .length;
     int thisTotal = thisWeekUc.length;
 
-    int prevCompleted = prevWeekUc.where((uc) => uc.status == ChallengeStatus.completed).length;
+    int prevCompleted = prevWeekUc
+        .where((uc) => uc.status == ChallengeStatus.completed)
+        .length;
     int prevTotal = prevWeekUc.length;
 
     double thisRate = thisTotal > 0 ? thisCompleted / thisTotal : 0;
     double prevRate = prevTotal > 0 ? prevCompleted / prevTotal : 0;
 
     String grade;
-    if (thisRate >= 0.9) grade = 'A+';
-    else if (thisRate >= 0.8) grade = 'A';
-    else if (thisRate >= 0.7) grade = 'B+';
-    else if (thisRate >= 0.6) grade = 'B';
-    else if (thisRate >= 0.5) grade = 'C';
-    else if (thisRate >= 0.3) grade = 'D';
-    else grade = 'F';
+    if (thisRate >= 0.9)
+      grade = 'A+';
+    else if (thisRate >= 0.8)
+      grade = 'A';
+    else if (thisRate >= 0.7)
+      grade = 'B+';
+    else if (thisRate >= 0.6)
+      grade = 'B';
+    else if (thisRate >= 0.5)
+      grade = 'C';
+    else if (thisRate >= 0.3)
+      grade = 'D';
+    else
+      grade = 'F';
 
     return {
       'grade': grade,
