@@ -22,12 +22,14 @@ class ProgressScreen extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('YOUR PROGRESS',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        letterSpacing: 1.5,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.textSecondary,
-                      )),
+              Text(
+                'YOUR PROGRESS',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  letterSpacing: 1.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.textSecondary,
+                ),
+              ),
               const SizedBox(height: 20),
 
               // Brain visualization
@@ -40,14 +42,18 @@ class ProgressScreen extends StatelessWidget {
                       levelTitle: user.levelTitle,
                     ),
                     const SizedBox(height: 12),
-                    Text('Level ${user.level}: ${user.levelTitle}',
-                        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: AppTheme.primary,
-                            ),
-                        textAlign: TextAlign.center),
-                    Text('${(user.brainDevelopmentPercent * 100).toStringAsFixed(0)}% Brain Development',
-                        style: Theme.of(context).textTheme.bodyMedium,
-                        textAlign: TextAlign.center),
+                    Text(
+                      'Level ${user.level}: ${user.levelTitle}',
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: AppTheme.primary,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    Text(
+                      '${(user.brainDevelopmentPercent * 100).toStringAsFixed(0)}% Brain Development',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
+                    ),
                   ],
                 ),
               ),
@@ -85,23 +91,34 @@ class ProgressScreen extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Total XP',
-                      style: const TextStyle(color: Colors.white60, fontSize: 13)),
-                  Text('${user.xp}',
-                      style: const TextStyle(
-                          color: Colors.white,
-                          fontWeight: FontWeight.w900,
-                          fontSize: 32)),
+                  Text(
+                    'Total XP',
+                    style: const TextStyle(color: Colors.white60, fontSize: 13),
+                  ),
+                  Text(
+                    '${user.xp}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 32,
+                    ),
+                  ),
                 ],
               ),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  Text('Next Level',
-                      style: const TextStyle(color: Colors.white60, fontSize: 13)),
-                  Text('${user.xpForNextLevel - user.currentLevelXp} XP away',
-                      style: const TextStyle(
-                          color: Colors.white, fontWeight: FontWeight.w700)),
+                  Text(
+                    'Next Level',
+                    style: const TextStyle(color: Colors.white60, fontSize: 13),
+                  ),
+                  Text(
+                    '${user.xpForNextLevel - user.currentLevelXp} XP away',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
                 ],
               ),
             ],
@@ -118,8 +135,9 @@ class ProgressScreen extends StatelessWidget {
           ),
           const SizedBox(height: 6),
           Text(
-              '${user.currentLevelXp} / ${user.xpForNextLevel} XP · Level ${user.level} → ${user.level + 1}',
-              style: const TextStyle(color: Colors.white60, fontSize: 11)),
+            '${user.currentLevelXp} / ${user.xpForNextLevel} XP · Level ${user.level} → ${user.level + 1}',
+            style: const TextStyle(color: Colors.white60, fontSize: 11),
+          ),
         ],
       ),
     );
@@ -129,8 +147,11 @@ class ProgressScreen extends StatelessWidget {
     if (stats.isEmpty) return const SizedBox.shrink();
 
     final grade = stats['grade'] as String;
+    final expired = stats['thisExpired'] as int? ?? 0;
     final brutalComment = ScheduleService.getBrutalComment(
-        grade, (stats['thisSkipped'] as int? ?? 0));
+      grade,
+      (stats['thisSkipped'] as int? ?? 0),
+    );
 
     Color gradeColor;
     switch (grade[0]) {
@@ -159,12 +180,14 @@ class ProgressScreen extends StatelessWidget {
         children: [
           Row(
             children: [
-              Text('WEEKLY REPORT',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        letterSpacing: 1.5,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.textSecondary,
-                      )),
+              Text(
+                'WEEKLY REPORT',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  letterSpacing: 1.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.textSecondary,
+                ),
+              ),
               const Spacer(),
               Container(
                 width: 52,
@@ -172,14 +195,20 @@ class ProgressScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: gradeColor.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: gradeColor.withValues(alpha: 0.3), width: 2),
+                  border: Border.all(
+                    color: gradeColor.withValues(alpha: 0.3),
+                    width: 2,
+                  ),
                 ),
                 alignment: Alignment.center,
-                child: Text(grade,
-                    style: TextStyle(
-                        color: gradeColor,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w900)),
+                child: Text(
+                  grade,
+                  style: TextStyle(
+                    color: gradeColor,
+                    fontSize: 22,
+                    fontWeight: FontWeight.w900,
+                  ),
+                ),
               ),
             ],
           ),
@@ -188,15 +217,23 @@ class ProgressScreen extends StatelessWidget {
           // Stats row
           Row(
             children: [
-              _weekStat('Done', '${stats['thisCompleted']}', AppTheme.successColor, context),
-              _weekStat('Skipped', '${stats['thisSkipped']}', AppTheme.errorColor, context),
-              _weekStat('Total', '${stats['thisTotal']}', AppTheme.primary, context),
               _weekStat(
-                'vs Last Wk',
-                '${((stats['thisRate'] as double) * 100).toStringAsFixed(0)}% vs ${((stats['prevRate'] as double) * 100).toStringAsFixed(0)}%',
-                (stats['thisRate'] as double) >= (stats['prevRate'] as double)
-                    ? AppTheme.successColor
-                    : AppTheme.errorColor,
+                'Done',
+                '${stats['thisCompleted']}',
+                AppTheme.successColor,
+                context,
+              ),
+              _weekStat(
+                'Missed',
+                '${stats['thisSkipped']}',
+                AppTheme.errorColor,
+                context,
+              ),
+              _weekStat('Expired', '$expired', AppTheme.warningColor, context),
+              _weekStat(
+                'Total',
+                '${stats['thisTotal']}',
+                AppTheme.primary,
                 context,
               ),
             ],
@@ -213,12 +250,14 @@ class ProgressScreen extends StatelessWidget {
               const Text('💀', style: TextStyle(fontSize: 18)),
               const SizedBox(width: 10),
               Expanded(
-                child: Text(brutalComment,
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppTheme.textPrimary,
-                          fontStyle: FontStyle.italic,
-                          height: 1.6,
-                        )),
+                child: Text(
+                  brutalComment,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.textPrimary,
+                    fontStyle: FontStyle.italic,
+                    height: 1.6,
+                  ),
+                ),
               ),
             ],
           ),
@@ -227,16 +266,28 @@ class ProgressScreen extends StatelessWidget {
     );
   }
 
-  Widget _weekStat(String label, String value, Color color, BuildContext context) {
+  Widget _weekStat(
+    String label,
+    String value,
+    Color color,
+    BuildContext context,
+  ) {
     return Expanded(
       child: Column(
         children: [
-          Text(value,
-              style: TextStyle(
-                  color: color, fontWeight: FontWeight.w800, fontSize: 16)),
-          Text(label,
-              style: TextStyle(color: AppTheme.textSecondary, fontSize: 10),
-              textAlign: TextAlign.center),
+          Text(
+            value,
+            style: TextStyle(
+              color: color,
+              fontWeight: FontWeight.w800,
+              fontSize: 16,
+            ),
+          ),
+          Text(
+            label,
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 10),
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );
@@ -246,12 +297,14 @@ class ProgressScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('ALL TIME',
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  letterSpacing: 1.5,
-                  fontWeight: FontWeight.w700,
-                  color: AppTheme.textSecondary,
-                )),
+        Text(
+          'ALL TIME',
+          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+            letterSpacing: 1.5,
+            fontWeight: FontWeight.w700,
+            color: AppTheme.textSecondary,
+          ),
+        ),
         const SizedBox(height: 12),
         GridView.count(
           crossAxisCount: 2,
@@ -261,22 +314,54 @@ class ProgressScreen extends StatelessWidget {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           children: [
-            _allTimeStat('Challenges Done', '${user.totalChallengesCompleted}',
-                Icons.check_circle_outline, AppTheme.successColor, context),
-            _allTimeStat('Challenges Skipped', '${user.totalChallengesSkipped}',
-                Icons.cancel_outlined, AppTheme.errorColor, context),
-            _allTimeStat('Current Streak', '${user.currentStreak} weeks',
-                Icons.local_fire_department_outlined, AppTheme.warningColor, context),
-            _allTimeStat('Best Streak', '${user.bestStreak} weeks',
-                Icons.emoji_events_outlined, AppTheme.primary, context),
+            _allTimeStat(
+              'Challenges Done',
+              '${user.totalChallengesCompleted}',
+              Icons.check_circle_outline,
+              AppTheme.successColor,
+              context,
+            ),
+            _allTimeStat(
+              'Challenges Missed',
+              '${user.totalChallengesSkipped}',
+              Icons.cancel_outlined,
+              AppTheme.errorColor,
+              context,
+            ),
+            _allTimeStat(
+              'Expired',
+              '${user.expiredChallengeIds.length}',
+              Icons.timer_off_outlined,
+              AppTheme.warningColor,
+              context,
+            ),
+            _allTimeStat(
+              'Current Streak',
+              '${user.currentStreak} weeks',
+              Icons.local_fire_department_outlined,
+              AppTheme.warningColor,
+              context,
+            ),
+            _allTimeStat(
+              'Best Streak',
+              '${user.bestStreak} weeks',
+              Icons.emoji_events_outlined,
+              AppTheme.primary,
+              context,
+            ),
           ],
         ),
       ],
     );
   }
 
-  Widget _allTimeStat(String label, String value, IconData icon, Color color,
-      BuildContext context) {
+  Widget _allTimeStat(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+    BuildContext context,
+  ) {
     return Container(
       padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
@@ -293,14 +378,18 @@ class ProgressScreen extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(value,
-                    style: TextStyle(
-                        color: AppTheme.textPrimary,
-                        fontWeight: FontWeight.w800,
-                        fontSize: 16)),
-                Text(label,
-                    style: TextStyle(
-                        color: AppTheme.textSecondary, fontSize: 10)),
+                Text(
+                  value,
+                  style: TextStyle(
+                    color: AppTheme.textPrimary,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16,
+                  ),
+                ),
+                Text(
+                  label,
+                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 10),
+                ),
               ],
             ),
           ),
