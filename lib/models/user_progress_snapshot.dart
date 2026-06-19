@@ -15,9 +15,7 @@ class UserProgressSnapshot {
   Map<String, dynamic> toJson() => {
         'userId': user.id,
         'user': _userProgressJson(user),
-        'challenges': challenges
-            .map((challenge) => challenge.toJson())
-            .toList(),
+        'challenges': challenges.map((challenge) => challenge.toJson()).toList(),
         'updatedAt': updatedAt.toIso8601String(),
       };
 
