@@ -1,4 +1,5 @@
 enum ChallengeType { philosophy, cognitiveBias }
+
 enum ChallengeStatus { pending, open, inProgress, completed, skipped }
 
 class ChallengeMessage {
@@ -65,7 +66,7 @@ class Challenge {
       };
 
   String get typeLabel =>
-      type == ChallengeType.philosophy ? '🏛️ Philosophy' : '🧠 Cognitive Bias';
+      type == ChallengeType.philosophy ? 'Philosophy' : 'Cognitive Bias';
 }
 
 class UserChallenge {
@@ -99,9 +100,14 @@ class UserChallenge {
     this.qualityScore,
   }) : conversation = conversation ?? [];
 
-  bool get isOpen => status == ChallengeStatus.open || status == ChallengeStatus.inProgress;
+  bool get isOpen =>
+      status == ChallengeStatus.open || status == ChallengeStatus.inProgress;
+
   bool get isExpired {
-    if (status == ChallengeStatus.completed || status == ChallengeStatus.skipped) return false;
+    if (status == ChallengeStatus.completed ||
+        status == ChallengeStatus.skipped) {
+      return false;
+    }
     return DateTime.now().isAfter(scheduledFor.add(const Duration(days: 4)));
   }
 

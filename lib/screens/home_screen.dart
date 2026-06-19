@@ -48,17 +48,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 20),
                 if (countdown != null) _buildCountdown(countdown),
                 if (countdown != null) const SizedBox(height: 20),
-                Text('THIS WEEK\'S CHALLENGES',
-                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          letterSpacing: 1.5,
-                          fontWeight: FontWeight.w700,
-                          color: AppTheme.textSecondary,
-                        )),
+                Text(
+                  'THIS WEEK\'S CHALLENGES',
+                  style: AppTheme.sectionLabelStyle,
+                ),
                 const SizedBox(height: 12),
                 if (challenges.isEmpty)
                   _buildNoChallenges()
                 else
-                  ...challenges.map((uc) => _buildChallengeCard(uc, context, provider)),
+                  ...challenges.map(
+                    (uc) => _buildChallengeCard(uc, context, provider),
+                  ),
                 const SizedBox(height: 20),
                 _buildQuickStats(user, context),
               ],
@@ -78,11 +78,17 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Hello, ${user.username}',
-                  style: Theme.of(context).textTheme.titleLarge),
-              Text(user.levelTitle,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.primary, fontWeight: FontWeight.w600)),
+              Text(
+                'Hello, ${user.username}',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              Text(
+                user.levelTitle,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: AppTheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
+              ),
             ],
           ),
         ),
@@ -91,18 +97,27 @@ class _HomeScreenState extends State<HomeScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
             decoration: BoxDecoration(
               color: AppTheme.warningColor.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.warningColor.withValues(alpha: 0.3)),
+              borderRadius: BorderRadius.circular(AppTheme.pillRadius),
+              border: Border.all(
+                color: AppTheme.warningColor.withValues(alpha: 0.3),
+              ),
             ),
             child: Row(
               children: [
-                const Text('🔥', style: TextStyle(fontSize: 14)),
+                Icon(
+                  Icons.local_fire_department,
+                  color: AppTheme.warningColor,
+                  size: 14,
+                ),
                 const SizedBox(width: 4),
-                Text('${user.currentStreak}',
-                    style: TextStyle(
-                        color: AppTheme.warningColor,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 13)),
+                Text(
+                  '${user.currentStreak}',
+                  style: TextStyle(
+                    color: AppTheme.warningColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                ),
               ],
             ),
           ),
@@ -119,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppTheme.radius),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,29 +142,43 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Level ${user.level}',
-                  style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.w900,
-                      fontSize: 22)),
+              Text(
+                'Level ${user.level}',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w900,
+                  fontSize: 22,
+                ),
+              ),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   color: Colors.white.withValues(alpha: 0.2),
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(AppTheme.pillRadius),
                 ),
-                child: Text('${user.xp} XP',
-                    style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w700,
-                        fontSize: 13)),
+                child: Text(
+                  '${user.xp} XP',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 13,
+                  ),
+                ),
               ),
             ],
           ),
           const SizedBox(height: 8),
-          Text(user.levelTitle,
-              style: const TextStyle(
-                  color: Colors.white70, fontSize: 13, letterSpacing: 0.5)),
+          Text(
+            user.levelTitle,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 13,
+              letterSpacing: 0.5,
+            ),
+          ),
           const SizedBox(height: 14),
           ClipRRect(
             borderRadius: BorderRadius.circular(8),
@@ -162,8 +191,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 6),
           Text(
-              '${user.currentLevelXp} / ${user.xpForNextLevel} XP to Level ${user.level + 1}',
-              style: const TextStyle(color: Colors.white60, fontSize: 11)),
+            '${user.currentLevelXp} / ${user.xpForNextLevel} XP to Level ${user.level + 1}',
+            style: const TextStyle(color: Colors.white60, fontSize: 11),
+          ),
         ],
       ),
     );
@@ -187,24 +217,31 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
         color: AppTheme.primaryLight.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(14),
+        borderRadius: BorderRadius.circular(AppTheme.radius),
         border: Border.all(color: AppTheme.primaryLight.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
           Icon(Icons.schedule_outlined, color: AppTheme.primary, size: 20),
           const SizedBox(width: 10),
-          Text(label,
-              style: TextStyle(
-                  color: AppTheme.primary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13)),
+          Text(
+            label,
+            style: TextStyle(
+              color: AppTheme.primary,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildChallengeCard(UserChallenge uc, BuildContext context, AppProvider provider) {
+  Widget _buildChallengeCard(
+    UserChallenge uc,
+    BuildContext context,
+    AppProvider provider,
+  ) {
     final challenge = ChallengeLibrary.getById(uc.challengeId);
     if (challenge == null) return const SizedBox.shrink();
 
@@ -219,7 +256,7 @@ class _HomeScreenState extends State<HomeScreen> {
       margin: const EdgeInsets.only(bottom: 14),
       decoration: BoxDecoration(
         color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppTheme.radius),
         border: Border.all(
           color: isAvailable && !isCompleted && !isSkipped
               ? typeColor.withValues(alpha: 0.4)
@@ -229,17 +266,18 @@ class _HomeScreenState extends State<HomeScreen> {
         boxShadow: isAvailable && !isCompleted
             ? [
                 BoxShadow(
-                    color: typeColor.withValues(alpha: 0.08),
-                    blurRadius: 12,
-                    offset: const Offset(0, 4))
+                  color: typeColor.withValues(alpha: 0.08),
+                  blurRadius: 12,
+                  offset: const Offset(0, 4),
+                ),
               ]
             : null,
       ),
       child: Material(
         color: Colors.transparent,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppTheme.radius),
         child: InkWell(
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(AppTheme.radius),
           onTap: isCompleted || isSkipped
               ? null
               : () {
@@ -248,7 +286,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (_) => DebateScreen(ucId: uc.id)),
+                        builder: (_) => DebateScreen(ucId: uc.id),
+                      ),
                     );
                   } else {
                     _showLockedDialog(context, uc);
@@ -262,16 +301,24 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   children: [
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       decoration: BoxDecoration(
                         color: typeColor.withValues(alpha: 0.1),
-                        borderRadius: BorderRadius.circular(20),
+                        borderRadius: BorderRadius.circular(
+                          AppTheme.pillRadius,
+                        ),
                       ),
-                      child: Text(challenge.typeLabel,
-                          style: TextStyle(
-                              color: typeColor,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700)),
+                      child: Text(
+                        challenge.typeLabel,
+                        style: AppTheme.sectionLabelStyle.copyWith(
+                          color: typeColor,
+                          fontSize: 11,
+                          letterSpacing: 0,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 8),
                     _difficultyDots(challenge.difficulty, typeColor),
@@ -280,65 +327,95 @@ class _HomeScreenState extends State<HomeScreen> {
                   ],
                 ),
                 const SizedBox(height: 12),
-                Text(challenge.title,
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: isSkipped ? AppTheme.textSecondary : AppTheme.textPrimary,
-                          decoration: isSkipped ? TextDecoration.lineThrough : null,
-                        )),
+                Text(
+                  challenge.title,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        color: isSkipped
+                            ? AppTheme.textSecondary
+                            : AppTheme.textPrimary,
+                        decoration:
+                            isSkipped ? TextDecoration.lineThrough : null,
+                      ),
+                ),
                 const SizedBox(height: 6),
                 Text(
                   challenge.question.length > 120
                       ? '${challenge.question.substring(0, 120)}...'
                       : challenge.question,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.textSecondary,
-                        fontSize: 13,
-                      ),
+                  style: AppTheme.readingTextStyle.copyWith(
+                    color: AppTheme.textSecondary,
+                    fontSize: 13,
+                    height: 1.45,
+                  ),
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 14),
                 Row(
                   children: [
-                    Icon(Icons.calendar_today_outlined,
-                        size: 13, color: AppTheme.textSecondary),
+                    Icon(
+                      Icons.calendar_today_outlined,
+                      size: 13,
+                      color: AppTheme.textSecondary,
+                    ),
                     const SizedBox(width: 4),
-                    Text(_formatSchedule(uc.scheduledFor),
-                        style: TextStyle(
-                            color: AppTheme.textSecondary, fontSize: 12)),
+                    Text(
+                      _formatSchedule(uc.scheduledFor),
+                      style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 12,
+                      ),
+                    ),
                     const Spacer(),
                     if (!isCompleted && !isSkipped)
                       Row(
                         children: [
                           if (isAvailable)
-                            Text('Tap to debate',
-                                style: TextStyle(
-                                    color: typeColor,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600))
+                            Text(
+                              'Tap to debate',
+                              style: TextStyle(
+                                color: typeColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            )
                           else
-                            Text('Opens ${_timeUntil(uc.scheduledFor)}',
-                                style: TextStyle(
-                                    color: AppTheme.textSecondary,
-                                    fontSize: 12)),
+                            Text(
+                              'Opens ${_timeUntil(uc.scheduledFor)}',
+                              style: TextStyle(
+                                color: AppTheme.textSecondary,
+                                fontSize: 12,
+                              ),
+                            ),
                           const SizedBox(width: 4),
                           Icon(
-                            isAvailable ? Icons.arrow_forward : Icons.lock_outline,
+                            isAvailable
+                                ? Icons.arrow_forward
+                                : Icons.lock_outline,
                             size: 14,
-                            color: isAvailable ? typeColor : AppTheme.textSecondary,
+                            color: isAvailable
+                                ? typeColor
+                                : AppTheme.textSecondary,
                           ),
                         ],
                       ),
                     if (isCompleted)
                       Row(
                         children: [
-                          Icon(Icons.check_circle, color: AppTheme.successColor, size: 16),
+                          Icon(
+                            Icons.check_circle,
+                            color: AppTheme.successColor,
+                            size: 16,
+                          ),
                           const SizedBox(width: 4),
-                          Text('+${uc.xpEarned} XP',
-                              style: TextStyle(
-                                  color: AppTheme.successColor,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 12)),
+                          Text(
+                            '+${uc.xpEarned} XP',
+                            style: TextStyle(
+                              color: AppTheme.successColor,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          ),
                         ],
                       ),
                   ],
@@ -360,9 +437,7 @@ class _HomeScreenState extends State<HomeScreen> {
           margin: const EdgeInsets.only(right: 3),
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            color: i < difficulty
-                ? color
-                : color.withValues(alpha: 0.2),
+            color: i < difficulty ? color : color.withValues(alpha: 0.2),
           ),
         );
       }),
@@ -376,33 +451,48 @@ class _HomeScreenState extends State<HomeScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
             color: AppTheme.successColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppTheme.pillRadius),
           ),
-          child: Text('Done',
-              style: TextStyle(
-                  color: AppTheme.successColor, fontSize: 11, fontWeight: FontWeight.w700)),
+          child: Text(
+            'Done',
+            style: TextStyle(
+              color: AppTheme.successColor,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         );
       case ChallengeStatus.skipped:
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
             color: AppTheme.errorColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppTheme.pillRadius),
           ),
-          child: Text('Skipped',
-              style: TextStyle(
-                  color: AppTheme.errorColor, fontSize: 11, fontWeight: FontWeight.w700)),
+          child: Text(
+            'Skipped',
+            style: TextStyle(
+              color: AppTheme.errorColor,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         );
       case ChallengeStatus.inProgress:
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
             color: AppTheme.warningColor.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppTheme.pillRadius),
           ),
-          child: Text('Open',
-              style: TextStyle(
-                  color: AppTheme.warningColor, fontSize: 11, fontWeight: FontWeight.w700)),
+          child: Text(
+            'Open',
+            style: TextStyle(
+              color: AppTheme.warningColor,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         );
       default:
         return Container(
@@ -411,13 +501,16 @@ class _HomeScreenState extends State<HomeScreen> {
             color: isAvailable
                 ? AppTheme.primary.withValues(alpha: 0.1)
                 : AppTheme.border,
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(AppTheme.pillRadius),
           ),
-          child: Text(isAvailable ? 'Ready' : 'Upcoming',
-              style: TextStyle(
-                  color: isAvailable ? AppTheme.primary : AppTheme.textSecondary,
-                  fontSize: 11,
-                  fontWeight: FontWeight.w700)),
+          child: Text(
+            isAvailable ? 'Ready' : 'Upcoming',
+            style: TextStyle(
+              color: isAvailable ? AppTheme.primary : AppTheme.textSecondary,
+              fontSize: 11,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
         );
     }
   }
@@ -427,20 +520,24 @@ class _HomeScreenState extends State<HomeScreen> {
       padding: const EdgeInsets.all(24),
       decoration: BoxDecoration(
         color: AppTheme.surface,
-        borderRadius: BorderRadius.circular(18),
+        borderRadius: BorderRadius.circular(AppTheme.radius),
         border: Border.all(color: AppTheme.border),
       ),
       child: Column(
         children: [
           const BrainLogo(size: 50),
           const SizedBox(height: 12),
-          Text('Loading this week\'s challenges...',
-              style: Theme.of(context).textTheme.titleMedium,
-              textAlign: TextAlign.center),
+          Text(
+            'Loading this week\'s challenges...',
+            style: Theme.of(context).textTheme.titleMedium,
+            textAlign: TextAlign.center,
+          ),
           const SizedBox(height: 8),
-          Text('Pull to refresh',
-              style: Theme.of(context).textTheme.bodyMedium,
-              textAlign: TextAlign.center),
+          Text(
+            'Pull to refresh',
+            style: Theme.of(context).textTheme.bodyMedium,
+            textAlign: TextAlign.center,
+          ),
         ],
       ),
     );
@@ -449,26 +546,46 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildQuickStats(user, BuildContext context) {
     return Row(
       children: [
-        _statCard('Completed', '${user.totalChallengesCompleted}',
-            Icons.check_circle_outline, AppTheme.successColor, context),
+        _statCard(
+          'Completed',
+          '${user.totalChallengesCompleted}',
+          Icons.check_circle_outline,
+          AppTheme.successColor,
+          context,
+        ),
         const SizedBox(width: 10),
-        _statCard('Skipped', '${user.totalChallengesSkipped}',
-            Icons.cancel_outlined, AppTheme.errorColor, context),
+        _statCard(
+          'Skipped',
+          '${user.totalChallengesSkipped}',
+          Icons.cancel_outlined,
+          AppTheme.errorColor,
+          context,
+        ),
         const SizedBox(width: 10),
-        _statCard('Best Streak', '${user.bestStreak}🔥',
-            Icons.local_fire_department_outlined, AppTheme.warningColor, context),
+        _statCard(
+          'Best Streak',
+          '${user.bestStreak}',
+          Icons.local_fire_department_outlined,
+          AppTheme.warningColor,
+          context,
+        ),
       ],
     );
   }
 
-  Widget _statCard(String label, String value, IconData icon, Color color,
-      BuildContext context) {
+  Widget _statCard(
+    String label,
+    String value,
+    IconData icon,
+    Color color,
+    BuildContext context,
+  ) {
     return Expanded(
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
           color: AppTheme.surface,
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppTheme.radius),
           border: Border.all(color: AppTheme.border),
         ),
         child: Column(
@@ -476,13 +593,11 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             Icon(icon, color: color, size: 18),
             const SizedBox(height: 8),
-            Text(value,
-                style: TextStyle(
-                    color: AppTheme.textPrimary,
-                    fontWeight: FontWeight.w800,
-                    fontSize: 18)),
-            Text(label,
-                style: TextStyle(color: AppTheme.textSecondary, fontSize: 11)),
+            Text(value, style: AppTheme.metricStyle),
+            Text(
+              label,
+              style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+            ),
           ],
         ),
       ),
@@ -493,7 +608,9 @@ class _HomeScreenState extends State<HomeScreen> {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppTheme.radius),
+        ),
         title: const Row(
           children: [
             Icon(Icons.lock_outline, color: AppTheme.primary),
@@ -506,11 +623,16 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-                'This challenge opens on ${_formatSchedule(uc.scheduledFor)}.'),
+              'This challenge opens on ${_formatSchedule(uc.scheduledFor)}.',
+            ),
             const SizedBox(height: 8),
-            Text('Opens in: ${_timeUntil(uc.scheduledFor)}',
-                style: TextStyle(
-                    color: AppTheme.primary, fontWeight: FontWeight.w600)),
+            Text(
+              'Opens in: ${_timeUntil(uc.scheduledFor)}',
+              style: TextStyle(
+                color: AppTheme.primary,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
           ],
         ),
         actions: [
@@ -526,8 +648,18 @@ class _HomeScreenState extends State<HomeScreen> {
   String _formatSchedule(DateTime dt) {
     final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     final months = [
-      'Jan','Feb','Mar','Apr','May','Jun',
-      'Jul','Aug','Sep','Oct','Nov','Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     final hour = dt.hour;
     final ampm = hour >= 12 ? 'pm' : 'am';

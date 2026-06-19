@@ -4,7 +4,8 @@ import '../models/challenge_model.dart';
 import 'schedule_service.dart';
 
 class OpenRouterService {
-  static const String _baseUrl = 'https://openrouter.ai/api/v1/chat/completions';
+  static const String _baseUrl =
+      'https://openrouter.ai/api/v1/chat/completions';
   static const String _model = 'anthropic/claude-3.5-sonnet';
 
   static Future<String> getSocraticResponse({
@@ -42,18 +43,25 @@ class OpenRouterService {
         final content = data['choices'][0]['message']['content'] as String;
         return content.trim();
       } else if (response.statusCode == 401) {
-        return '⚠️ Invalid API key. Please update your OpenRouter key in Settings.';
+        return 'Warning: Invalid API key. Please update your OpenRouter key in '
+            'Settings.';
       } else if (response.statusCode == 429) {
-        return '⚠️ Rate limit reached. Please wait a moment and try again.';
+        return 'Warning: Rate limit reached. Please wait a moment and try again.';
       } else {
-        return '⚠️ Connection error (${response.statusCode}). Check your API key and internet connection.';
+        return 'Warning: Connection error (${response.statusCode}). Check your '
+            'API key and internet connection.';
       }
     } catch (e) {
-      return '⚠️ Failed to connect to the debate engine. Check your internet connection.\n\nError: $e';
+      return 'Warning: Failed to connect to the debate engine. Check your '
+          'internet connection.\n\nError: $e';
     }
   }
 
-  static String _buildSystemPrompt(Challenge challenge, int hintsUsed, int userLevel) {
+  static String _buildSystemPrompt(
+    Challenge challenge,
+    int hintsUsed,
+    int userLevel,
+  ) {
     final difficultyAdj = userLevel >= 8
         ? 'This person is an advanced thinker (Level $userLevel). Push them hard. Use technical philosophical terminology. Expect rigorous arguments.'
         : userLevel >= 4
@@ -144,7 +152,7 @@ Tone: Like a brilliant, ruthless mentor who genuinely wants them to succeed but 
         body: jsonEncode({
           'model': _model,
           'messages': [
-            {'role': 'user', 'content': prompt}
+            {'role': 'user', 'content': prompt},
           ],
           'max_tokens': 300,
           'temperature': 0.9,
@@ -156,6 +164,9 @@ Tone: Like a brilliant, ruthless mentor who genuinely wants them to succeed but 
         return (data['choices'][0]['message']['content'] as String).trim();
       }
     } catch (_) {}
-    return ScheduleService.getBrutalComment(stats['grade'] as String, stats['thisSkipped'] as int);
+    return ScheduleService.getBrutalComment(
+      stats['grade'] as String,
+      stats['thisSkipped'] as int,
+    );
   }
 }

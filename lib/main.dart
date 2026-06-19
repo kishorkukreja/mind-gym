@@ -8,10 +8,12 @@ import 'utils/theme.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-    statusBarColor: Colors.transparent,
-    statusBarIconBrightness: Brightness.dark,
-  ));
+  SystemChrome.setSystemUIOverlayStyle(
+    const SystemUiOverlayStyle(
+      statusBarColor: Colors.transparent,
+      statusBarIconBrightness: Brightness.dark,
+    ),
+  );
   runApp(
     ChangeNotifierProvider(
       create: (_) => AppProvider(),
@@ -89,12 +91,7 @@ class SplashScreen extends StatelessWidget {
             const SizedBox(height: 24),
             Text(
               'MIND GYM',
-              style: TextStyle(
-                color: AppTheme.primary,
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-                letterSpacing: 4,
-              ),
+              style: AppTheme.brandTextStyle.copyWith(fontSize: 20),
             ),
           ],
         ),
