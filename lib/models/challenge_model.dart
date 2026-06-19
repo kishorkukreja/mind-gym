@@ -134,21 +134,18 @@ class UserChallenge {
       orElse: () => ChallengeStatus.pending,
     ),
     scheduledFor: DateTime.parse(json['scheduledFor'] as String),
-    openedAt:
-        json['openedAt'] != null
-            ? DateTime.parse(json['openedAt'] as String)
-            : null,
-    completedAt:
-        json['completedAt'] != null
-            ? DateTime.parse(json['completedAt'] as String)
-            : null,
+    openedAt: json['openedAt'] != null
+        ? DateTime.parse(json['openedAt'] as String)
+        : null,
+    completedAt: json['completedAt'] != null
+        ? DateTime.parse(json['completedAt'] as String)
+        : null,
     hintsUsed: (json['hintsUsed'] as int?) ?? 0,
     xpEarned: (json['xpEarned'] as int?) ?? 0,
     responseCount: (json['responseCount'] as int?) ?? 0,
-    conversation:
-        ((json['conversation'] as List?) ?? [])
-            .map((m) => ChallengeMessage.fromJson(m as Map<String, dynamic>))
-            .toList(),
+    conversation: ((json['conversation'] as List?) ?? [])
+        .map((m) => ChallengeMessage.fromJson(m as Map<String, dynamic>))
+        .toList(),
     selfAssessmentNote: json['selfAssessmentNote'] as String?,
     qualityScore: json['qualityScore'] as int?,
   );

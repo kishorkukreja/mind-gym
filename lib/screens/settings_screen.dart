@@ -146,10 +146,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 color: AppTheme.textSecondary,
                                 size: 18,
                               ),
-                              onPressed:
-                                  () => setState(
-                                    () => _showApiKey = !_showApiKey,
-                                  ),
+                              onPressed: () =>
+                                  setState(() => _showApiKey = !_showApiKey),
                             ),
                           ],
                         ),
@@ -181,17 +179,16 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: _saving ? null : _saveApiKey,
-                        child:
-                            _saving
-                                ? const SizedBox(
-                                  width: 18,
-                                  height: 18,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                                : const Text('Save API Key'),
+                        child: _saving
+                            ? const SizedBox(
+                                width: 18,
+                                height: 18,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Text('Save API Key'),
                       ),
                     ),
                   ],
@@ -317,28 +314,26 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         onPressed: () async {
                           final confirm = await showDialog<bool>(
                             context: context,
-                            builder:
-                                (_) => AlertDialog(
-                                  title: const Text('Log Out?'),
-                                  content: const Text(
-                                    'Your progress is saved locally. You can log back in anytime.',
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed:
-                                          () => Navigator.pop(context, false),
-                                      child: const Text('Cancel'),
-                                    ),
-                                    ElevatedButton(
-                                      onPressed:
-                                          () => Navigator.pop(context, true),
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppTheme.errorColor,
-                                      ),
-                                      child: const Text('Log Out'),
-                                    ),
-                                  ],
+                            builder: (_) => AlertDialog(
+                              title: const Text('Log Out?'),
+                              content: const Text(
+                                'Your progress is saved locally. You can log back in anytime.',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () =>
+                                      Navigator.pop(context, false),
+                                  child: const Text('Cancel'),
                                 ),
+                                ElevatedButton(
+                                  onPressed: () => Navigator.pop(context, true),
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: AppTheme.errorColor,
+                                  ),
+                                  child: const Text('Log Out'),
+                                ),
+                              ],
+                            ),
                           );
                           if (confirm == true && context.mounted) {
                             await context.read<AppProvider>().logout();
@@ -460,10 +455,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       dropdownColor: AppTheme.surface,
       style: TextStyle(color: AppTheme.textPrimary, fontSize: 13),
-      items:
-          items.entries
-              .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
-              .toList(),
+      items: items.entries
+          .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
+          .toList(),
       onChanged: onChanged,
     );
   }
