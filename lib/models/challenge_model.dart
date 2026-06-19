@@ -58,7 +58,9 @@ class Challenge {
     final id = _requiredString(json, 'id', source);
     final typeValue = _requiredString(json, 'type', source, id);
     final difficultyValue = json['difficulty'];
-    if (difficultyValue is! int || difficultyValue < 1 || difficultyValue > 5) {
+    if (difficultyValue is! int ||
+        difficultyValue < 1 ||
+        difficultyValue > 5) {
       throw ChallengeContentException(
         'Challenge "$id" in $source has invalid difficulty. Expected an integer from 1 to 5.',
       );
@@ -111,12 +113,8 @@ class Challenge {
         'thinkingAngles': thinkingAngles,
       };
 
-  String get typeLabel {
-    if (type == ChallengeType.philosophy) {
-      return '🏛️ Philosophy';
-    }
-    return '🧠 Cognitive Bias';
-  }
+  String get typeLabel =>
+      type == ChallengeType.philosophy ? '🏛️ Philosophy' : '🧠 Cognitive Bias';
 }
 
 class ChallengeContentException implements Exception {
@@ -136,7 +134,8 @@ String _requiredString(
 ]) {
   final value = json[field];
   if (value is String && value.trim().isNotEmpty) return value;
-  final prefix = challengeId == null ? 'Challenge' : 'Challenge "$challengeId"';
+  final prefix =
+      challengeId == null ? 'Challenge' : 'Challenge "$challengeId"';
   throw ChallengeContentException(
     '$prefix in $source has invalid "$field". Expected a non-empty string.',
   );
