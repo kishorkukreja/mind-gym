@@ -3,6 +3,7 @@ import '../models/user_model.dart';
 import '../models/challenge_model.dart';
 import 'challenge_library.dart';
 import 'storage_service.dart';
+import 'streak_service.dart';
 
 class ScheduleService {
   static const _uuid = Uuid();
@@ -38,13 +39,23 @@ class ScheduleService {
     }
 
     // Pick new challenges
-    final recentIds = List<String>.from(assignments['recentChallengeIds'] ?? []);
+    final recentIds = List<String>.from(
+      assignments['recentChallengeIds'] ?? [],
+    );
     final picks = ChallengeLibrary.pickWeeklyChallenges(recentIds);
 
     // Schedule: weekday challenge on user's chosen weekday at chosen hour
     // Weekend challenge on user's chosen weekend day at chosen hour
-    final weekdayDate = _nextOccurrenceOfWeekday(now, user.weekdayChallengeDay, user.weekdayHour);
-    final weekendDate = _nextOccurrenceOfWeekday(now, user.weekendChallengeDay, user.weekendHour);
+    final weekdayDate = _nextOccurrenceOfWeekday(
+      now,
+      user.weekdayChallengeDay,
+      user.weekdayHour,
+    );
+    final weekendDate = _nextOccurrenceOfWeekday(
+      now,
+      user.weekendChallengeDay,
+      user.weekendHour,
+    );
 
     final uc1 = UserChallenge(
       id: _uuid.v4(),
@@ -62,14 +73,24 @@ class ScheduleService {
     );
 
     // Save
-    _saveNewWeeklyAssignment(user.id, wk, [uc1.id, uc2.id], recentIds, picks.map((p) => p.id).toList());
+    _saveNewWeeklyAssignment(
+      user.id,
+      wk,
+      [uc1.id, uc2.id],
+      recentIds,
+      picks.map((p) => p.id).toList(),
+    );
     StorageService.saveUserChallenge(uc1);
     StorageService.saveUserChallenge(uc2);
 
     return [uc1, uc2];
   }
 
-  static DateTime _nextOccurrenceOfWeekday(DateTime from, int weekday, int hour) {
+  static DateTime _nextOccurrenceOfWeekday(
+    DateTime from,
+    int weekday,
+    int hour,
+  ) {
     // weekday: 1=Mon...7=Sun
     var date = DateTime(from.year, from.month, from.day, hour, 0);
     int daysUntil = (weekday - from.weekday) % 7;
@@ -77,8 +98,13 @@ class ScheduleService {
     return date.add(Duration(days: daysUntil));
   }
 
-  static void _saveNewWeeklyAssignment(String userId, String wk, List<String> ucIds,
-      List<String> oldRecentIds, List<String> newPickIds) {
+  static void _saveNewWeeklyAssignment(
+    String userId,
+    String wk,
+    List<String> ucIds,
+    List<String> oldRecentIds,
+    List<String> newPickIds,
+  ) {
     final updatedRecent = [...oldRecentIds, ...newPickIds];
     // Keep only last 10 to allow rotation
     final trimmed = updatedRecent.length > 10
@@ -92,17 +118,23 @@ class ScheduleService {
     });
   }
 
-  /// Check and mark expired challenges as skipped (with XP penalty)
+  /// Check and mark expired challenges as missed (with XP penalty)
   static Future<void> processExpiredChallenges(UserModel user) async {
     final challenges = StorageService.getUserChallenges(user.id);
     bool changed = false;
     for (final uc in challenges) {
-      if (uc.isExpired && uc.status == ChallengeStatus.pending) {
-        uc.status = ChallengeStatus.skipped;
+      if (uc.isExpired &&
+          uc.status != ChallengeStatus.completed &&
+          uc.status != ChallengeStatus.skipped &&
+          uc.status != ChallengeStatus.expired) {
+        uc.status = ChallengeStatus.expired;
         user.totalChallengesSkipped++;
+        if (!user.skippedChallengeIds.contains(uc.id)) {
+          user.skippedChallengeIds.add(uc.id);
+        }
         // XP penalty: -50 per skip
         user.xp = (user.xp - 50).clamp(0, 999999);
-        user.currentStreak = 0;
+        StreakService.recordMissedChallenge(user: user);
         changed = true;
         await StorageService.saveUserChallenge(uc);
       }
@@ -137,14 +169,21 @@ class ScheduleService {
   }
 
   /// Get countdown to next challenge
-  static Duration? getCountdownToNextChallenge(List<UserChallenge> weekChallenges) {
-    final now = DateTime.now();
+  static Duration? getCountdownToNextChallenge(
+    List<UserChallenge> weekChallenges, {
+    DateTime? now,
+  }) {
+    final currentTime = now ?? DateTime.now();
     final pending = weekChallenges
-        .where((uc) => uc.status == ChallengeStatus.pending && uc.scheduledFor.isAfter(now))
+        .where(
+          (uc) =>
+              uc.status == ChallengeStatus.pending &&
+              uc.scheduledFor.isAfter(currentTime),
+        )
         .toList();
     if (pending.isEmpty) return null;
     pending.sort((a, b) => a.scheduledFor.compareTo(b.scheduledFor));
-    return pending.first.scheduledFor.difference(now);
+    return pending.first.scheduledFor.difference(currentTime);
   }
 
   /// Weekly performance stats
@@ -152,32 +191,60 @@ class ScheduleService {
     final allUc = StorageService.getUserChallenges(user.id);
     final now = DateTime.now();
     final weekStart = now.subtract(Duration(days: now.weekday - 1));
-    final thisWeekUc = allUc.where((uc) =>
-        uc.scheduledFor.isAfter(weekStart.subtract(const Duration(days: 1)))).toList();
+    final thisWeekUc = allUc
+        .where(
+          (uc) => uc.scheduledFor.isAfter(
+            weekStart.subtract(const Duration(days: 1)),
+          ),
+        )
+        .toList();
 
     final prevWeekStart = weekStart.subtract(const Duration(days: 7));
-    final prevWeekUc = allUc.where((uc) =>
-        uc.scheduledFor.isAfter(prevWeekStart.subtract(const Duration(days: 1))) &&
-        uc.scheduledFor.isBefore(weekStart)).toList();
+    final prevWeekUc = allUc
+        .where(
+          (uc) =>
+              uc.scheduledFor.isAfter(
+                prevWeekStart.subtract(const Duration(days: 1)),
+              ) &&
+              uc.scheduledFor.isBefore(weekStart),
+        )
+        .toList();
 
-    int thisCompleted = thisWeekUc.where((uc) => uc.status == ChallengeStatus.completed).length;
-    int thisSkipped = thisWeekUc.where((uc) => uc.status == ChallengeStatus.skipped).length;
+    int thisCompleted = thisWeekUc
+        .where((uc) => uc.status == ChallengeStatus.completed)
+        .length;
+    int thisSkipped = thisWeekUc
+        .where(
+          (uc) =>
+              uc.status == ChallengeStatus.skipped ||
+              uc.status == ChallengeStatus.expired,
+        )
+        .length;
     int thisTotal = thisWeekUc.length;
 
-    int prevCompleted = prevWeekUc.where((uc) => uc.status == ChallengeStatus.completed).length;
+    int prevCompleted = prevWeekUc
+        .where((uc) => uc.status == ChallengeStatus.completed)
+        .length;
     int prevTotal = prevWeekUc.length;
 
     double thisRate = thisTotal > 0 ? thisCompleted / thisTotal : 0;
     double prevRate = prevTotal > 0 ? prevCompleted / prevTotal : 0;
 
     String grade;
-    if (thisRate >= 0.9) grade = 'A+';
-    else if (thisRate >= 0.8) grade = 'A';
-    else if (thisRate >= 0.7) grade = 'B+';
-    else if (thisRate >= 0.6) grade = 'B';
-    else if (thisRate >= 0.5) grade = 'C';
-    else if (thisRate >= 0.3) grade = 'D';
-    else grade = 'F';
+    if (thisRate >= 0.9)
+      grade = 'A+';
+    else if (thisRate >= 0.8)
+      grade = 'A';
+    else if (thisRate >= 0.7)
+      grade = 'B+';
+    else if (thisRate >= 0.6)
+      grade = 'B';
+    else if (thisRate >= 0.5)
+      grade = 'C';
+    else if (thisRate >= 0.3)
+      grade = 'D';
+    else
+      grade = 'F';
 
     return {
       'grade': grade,
@@ -189,7 +256,12 @@ class ScheduleService {
       'prevTotal': prevTotal,
       'prevRate': prevRate,
       'totalXp': user.xp,
-      'streak': user.currentStreak,
+      'activityStreak': user.activityStreak,
+      'weeklyCompletionStreak': user.weeklyCompletionStreak,
+      'perfectWeekStatus': StreakService.perfectWeekLabel(
+        StreakService.getPerfectWeekStatus(thisWeekUc, now: now),
+      ),
+      'streak': user.activityStreak,
       'level': user.level,
     };
   }
