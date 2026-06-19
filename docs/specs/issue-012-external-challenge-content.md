@@ -68,4 +68,3 @@ Validation rules:
 6. Generate `assets/content/challenges.json` from the existing hardcoded bank and remove hardcoded challenge objects from Dart.
 7. Register `assets/content/` in `pubspec.yaml`.
 8. Run focused tests plus full Flutter tests/analyzer where the local SDK allows it.
-
