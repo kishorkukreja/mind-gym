@@ -8,10 +8,7 @@ class XpBreakdownResult {
   final int totalXp;
   final List<XpFactor> factors;
 
-  const XpBreakdownResult({
-    required this.totalXp,
-    required this.factors,
-  });
+  const XpBreakdownResult({required this.totalXp, required this.factors});
 }
 
 class ScheduleService {
@@ -48,7 +45,9 @@ class ScheduleService {
     }
 
     // Pick new challenges
-    final recentIds = List<String>.from(assignments['recentChallengeIds'] ?? []);
+    final recentIds = List<String>.from(
+      assignments['recentChallengeIds'] ?? [],
+    );
     final picks = ChallengeLibrary.pickWeeklyChallenges(recentIds);
 
     // Schedule: weekday challenge on user's chosen weekday at chosen hour
@@ -93,7 +92,11 @@ class ScheduleService {
     return [uc1, uc2];
   }
 
-  static DateTime _nextOccurrenceOfWeekday(DateTime from, int weekday, int hour) {
+  static DateTime _nextOccurrenceOfWeekday(
+    DateTime from,
+    int weekday,
+    int hour,
+  ) {
     // weekday: 1=Mon...7=Sun
     var date = DateTime(from.year, from.month, from.day, hour, 0);
     int daysUntil = (weekday - from.weekday) % 7;
@@ -258,8 +261,9 @@ class ScheduleService {
     int thisCompleted = thisWeekUc
         .where((uc) => uc.status == ChallengeStatus.completed)
         .length;
-    int thisSkipped =
-        thisWeekUc.where((uc) => uc.status == ChallengeStatus.skipped).length;
+    int thisSkipped = thisWeekUc
+        .where((uc) => uc.status == ChallengeStatus.skipped)
+        .length;
     int thisTotal = thisWeekUc.length;
 
     int prevCompleted = prevWeekUc
@@ -271,13 +275,20 @@ class ScheduleService {
     double prevRate = prevTotal > 0 ? prevCompleted / prevTotal : 0;
 
     String grade;
-    if (thisRate >= 0.9) grade = 'A+';
-    else if (thisRate >= 0.8) grade = 'A';
-    else if (thisRate >= 0.7) grade = 'B+';
-    else if (thisRate >= 0.6) grade = 'B';
-    else if (thisRate >= 0.5) grade = 'C';
-    else if (thisRate >= 0.3) grade = 'D';
-    else grade = 'F';
+    if (thisRate >= 0.9)
+      grade = 'A+';
+    else if (thisRate >= 0.8)
+      grade = 'A';
+    else if (thisRate >= 0.7)
+      grade = 'B+';
+    else if (thisRate >= 0.6)
+      grade = 'B';
+    else if (thisRate >= 0.5)
+      grade = 'C';
+    else if (thisRate >= 0.3)
+      grade = 'D';
+    else
+      grade = 'F';
 
     return {
       'grade': grade,
