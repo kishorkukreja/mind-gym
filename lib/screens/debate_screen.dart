@@ -90,58 +90,62 @@ class _DebateScreenState extends State<DebateScreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(AppTheme.radius),
-        ),
-        contentPadding: const EdgeInsets.all(28),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.psychology, color: AppTheme.primary, size: 52),
-            const SizedBox(height: 16),
-            Text(
-              'Challenge Completed!',
-              style: Theme.of(context).textTheme.titleLarge,
-              textAlign: TextAlign.center,
+      builder:
+          (_) => AlertDialog(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppTheme.radius),
             ),
-            const SizedBox(height: 8),
-            Text(
-              'Your mind grew stronger today.',
-              style: Theme.of(context).textTheme.bodyMedium,
-              textAlign: TextAlign.center,
+            contentPadding: const EdgeInsets.all(28),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.psychology, color: AppTheme.primary, size: 52),
+                const SizedBox(height: 16),
+                Text(
+                  'Challenge Completed!',
+                  style: Theme.of(context).textTheme.titleLarge,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Your mind grew stronger today.',
+                  style: Theme.of(context).textTheme.bodyMedium,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20,
+                    vertical: 10,
+                  ),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(AppTheme.pillRadius),
+                  ),
+                  child: Text(
+                    '+$xp XP',
+                    style: TextStyle(
+                      color: AppTheme.primary,
+                      fontWeight: FontWeight.w900,
+                      fontSize: 24,
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              decoration: BoxDecoration(
-                color: AppTheme.primary.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(AppTheme.pillRadius),
-              ),
-              child: Text(
-                '+$xp XP',
-                style: TextStyle(
-                  color: AppTheme.primary,
-                  fontWeight: FontWeight.w900,
-                  fontSize: 24,
+            actions: [
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
+                  child: const Text('Back to Training'),
                 ),
               ),
-            ),
-          ],
-        ),
-        actions: [
-          SizedBox(
-            width: double.infinity,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
-              child: const Text('Back to Training'),
-            ),
+            ],
           ),
-        ],
-      ),
     );
   }
 
@@ -242,9 +246,10 @@ class _DebateScreenState extends State<DebateScreen> {
                 ),
                 AnimatedCrossFade(
                   duration: const Duration(milliseconds: 300),
-                  crossFadeState: _showChallenge
-                      ? CrossFadeState.showFirst
-                      : CrossFadeState.showSecond,
+                  crossFadeState:
+                      _showChallenge
+                          ? CrossFadeState.showFirst
+                          : CrossFadeState.showSecond,
                   firstChild: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Container(
@@ -281,20 +286,22 @@ class _DebateScreenState extends State<DebateScreen> {
 
           // Chat messages
           Expanded(
-            child: uc.conversation.isEmpty
-                ? _buildEmptyState(challenge.typeLabel, typeColor)
-                : ListView.builder(
-                    controller: _scrollCtrl,
-                    padding: const EdgeInsets.all(16),
-                    itemCount:
-                        uc.conversation.length + (provider.isDebating ? 1 : 0),
-                    itemBuilder: (context, index) {
-                      if (index == uc.conversation.length) {
-                        return _buildTypingIndicator();
-                      }
-                      return _buildMessage(uc.conversation[index], typeColor);
-                    },
-                  ),
+            child:
+                uc.conversation.isEmpty
+                    ? _buildEmptyState(challenge.typeLabel, typeColor)
+                    : ListView.builder(
+                      controller: _scrollCtrl,
+                      padding: const EdgeInsets.all(16),
+                      itemCount:
+                          uc.conversation.length +
+                          (provider.isDebating ? 1 : 0),
+                      itemBuilder: (context, index) {
+                        if (index == uc.conversation.length) {
+                          return _buildTypingIndicator();
+                        }
+                        return _buildMessage(uc.conversation[index], typeColor);
+                      },
+                    ),
           ),
 
           // Bottom bar
@@ -398,9 +405,10 @@ class _DebateScreenState extends State<DebateScreen> {
             Text(
               _formatTime(msg.timestamp),
               style: TextStyle(
-                color: isUser
-                    ? Colors.white.withValues(alpha: 0.6)
-                    : AppTheme.textSecondary,
+                color:
+                    isUser
+                        ? Colors.white.withValues(alpha: 0.6)
+                        : AppTheme.textSecondary,
                 fontSize: 10,
               ),
             ),
@@ -549,16 +557,20 @@ class _DebateScreenState extends State<DebateScreen> {
                   ),
                   child: IconButton(
                     onPressed: _sendingMessage ? null : _sendMessage,
-                    icon: _sendingMessage
-                        ? const SizedBox(
-                            width: 20,
-                            height: 20,
-                            child: CircularProgressIndicator(
+                    icon:
+                        _sendingMessage
+                            ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(
+                                color: Colors.white,
+                                strokeWidth: 2,
+                              ),
+                            )
+                            : const Icon(
+                              Icons.send_rounded,
                               color: Colors.white,
-                              strokeWidth: 2,
                             ),
-                          )
-                        : const Icon(Icons.send_rounded, color: Colors.white),
                   ),
                 ),
               ],

@@ -82,9 +82,8 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
       final err = await provider.register(
         username,
         pin,
-        apiKey: _apiKeyCtrl.text.trim().isNotEmpty
-            ? _apiKeyCtrl.text.trim()
-            : null,
+        apiKey:
+            _apiKeyCtrl.text.trim().isNotEmpty ? _apiKeyCtrl.text.trim() : null,
       );
       if (err != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -106,10 +105,11 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
           padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 20),
           child: AnimatedBuilder(
             animation: _slideAnim,
-            builder: (context, child) => Transform.translate(
-              offset: Offset(0, 30 * (1 - _slideAnim.value)),
-              child: Opacity(opacity: _slideAnim.value, child: child),
-            ),
+            builder:
+                (context, child) => Transform.translate(
+                  offset: Offset(0, 30 * (1 - _slideAnim.value)),
+                  child: Opacity(opacity: _slideAnim.value, child: child),
+                ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -231,19 +231,22 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                               ),
                             ),
                           ),
-                          child: provider.isLoading
-                              ? const SizedBox(
-                                  width: 20,
-                                  height: 20,
-                                  child: CircularProgressIndicator(
-                                    color: Colors.white,
-                                    strokeWidth: 2,
+                          child:
+                              provider.isLoading
+                                  ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                  : Text(
+                                    _isLogin
+                                        ? 'Enter the Gym'
+                                        : 'Begin Training',
+                                    style: AppTheme.ctaTextStyle,
                                   ),
-                                )
-                              : Text(
-                                  _isLogin ? 'Enter the Gym' : 'Begin Training',
-                                  style: AppTheme.ctaTextStyle,
-                                ),
                         ),
                       ),
                     ],
@@ -351,18 +354,19 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
         ),
         labelStyle: TextStyle(color: AppTheme.textSecondary),
         prefixIcon: Icon(icon, color: AppTheme.primary, size: 20),
-        suffixIcon: isPin
-            ? IconButton(
-                icon: Icon(
-                  _obscurePin
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                  color: AppTheme.textSecondary,
-                  size: 20,
-                ),
-                onPressed: () => setState(() => _obscurePin = !_obscurePin),
-              )
-            : null,
+        suffixIcon:
+            isPin
+                ? IconButton(
+                  icon: Icon(
+                    _obscurePin
+                        ? Icons.visibility_off_outlined
+                        : Icons.visibility_outlined,
+                    color: AppTheme.textSecondary,
+                    size: 20,
+                  ),
+                  onPressed: () => setState(() => _obscurePin = !_obscurePin),
+                )
+                : null,
         filled: true,
         fillColor: AppTheme.background,
         border: OutlineInputBorder(
