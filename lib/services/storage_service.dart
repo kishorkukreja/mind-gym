@@ -32,7 +32,9 @@ class StorageService {
     final raw = prefs.getString(_usersKey);
     if (raw == null) return [];
     final list = jsonDecode(raw) as List;
-    return list.map((u) => UserModel.fromJson(u as Map<String, dynamic>)).toList();
+    return list
+        .map((u) => UserModel.fromJson(u as Map<String, dynamic>))
+        .toList();
   }
 
   static Future<void> saveUser(UserModel user) async {
@@ -43,20 +45,36 @@ class StorageService {
     } else {
       users.add(user);
     }
-    await prefs.setString(_usersKey, jsonEncode(users.map((u) => u.toJson()).toList()));
+    await prefs.setString(
+      _usersKey,
+      jsonEncode(users.map((u) => u.toJson()).toList()),
+    );
   }
 
   static Future<void> deleteUser(String userId) async {
     final users = getAllUsers();
     users.removeWhere((u) => u.id == userId);
-    await prefs.setString(_usersKey, jsonEncode(users.map((u) => u.toJson()).toList()));
+    await prefs.setString(
+      _usersKey,
+      jsonEncode(users.map((u) => u.toJson()).toList()),
+    );
   }
 
   static UserModel? getUserByUsername(String username) {
     final users = getAllUsers();
     try {
       return users.firstWhere(
-          (u) => u.username.toLowerCase() == username.toLowerCase());
+        (u) => u.username.toLowerCase() == username.toLowerCase(),
+      );
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static UserModel? getUserById(String userId) {
+    final users = getAllUsers();
+    try {
+      return users.firstWhere((u) => u.id == userId);
     } catch (_) {
       return null;
     }
@@ -114,7 +132,9 @@ class StorageService {
   }
 
   static Future<void> saveAllUserChallenges(
-      String userId, List<UserChallenge> challenges) async {
+    String userId,
+    List<UserChallenge> challenges,
+  ) async {
     await prefs.setString(
       '${_challengesKey}_$userId',
       jsonEncode(challenges.map((c) => c.toJson()).toList()),
@@ -129,7 +149,9 @@ class StorageService {
   }
 
   static Future<void> saveWeeklyAssignments(
-      String userId, Map<String, dynamic> data) async {
+    String userId,
+    Map<String, dynamic> data,
+  ) async {
     await prefs.setString('${_weeklyAssignmentsKey}_$userId', jsonEncode(data));
   }
 
@@ -140,7 +162,9 @@ class StorageService {
     if (idx >= 0) {
       users[idx].openRouterApiKey = apiKey;
       await prefs.setString(
-          _usersKey, jsonEncode(users.map((u) => u.toJson()).toList()));
+        _usersKey,
+        jsonEncode(users.map((u) => u.toJson()).toList()),
+      );
     }
   }
 }

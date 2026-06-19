@@ -6,9 +6,15 @@ import 'storage_service.dart';
 import 'schedule_service.dart';
 import 'openrouter_service.dart';
 import 'challenge_library.dart';
+import 'auth_service.dart';
 
 class AppProvider extends ChangeNotifier {
   static const _uuid = Uuid();
+
+  AppProvider({GoogleAuthService? googleAuthService})
+      : _googleAuthService = googleAuthService ?? FirebaseGoogleAuthService();
+
+  final GoogleAuthService _googleAuthService;
 
   UserModel? _currentUser;
   List<UserChallenge> _weekChallenges = [];
@@ -55,7 +61,104 @@ class AppProvider extends ChangeNotifier {
     return true;
   }
 
-  Future<String?> register(String username, String pin, {String? apiKey}) async {
+  Future<bool> signInWithGoogle() async {
+    _setLoading(true);
+    _error = null;
+
+    try {
+      final googleProfile = await _googleAuthService.signIn();
+      if (googleProfile == null) {
+        _error = 'Google sign-in was cancelled.';
+        _setLoading(false);
+        return false;
+      }
+
+      final user = await _restoreOrCreateGoogleUser(googleProfile);
+      await StorageService.setCurrentUser(user.id);
+      _currentUser = user;
+      await _loadWeekChallenges();
+      _error = null;
+      _setLoading(false);
+      return true;
+    } on GoogleAuthException catch (error) {
+      _error = error.message;
+      _setLoading(false);
+      return false;
+    } catch (_) {
+      _error = 'Google sign-in failed. Please try again.';
+      _setLoading(false);
+      return false;
+    }
+  }
+
+  Future<UserModel> _restoreOrCreateGoogleUser(
+    GoogleAuthProfile profile,
+  ) async {
+    final existingUser = StorageService.getUserById(profile.uid);
+    if (existingUser != null) {
+      final updatedUser = _mergeGoogleProfile(existingUser, profile);
+      await StorageService.saveUser(updatedUser);
+      return updatedUser;
+    }
+
+    final user = UserModel(
+      id: profile.uid,
+      username: _profileUsername(profile),
+      pinHash: '',
+      authProvider: AuthProvider.google,
+      email: profile.email,
+      photoUrl: profile.photoUrl,
+    );
+    await StorageService.saveUser(user);
+    return user;
+  }
+
+  UserModel _mergeGoogleProfile(UserModel user, GoogleAuthProfile profile) {
+    return UserModel(
+      id: user.id,
+      username: profile.displayName?.trim().isNotEmpty == true
+          ? profile.displayName!.trim()
+          : user.username,
+      pinHash: user.pinHash,
+      authProvider: AuthProvider.google,
+      email: profile.email ?? user.email,
+      photoUrl: profile.photoUrl ?? user.photoUrl,
+      xp: user.xp,
+      level: user.level,
+      totalChallengesCompleted: user.totalChallengesCompleted,
+      totalChallengesSkipped: user.totalChallengesSkipped,
+      currentStreak: user.currentStreak,
+      bestStreak: user.bestStreak,
+      lastActiveDate: user.lastActiveDate,
+      completedChallengeIds: user.completedChallengeIds,
+      skippedChallengeIds: user.skippedChallengeIds,
+      weeklyStats: user.weeklyStats,
+      createdAt: user.createdAt,
+      openRouterApiKey: user.openRouterApiKey,
+      weekdayHour: user.weekdayHour,
+      weekendHour: user.weekendHour,
+      weekdayChallengeDay: user.weekdayChallengeDay,
+      weekendChallengeDay: user.weekendChallengeDay,
+    );
+  }
+
+  String _profileUsername(GoogleAuthProfile profile) {
+    final displayName = profile.displayName?.trim();
+    if (displayName != null && displayName.isNotEmpty) return displayName;
+
+    final email = profile.email?.trim();
+    if (email != null && email.isNotEmpty) {
+      return email.split('@').first;
+    }
+
+    return 'Google User';
+  }
+
+  Future<String?> register(
+    String username,
+    String pin, {
+    String? apiKey,
+  }) async {
     _setLoading(true);
     if (username.trim().isEmpty) {
       _setLoading(false);
@@ -85,10 +188,24 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<void> logout() async {
+    final shouldSignOutOfGoogle =
+        _currentUser?.authProvider == AuthProvider.google;
     await StorageService.clearCurrentUser();
     _currentUser = null;
     _weekChallenges = [];
     notifyListeners();
+
+    if (shouldSignOutOfGoogle) {
+      try {
+        await _googleAuthService.signOut();
+      } on GoogleAuthException catch (error) {
+        _error = error.message;
+        notifyListeners();
+      } catch (_) {
+        _error = 'Google sign-out failed. Please try again.';
+        notifyListeners();
+      }
+    }
   }
 
   // ===== CHALLENGES =====
@@ -119,7 +236,8 @@ class AppProvider extends ChangeNotifier {
   Future<void> openChallenge(String ucId) async {
     final uc = getChallenge(ucId);
     if (uc == null || _currentUser == null) return;
-    if (uc.status == ChallengeStatus.pending || uc.status == ChallengeStatus.open) {
+    if (uc.status == ChallengeStatus.pending ||
+        uc.status == ChallengeStatus.open) {
       uc.status = ChallengeStatus.inProgress;
       uc.openedAt = DateTime.now();
       await StorageService.saveUserChallenge(uc);
@@ -209,8 +327,9 @@ class AppProvider extends ChangeNotifier {
       hintsUsed: uc.hintsUsed,
       responseCount: uc.responseCount,
       difficulty: challenge?.difficulty ?? 3,
-      onTime: DateTime.now()
-          .isBefore(uc.scheduledFor.add(const Duration(days: 2))),
+      onTime: DateTime.now().isBefore(
+        uc.scheduledFor.add(const Duration(days: 2)),
+      ),
     );
 
     uc.status = ChallengeStatus.completed;
