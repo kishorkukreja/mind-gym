@@ -15,7 +15,11 @@ void main() {
       completionSummary: const CompletionSummary(
         totalXp: 130,
         factors: [
-          XpFactor(label: 'Difficulty', points: 120, detail: 'Hard challenge'),
+          XpFactor(
+            label: 'Difficulty',
+            points: 120,
+            detail: 'Hard challenge',
+          ),
           XpFactor(label: 'Hints', points: -10, detail: '1 hint used'),
         ],
         feedback: 'You made a clear argument.',

@@ -158,10 +158,8 @@ class ScheduleService {
     final countedResponses = responseCount.clamp(1, 6).toInt();
     final engagementPoints = countedResponses * 5;
     final timelinessPoints = onTime ? 0 : -20;
-    final rawTotal = difficultyPoints +
-        hintPoints +
-        engagementPoints +
-        timelinessPoints;
+    final rawTotal =
+        difficultyPoints + hintPoints + engagementPoints + timelinessPoints;
     final total = rawTotal.clamp(10, 300).toInt();
     final clampAdjustment = total - rawTotal;
 

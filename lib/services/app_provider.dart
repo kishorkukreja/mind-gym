@@ -209,8 +209,9 @@ class AppProvider extends ChangeNotifier {
       hintsUsed: uc.hintsUsed,
       responseCount: uc.responseCount,
       difficulty: challenge?.difficulty ?? 3,
-      onTime: DateTime.now()
-          .isBefore(uc.scheduledFor.add(const Duration(days: 2))),
+      onTime: DateTime.now().isBefore(
+        uc.scheduledFor.add(const Duration(days: 2)),
+      ),
     );
     final xp = xpBreakdown.totalXp;
     final summary = CompletionSummary(
