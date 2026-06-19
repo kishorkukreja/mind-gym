@@ -14,10 +14,10 @@ class ChallengeMessage {
   });
 
   Map<String, dynamic> toJson() => {
-    'role': role,
-    'content': content,
-    'timestamp': timestamp.toIso8601String(),
-  };
+        'role': role,
+        'content': content,
+        'timestamp': timestamp.toIso8601String(),
+      };
 
   factory ChallengeMessage.fromJson(Map<String, dynamic> json) =>
       ChallengeMessage(
@@ -53,17 +53,17 @@ class Challenge {
   });
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'title': title,
-    'question': question,
-    'type': type.name,
-    'sourceName': sourceName,
-    'sourceDescription': sourceDescription,
-    'hintTiers': hintTiers,
-    'category': category,
-    'difficulty': difficulty,
-    'thinkingAngles': thinkingAngles,
-  };
+        'id': id,
+        'title': title,
+        'question': question,
+        'type': type.name,
+        'sourceName': sourceName,
+        'sourceDescription': sourceDescription,
+        'hintTiers': hintTiers,
+        'category': category,
+        'difficulty': difficulty,
+        'thinkingAngles': thinkingAngles,
+      };
 
   String get typeLabel =>
       type == ChallengeType.philosophy ? 'Philosophy' : 'Cognitive Bias';
@@ -112,43 +112,43 @@ class UserChallenge {
   }
 
   Map<String, dynamic> toJson() => {
-    'id': id,
-    'challengeId': challengeId,
-    'userId': userId,
-    'status': status.name,
-    'scheduledFor': scheduledFor.toIso8601String(),
-    'openedAt': openedAt?.toIso8601String(),
-    'completedAt': completedAt?.toIso8601String(),
-    'hintsUsed': hintsUsed,
-    'xpEarned': xpEarned,
-    'responseCount': responseCount,
-    'conversation': conversation.map((m) => m.toJson()).toList(),
-    'selfAssessmentNote': selfAssessmentNote,
-    'qualityScore': qualityScore,
-  };
+        'id': id,
+        'challengeId': challengeId,
+        'userId': userId,
+        'status': status.name,
+        'scheduledFor': scheduledFor.toIso8601String(),
+        'openedAt': openedAt?.toIso8601String(),
+        'completedAt': completedAt?.toIso8601String(),
+        'hintsUsed': hintsUsed,
+        'xpEarned': xpEarned,
+        'responseCount': responseCount,
+        'conversation': conversation.map((m) => m.toJson()).toList(),
+        'selfAssessmentNote': selfAssessmentNote,
+        'qualityScore': qualityScore,
+      };
 
   factory UserChallenge.fromJson(Map<String, dynamic> json) => UserChallenge(
-    id: json['id'] as String,
-    challengeId: json['challengeId'] as String,
-    userId: json['userId'] as String,
-    status: ChallengeStatus.values.firstWhere(
-      (e) => e.name == json['status'],
-      orElse: () => ChallengeStatus.pending,
-    ),
-    scheduledFor: DateTime.parse(json['scheduledFor'] as String),
-    openedAt: json['openedAt'] != null
-        ? DateTime.parse(json['openedAt'] as String)
-        : null,
-    completedAt: json['completedAt'] != null
-        ? DateTime.parse(json['completedAt'] as String)
-        : null,
-    hintsUsed: (json['hintsUsed'] as int?) ?? 0,
-    xpEarned: (json['xpEarned'] as int?) ?? 0,
-    responseCount: (json['responseCount'] as int?) ?? 0,
-    conversation: ((json['conversation'] as List?) ?? [])
-        .map((m) => ChallengeMessage.fromJson(m as Map<String, dynamic>))
-        .toList(),
-    selfAssessmentNote: json['selfAssessmentNote'] as String?,
-    qualityScore: json['qualityScore'] as int?,
-  );
+        id: json['id'] as String,
+        challengeId: json['challengeId'] as String,
+        userId: json['userId'] as String,
+        status: ChallengeStatus.values.firstWhere(
+          (e) => e.name == json['status'],
+          orElse: () => ChallengeStatus.pending,
+        ),
+        scheduledFor: DateTime.parse(json['scheduledFor'] as String),
+        openedAt: json['openedAt'] != null
+            ? DateTime.parse(json['openedAt'] as String)
+            : null,
+        completedAt: json['completedAt'] != null
+            ? DateTime.parse(json['completedAt'] as String)
+            : null,
+        hintsUsed: (json['hintsUsed'] as int?) ?? 0,
+        xpEarned: (json['xpEarned'] as int?) ?? 0,
+        responseCount: (json['responseCount'] as int?) ?? 0,
+        conversation: ((json['conversation'] as List?) ?? [])
+            .map((m) => ChallengeMessage.fromJson(m as Map<String, dynamic>))
+            .toList(),
+        selfAssessmentNote: json['selfAssessmentNote'] as String?,
+        qualityScore: json['qualityScore'] as int?,
+      );
 }

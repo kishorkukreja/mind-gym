@@ -85,9 +85,9 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(
                 user.levelTitle,
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: AppTheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
+                      color: AppTheme.primary,
+                      fontWeight: FontWeight.w600,
+                    ),
               ),
             ],
           ),
@@ -245,8 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final challenge = ChallengeLibrary.getById(uc.challengeId);
     if (challenge == null) return const SizedBox.shrink();
 
-    final isAvailable =
-        DateTime.now().isAfter(uc.scheduledFor) ||
+    final isAvailable = DateTime.now().isAfter(uc.scheduledFor) ||
         uc.status == ChallengeStatus.inProgress;
     final isCompleted = uc.status == ChallengeStatus.completed;
     final isSkipped = uc.status == ChallengeStatus.skipped;
@@ -331,11 +330,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 Text(
                   challenge.title,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: isSkipped
-                        ? AppTheme.textSecondary
-                        : AppTheme.textPrimary,
-                    decoration: isSkipped ? TextDecoration.lineThrough : null,
-                  ),
+                        color: isSkipped
+                            ? AppTheme.textSecondary
+                            : AppTheme.textPrimary,
+                        decoration:
+                            isSkipped ? TextDecoration.lineThrough : null,
+                      ),
                 ),
                 const SizedBox(height: 6),
                 Text(

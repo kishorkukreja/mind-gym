@@ -82,9 +82,8 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
       final err = await provider.register(
         username,
         pin,
-        apiKey: _apiKeyCtrl.text.trim().isNotEmpty
-            ? _apiKeyCtrl.text.trim()
-            : null,
+        apiKey:
+            _apiKeyCtrl.text.trim().isNotEmpty ? _apiKeyCtrl.text.trim() : null,
       );
       if (err != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -121,9 +120,9 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                 Text(
                   'Sharpen Your Thinking',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textSecondary,
-                    letterSpacing: 0,
-                  ),
+                        color: AppTheme.textSecondary,
+                        letterSpacing: 0,
+                      ),
                 ),
                 const SizedBox(height: 14),
                 Text(
@@ -158,9 +157,9 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                       Text(
                         _isLogin ? 'Welcome Back' : 'Create Account',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          color: AppTheme.textPrimary,
-                          fontWeight: FontWeight.bold,
-                        ),
+                              color: AppTheme.textPrimary,
+                              fontWeight: FontWeight.bold,
+                            ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 24),

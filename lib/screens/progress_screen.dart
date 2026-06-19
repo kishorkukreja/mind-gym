@@ -38,8 +38,8 @@ class ProgressScreen extends StatelessWidget {
                     Text(
                       'Level ${user.level}: ${user.levelTitle}',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppTheme.primary,
-                      ),
+                            color: AppTheme.primary,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                     Text(
@@ -249,10 +249,10 @@ class ProgressScreen extends StatelessWidget {
                 child: Text(
                   brutalComment,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textPrimary,
-                    fontStyle: FontStyle.italic,
-                    height: 1.6,
-                  ),
+                        color: AppTheme.textPrimary,
+                        fontStyle: FontStyle.italic,
+                        height: 1.6,
+                      ),
                 ),
               ),
             ],
