@@ -1,6 +1,107 @@
 enum ChallengeType { philosophy, cognitiveBias }
 enum ChallengeStatus { pending, open, inProgress, completed, skipped }
 
+class DebateEvaluation {
+  final int reasoningDepth;
+  final int clarity;
+  final int counterargumentHandling;
+  final int selfCorrection;
+  final int specificity;
+  final int originality;
+  final int intellectualHonesty;
+  final bool completionReadiness;
+  final String summary;
+
+  DebateEvaluation({
+    required this.reasoningDepth,
+    required this.clarity,
+    required this.counterargumentHandling,
+    required this.selfCorrection,
+    required this.specificity,
+    required this.originality,
+    required this.intellectualHonesty,
+    required this.completionReadiness,
+    required this.summary,
+  });
+
+  int get qualityScore {
+    final total = reasoningDepth +
+        clarity +
+        counterargumentHandling +
+        selfCorrection +
+        specificity +
+        originality +
+        intellectualHonesty;
+    return (total / 7).round().clamp(1, 5).toInt();
+  }
+
+  Map<String, dynamic> toJson() => {
+        'reasoningDepth': reasoningDepth,
+        'clarity': clarity,
+        'counterargumentHandling': counterargumentHandling,
+        'selfCorrection': selfCorrection,
+        'specificity': specificity,
+        'originality': originality,
+        'intellectualHonesty': intellectualHonesty,
+        'completionReadiness': completionReadiness,
+        'summary': summary,
+      };
+
+  static DebateEvaluation? tryParse(Map<String, dynamic> json) {
+    final reasoningDepth = _readScore(json, 'reasoningDepth');
+    final clarity = _readScore(json, 'clarity');
+    final counterargumentHandling =
+        _readScore(json, 'counterargumentHandling');
+    final selfCorrection = _readScore(json, 'selfCorrection');
+    final specificity = _readScore(json, 'specificity');
+    final originality = _readScore(json, 'originality');
+    final intellectualHonesty = _readScore(json, 'intellectualHonesty');
+    final completionReadiness = json['completionReadiness'];
+    final summary = json['summary'];
+
+    if (reasoningDepth == null ||
+        clarity == null ||
+        counterargumentHandling == null ||
+        selfCorrection == null ||
+        specificity == null ||
+        originality == null ||
+        intellectualHonesty == null ||
+        completionReadiness is! bool ||
+        summary is! String ||
+        summary.trim().isEmpty) {
+      return null;
+    }
+
+    return DebateEvaluation(
+      reasoningDepth: reasoningDepth,
+      clarity: clarity,
+      counterargumentHandling: counterargumentHandling,
+      selfCorrection: selfCorrection,
+      specificity: specificity,
+      originality: originality,
+      intellectualHonesty: intellectualHonesty,
+      completionReadiness: completionReadiness,
+      summary: summary.trim(),
+    );
+  }
+
+  static int? _readScore(Map<String, dynamic> json, String key) {
+    final value = json[key];
+    if (value is! int || value < 1 || value > 5) return null;
+    return value;
+  }
+}
+
+class SocraticResponse {
+  final String message;
+  final DebateEvaluation? evaluation;
+
+  SocraticResponse({
+    required this.message,
+    this.evaluation,
+  });
+}
+
 class ChallengeMessage {
   final String role; // 'user' or 'assistant'
   final String content;
@@ -82,6 +183,7 @@ class UserChallenge {
   List<ChallengeMessage> conversation;
   String? selfAssessmentNote;
   int? qualityScore; // 1-5 based on depth
+  DebateEvaluation? evaluation;
 
   UserChallenge({
     required this.id,
@@ -97,11 +199,18 @@ class UserChallenge {
     List<ChallengeMessage>? conversation,
     this.selfAssessmentNote,
     this.qualityScore,
+    this.evaluation,
   }) : conversation = conversation ?? [];
 
-  bool get isOpen => status == ChallengeStatus.open || status == ChallengeStatus.inProgress;
+  bool get isOpen =>
+      status == ChallengeStatus.open || status == ChallengeStatus.inProgress;
+  bool get canComplete =>
+      evaluation?.completionReadiness == true || responseCount >= 2;
   bool get isExpired {
-    if (status == ChallengeStatus.completed || status == ChallengeStatus.skipped) return false;
+    if (status == ChallengeStatus.completed ||
+        status == ChallengeStatus.skipped) {
+      return false;
+    }
     return DateTime.now().isAfter(scheduledFor.add(const Duration(days: 4)));
   }
 
@@ -119,30 +228,39 @@ class UserChallenge {
         'conversation': conversation.map((m) => m.toJson()).toList(),
         'selfAssessmentNote': selfAssessmentNote,
         'qualityScore': qualityScore,
+        'evaluation': evaluation?.toJson(),
       };
 
-  factory UserChallenge.fromJson(Map<String, dynamic> json) => UserChallenge(
-        id: json['id'] as String,
-        challengeId: json['challengeId'] as String,
-        userId: json['userId'] as String,
-        status: ChallengeStatus.values.firstWhere(
-          (e) => e.name == json['status'],
-          orElse: () => ChallengeStatus.pending,
-        ),
-        scheduledFor: DateTime.parse(json['scheduledFor'] as String),
-        openedAt: json['openedAt'] != null
-            ? DateTime.parse(json['openedAt'] as String)
-            : null,
-        completedAt: json['completedAt'] != null
-            ? DateTime.parse(json['completedAt'] as String)
-            : null,
-        hintsUsed: (json['hintsUsed'] as int?) ?? 0,
-        xpEarned: (json['xpEarned'] as int?) ?? 0,
-        responseCount: (json['responseCount'] as int?) ?? 0,
-        conversation: ((json['conversation'] as List?) ?? [])
-            .map((m) => ChallengeMessage.fromJson(m as Map<String, dynamic>))
-            .toList(),
-        selfAssessmentNote: json['selfAssessmentNote'] as String?,
-        qualityScore: json['qualityScore'] as int?,
-      );
+  factory UserChallenge.fromJson(Map<String, dynamic> json) {
+    final rawEvaluation = json['evaluation'];
+    final evaluation = rawEvaluation is Map
+        ? DebateEvaluation.tryParse(Map<String, dynamic>.from(rawEvaluation))
+        : null;
+
+    return UserChallenge(
+      id: json['id'] as String,
+      challengeId: json['challengeId'] as String,
+      userId: json['userId'] as String,
+      status: ChallengeStatus.values.firstWhere(
+        (e) => e.name == json['status'],
+        orElse: () => ChallengeStatus.pending,
+      ),
+      scheduledFor: DateTime.parse(json['scheduledFor'] as String),
+      openedAt: json['openedAt'] != null
+          ? DateTime.parse(json['openedAt'] as String)
+          : null,
+      completedAt: json['completedAt'] != null
+          ? DateTime.parse(json['completedAt'] as String)
+          : null,
+      hintsUsed: (json['hintsUsed'] as int?) ?? 0,
+      xpEarned: (json['xpEarned'] as int?) ?? 0,
+      responseCount: (json['responseCount'] as int?) ?? 0,
+      conversation: ((json['conversation'] as List?) ?? [])
+          .map((m) => ChallengeMessage.fromJson(m as Map<String, dynamic>))
+          .toList(),
+      selfAssessmentNote: json['selfAssessmentNote'] as String?,
+      qualityScore: (json['qualityScore'] as int?) ?? evaluation?.qualityScore,
+      evaluation: evaluation,
+    );
+  }
 }

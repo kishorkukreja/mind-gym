@@ -68,21 +68,29 @@ class _DebateScreenState extends State<DebateScreen> {
   Future<void> _markComplete() async {
     final provider = context.read<AppProvider>();
     final uc = provider.getChallenge(widget.ucId);
-    if (uc == null || uc.responseCount < 2) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('You need to engage more before completing. Keep thinking!'),
-        backgroundColor: AppTheme.warningColor,
-      ));
+    if (uc == null || !uc.canComplete) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'You need to engage more before completing. Keep thinking!',
+          ),
+          backgroundColor: AppTheme.warningColor,
+        ),
+      );
       return;
     }
 
     final xp = await provider.markChallengeComplete(widget.ucId);
+    final completedChallenge = provider.getChallenge(widget.ucId);
     if (mounted) {
-      _showCompletionDialog(xp);
+      _showCompletionDialog(
+        xp,
+        summary: completedChallenge?.evaluation?.summary,
+      );
     }
   }
 
-  void _showCompletionDialog(int xp) {
+  void _showCompletionDialog(int xp, {String? summary}) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -98,7 +106,7 @@ class _DebateScreenState extends State<DebateScreen> {
                 style: Theme.of(context).textTheme.titleLarge,
                 textAlign: TextAlign.center),
             const SizedBox(height: 8),
-            Text('Your mind grew stronger today.',
+            Text(summary ?? 'Your mind grew stronger today.',
                 style: Theme.of(context).textTheme.bodyMedium,
                 textAlign: TextAlign.center),
             const SizedBox(height: 16),
@@ -160,10 +168,13 @@ class _DebateScreenState extends State<DebateScreen> {
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
-        title: Text(challenge.title,
-            style: const TextStyle(fontSize: 16), overflow: TextOverflow.ellipsis),
+        title: Text(
+          challenge.title,
+          style: const TextStyle(fontSize: 16),
+          overflow: TextOverflow.ellipsis,
+        ),
         actions: [
-          if (!isCompleted && uc.responseCount >= 2)
+          if (!isCompleted && uc.canComplete)
             TextButton.icon(
               onPressed: _markComplete,
               icon: const Icon(Icons.check, size: 16),
@@ -187,7 +198,10 @@ class _DebateScreenState extends State<DebateScreen> {
                     child: Row(
                       children: [
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: typeColor.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(20),
@@ -226,7 +240,9 @@ class _DebateScreenState extends State<DebateScreen> {
                       decoration: BoxDecoration(
                         color: typeColor.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: typeColor.withValues(alpha: 0.2)),
+                        border: Border.all(
+                          color: typeColor.withValues(alpha: 0.2),
+                        ),
                       ),
                       child: Text(challenge.question,
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
@@ -259,7 +275,8 @@ class _DebateScreenState extends State<DebateScreen> {
                 : ListView.builder(
                     controller: _scrollCtrl,
                     padding: const EdgeInsets.all(16),
-                    itemCount: uc.conversation.length + (provider.isDebating ? 1 : 0),
+                    itemCount:
+                        uc.conversation.length + (provider.isDebating ? 1 : 0),
                     itemBuilder: (context, index) {
                       if (index == uc.conversation.length) {
                         return _buildTypingIndicator();
@@ -446,7 +463,10 @@ class _DebateScreenState extends State<DebateScreen> {
                         style: const TextStyle(fontSize: 12)),
                     style: TextButton.styleFrom(
                       foregroundColor: AppTheme.warningColor,
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                     ),
                   ),
                 if (hintsLeft == 0)
