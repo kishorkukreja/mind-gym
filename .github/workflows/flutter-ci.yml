@@ -55,9 +55,7 @@ jobs:
             exit 0
           fi
 
-          dart format "${dart_files[@]}"
-          git diff --patch -- "${dart_files[@]}"
-          git diff --quiet -- "${dart_files[@]}"
+          dart format --output=none --set-exit-if-changed "${dart_files[@]}"
 
       - name: Run static analysis
         run: flutter analyze --no-fatal-infos

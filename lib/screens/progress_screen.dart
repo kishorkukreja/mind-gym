@@ -25,11 +25,11 @@ class ProgressScreen extends StatelessWidget {
               Text(
                 'YOUR PROGRESS',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  letterSpacing: 1.5,
-                  fontWeight: FontWeight.w700,
-                  color: AppTheme.textSecondary,
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.textSecondary,
+                    ),
                 ),
-              ),
               const SizedBox(height: 20),
 
               // Brain visualization
@@ -45,8 +45,8 @@ class ProgressScreen extends StatelessWidget {
                     Text(
                       'Level ${user.level}: ${user.levelTitle}',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: AppTheme.primary,
-                      ),
+                            color: AppTheme.primary,
+                          ),
                       textAlign: TextAlign.center,
                     ),
                     Text(
@@ -182,10 +182,10 @@ class ProgressScreen extends StatelessWidget {
               Text(
                 'WEEKLY REPORT',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  letterSpacing: 1.5,
-                  fontWeight: FontWeight.w700,
-                  color: AppTheme.textSecondary,
-                ),
+                      letterSpacing: 1.5,
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.textSecondary,
+                    ),
               ),
               const Spacer(),
               Container(
@@ -263,10 +263,10 @@ class ProgressScreen extends StatelessWidget {
                 child: Text(
                   brutalComment,
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: AppTheme.textPrimary,
-                    fontStyle: FontStyle.italic,
-                    height: 1.6,
-                  ),
+                        color: AppTheme.textPrimary,
+                        fontStyle: FontStyle.italic,
+                        height: 1.6,
+                      ),
                 ),
               ),
             ],
@@ -310,10 +310,10 @@ class ProgressScreen extends StatelessWidget {
         Text(
           'ALL TIME',
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            letterSpacing: 1.5,
-            fontWeight: FontWeight.w700,
-            color: AppTheme.textSecondary,
-          ),
+                letterSpacing: 1.5,
+                fontWeight: FontWeight.w700,
+                color: AppTheme.textSecondary,
+              ),
         ),
         const SizedBox(height: 12),
         GridView.count(

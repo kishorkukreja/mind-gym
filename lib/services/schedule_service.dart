@@ -106,9 +106,10 @@ class ScheduleService {
   ) {
     final updatedRecent = [...oldRecentIds, ...newPickIds];
     // Keep only last 10 to allow rotation
-    final trimmed = updatedRecent.length > 10
-        ? updatedRecent.sublist(updatedRecent.length - 10)
-        : updatedRecent;
+    final trimmed =
+        updatedRecent.length > 10
+            ? updatedRecent.sublist(updatedRecent.length - 10)
+            : updatedRecent;
 
     StorageService.saveWeeklyAssignments(userId, {
       'week': wk,
@@ -166,13 +167,14 @@ class ScheduleService {
     List<UserChallenge> weekChallenges,
   ) {
     final now = DateTime.now();
-    final pending = weekChallenges
-        .where(
-          (uc) =>
-              uc.status == ChallengeStatus.pending &&
-              uc.scheduledFor.isAfter(now),
-        )
-        .toList();
+    final pending =
+        weekChallenges
+            .where(
+              (uc) =>
+                  uc.status == ChallengeStatus.pending &&
+                  uc.scheduledFor.isAfter(now),
+            )
+            .toList();
     if (pending.isEmpty) return null;
     pending.sort((a, b) => a.scheduledFor.compareTo(b.scheduledFor));
     return pending.first.scheduledFor.difference(now);
@@ -183,36 +185,35 @@ class ScheduleService {
     final allUc = StorageService.getUserChallenges(user.id);
     final now = DateTime.now();
     final weekStart = now.subtract(Duration(days: now.weekday - 1));
-    final thisWeekUc = allUc
-        .where(
-          (uc) => uc.scheduledFor.isAfter(
-            weekStart.subtract(const Duration(days: 1)),
-          ),
-        )
-        .toList();
+    final thisWeekUc =
+        allUc
+            .where(
+              (uc) => uc.scheduledFor.isAfter(
+                weekStart.subtract(const Duration(days: 1)),
+              ),
+            )
+            .toList();
 
     final prevWeekStart = weekStart.subtract(const Duration(days: 7));
-    final prevWeekUc = allUc
-        .where(
-          (uc) =>
-              uc.scheduledFor.isAfter(
-                prevWeekStart.subtract(const Duration(days: 1)),
-              ) &&
-              uc.scheduledFor.isBefore(weekStart),
-        )
-        .toList();
+    final prevWeekUc =
+        allUc
+            .where(
+              (uc) =>
+                  uc.scheduledFor.isAfter(
+                    prevWeekStart.subtract(const Duration(days: 1)),
+                  ) &&
+                  uc.scheduledFor.isBefore(weekStart),
+            )
+            .toList();
 
-    int thisCompleted = thisWeekUc
-        .where((uc) => uc.status == ChallengeStatus.completed)
-        .length;
-    int thisSkipped = thisWeekUc
-        .where((uc) => uc.status == ChallengeStatus.skipped)
-        .length;
+    int thisCompleted =
+        thisWeekUc.where((uc) => uc.status == ChallengeStatus.completed).length;
+    int thisSkipped =
+        thisWeekUc.where((uc) => uc.status == ChallengeStatus.skipped).length;
     int thisTotal = thisWeekUc.length;
 
-    int prevCompleted = prevWeekUc
-        .where((uc) => uc.status == ChallengeStatus.completed)
-        .length;
+    int prevCompleted =
+        prevWeekUc.where((uc) => uc.status == ChallengeStatus.completed).length;
     int prevTotal = prevWeekUc.length;
 
     double thisRate = thisTotal > 0 ? thisCompleted / thisTotal : 0;
