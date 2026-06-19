@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
+
 import '../models/user_model.dart';
 import '../models/challenge_model.dart';
 import 'storage_service.dart';
@@ -215,8 +216,9 @@ class AppProvider extends ChangeNotifier {
       hintsUsed: uc.hintsUsed,
       responseCount: uc.responseCount,
       difficulty: challenge?.difficulty ?? 3,
-      onTime: DateTime.now()
-          .isBefore(uc.scheduledFor.add(const Duration(days: 2))),
+      onTime: DateTime.now().isBefore(
+        uc.scheduledFor.add(const Duration(days: 2)),
+      ),
     );
 
     uc.status = ChallengeStatus.completed;

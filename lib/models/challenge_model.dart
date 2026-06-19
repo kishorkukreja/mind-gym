@@ -111,8 +111,12 @@ class Challenge {
         'thinkingAngles': thinkingAngles,
       };
 
-  String get typeLabel =>
-      type == ChallengeType.philosophy ? '🏛️ Philosophy' : '🧠 Cognitive Bias';
+  String get typeLabel {
+    if (type == ChallengeType.philosophy) {
+      return '🏛️ Philosophy';
+    }
+    return '🧠 Cognitive Bias';
+  }
 }
 
 class ChallengeContentException implements Exception {
