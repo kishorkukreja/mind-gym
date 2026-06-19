@@ -129,6 +129,7 @@ class ProgressScreen extends StatelessWidget {
     if (stats.isEmpty) return const SizedBox.shrink();
 
     final grade = stats['grade'] as String;
+    final expired = stats['thisExpired'] as int? ?? 0;
     final brutalComment = ScheduleService.getBrutalComment(
         grade, (stats['thisSkipped'] as int? ?? 0));
 
@@ -189,16 +190,9 @@ class ProgressScreen extends StatelessWidget {
           Row(
             children: [
               _weekStat('Done', '${stats['thisCompleted']}', AppTheme.successColor, context),
-              _weekStat('Skipped', '${stats['thisSkipped']}', AppTheme.errorColor, context),
+              _weekStat('Missed', '${stats['thisSkipped']}', AppTheme.errorColor, context),
+              _weekStat('Expired', '$expired', AppTheme.warningColor, context),
               _weekStat('Total', '${stats['thisTotal']}', AppTheme.primary, context),
-              _weekStat(
-                'vs Last Wk',
-                '${((stats['thisRate'] as double) * 100).toStringAsFixed(0)}% vs ${((stats['prevRate'] as double) * 100).toStringAsFixed(0)}%',
-                (stats['thisRate'] as double) >= (stats['prevRate'] as double)
-                    ? AppTheme.successColor
-                    : AppTheme.errorColor,
-                context,
-              ),
             ],
           ),
 
@@ -263,8 +257,10 @@ class ProgressScreen extends StatelessWidget {
           children: [
             _allTimeStat('Challenges Done', '${user.totalChallengesCompleted}',
                 Icons.check_circle_outline, AppTheme.successColor, context),
-            _allTimeStat('Challenges Skipped', '${user.totalChallengesSkipped}',
+            _allTimeStat('Challenges Missed', '${user.totalChallengesSkipped}',
                 Icons.cancel_outlined, AppTheme.errorColor, context),
+            _allTimeStat('Expired', '${user.expiredChallengeIds.length}',
+                Icons.timer_off_outlined, AppTheme.warningColor, context),
             _allTimeStat('Current Streak', '${user.currentStreak} weeks',
                 Icons.local_fire_department_outlined, AppTheme.warningColor, context),
             _allTimeStat('Best Streak', '${user.bestStreak} weeks',

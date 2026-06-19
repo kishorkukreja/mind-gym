@@ -11,6 +11,7 @@ class UserModel {
   DateTime? lastActiveDate;
   List<String> completedChallengeIds;
   List<String> skippedChallengeIds;
+  List<String> expiredChallengeIds;
   Map<String, dynamic> weeklyStats;
   DateTime createdAt;
   String? openRouterApiKey;
@@ -33,6 +34,7 @@ class UserModel {
     this.lastActiveDate,
     List<String>? completedChallengeIds,
     List<String>? skippedChallengeIds,
+    List<String>? expiredChallengeIds,
     Map<String, dynamic>? weeklyStats,
     DateTime? createdAt,
     this.openRouterApiKey,
@@ -42,6 +44,7 @@ class UserModel {
     this.weekendChallengeDay = 6,
   })  : completedChallengeIds = completedChallengeIds ?? [],
         skippedChallengeIds = skippedChallengeIds ?? [],
+        expiredChallengeIds = expiredChallengeIds ?? [],
         weeklyStats = weeklyStats ?? {},
         createdAt = createdAt ?? DateTime.now();
 
@@ -58,6 +61,7 @@ class UserModel {
         'lastActiveDate': lastActiveDate?.toIso8601String(),
         'completedChallengeIds': completedChallengeIds,
         'skippedChallengeIds': skippedChallengeIds,
+        'expiredChallengeIds': expiredChallengeIds,
         'weeklyStats': weeklyStats,
         'createdAt': createdAt.toIso8601String(),
         'openRouterApiKey': openRouterApiKey,
@@ -84,6 +88,8 @@ class UserModel {
             List<String>.from((json['completedChallengeIds'] as List?) ?? []),
         skippedChallengeIds:
             List<String>.from((json['skippedChallengeIds'] as List?) ?? []),
+        expiredChallengeIds:
+            List<String>.from((json['expiredChallengeIds'] as List?) ?? []),
         weeklyStats: Map<String, dynamic>.from((json['weeklyStats'] as Map?) ?? {}),
         createdAt: json['createdAt'] != null
             ? DateTime.parse(json['createdAt'] as String)

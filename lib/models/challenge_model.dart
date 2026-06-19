@@ -1,5 +1,5 @@
 enum ChallengeType { philosophy, cognitiveBias }
-enum ChallengeStatus { pending, open, inProgress, completed, skipped }
+enum ChallengeStatus { pending, ready, inProgress, completed, skipped, expired }
 
 class ChallengeMessage {
   final String role; // 'user' or 'assistant'
@@ -99,11 +99,22 @@ class UserChallenge {
     this.qualityScore,
   }) : conversation = conversation ?? [];
 
-  bool get isOpen => status == ChallengeStatus.open || status == ChallengeStatus.inProgress;
-  bool get isExpired {
-    if (status == ChallengeStatus.completed || status == ChallengeStatus.skipped) return false;
-    return DateTime.now().isAfter(scheduledFor.add(const Duration(days: 4)));
-  }
+  DateTime get expiresAt => scheduledFor.add(const Duration(days: 4));
+  bool get isPending => status == ChallengeStatus.pending;
+  bool get isReady => status == ChallengeStatus.ready;
+  bool get isInProgress => status == ChallengeStatus.inProgress;
+  bool get isTerminal =>
+      status == ChallengeStatus.completed ||
+      status == ChallengeStatus.skipped ||
+      status == ChallengeStatus.expired;
+  bool get canEnterDebate => isReady || isInProgress;
+  bool get isOpen => canEnterDebate;
+  bool get isExpired => shouldExpire(DateTime.now());
+  bool shouldBecomeReady(DateTime now) =>
+      status == ChallengeStatus.pending && !now.isBefore(scheduledFor);
+  bool shouldExpire(DateTime now) =>
+      (status == ChallengeStatus.pending || status == ChallengeStatus.ready) &&
+      now.isAfter(expiresAt);
 
   Map<String, dynamic> toJson() => {
         'id': id,
@@ -125,10 +136,7 @@ class UserChallenge {
         id: json['id'] as String,
         challengeId: json['challengeId'] as String,
         userId: json['userId'] as String,
-        status: ChallengeStatus.values.firstWhere(
-          (e) => e.name == json['status'],
-          orElse: () => ChallengeStatus.pending,
-        ),
+        status: _parseStatus(json['status'] as String?),
         scheduledFor: DateTime.parse(json['scheduledFor'] as String),
         openedAt: json['openedAt'] != null
             ? DateTime.parse(json['openedAt'] as String)
@@ -145,4 +153,12 @@ class UserChallenge {
         selfAssessmentNote: json['selfAssessmentNote'] as String?,
         qualityScore: json['qualityScore'] as int?,
       );
+
+  static ChallengeStatus _parseStatus(String? rawStatus) {
+    if (rawStatus == 'open') return ChallengeStatus.ready;
+    return ChallengeStatus.values.firstWhere(
+      (status) => status.name == rawStatus,
+      orElse: () => ChallengeStatus.pending,
+    );
+  }
 }

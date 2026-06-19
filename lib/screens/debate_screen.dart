@@ -4,6 +4,7 @@ import '../services/app_provider.dart';
 import '../models/challenge_model.dart';
 import '../services/challenge_library.dart';
 import '../utils/theme.dart';
+import '../utils/challenge_state_copy.dart';
 
 class DebateScreen extends StatefulWidget {
   final String ucId;
@@ -155,6 +156,8 @@ class _DebateScreenState extends State<DebateScreen> {
     final isPhilo = challenge.type == ChallengeType.philosophy;
     final typeColor = isPhilo ? AppTheme.philosophyColor : AppTheme.biasColor;
     final isCompleted = uc.status == ChallengeStatus.completed;
+    final stateCopy = ChallengeStateCopy.forStatus(uc.status);
+    final isBlocked = stateCopy.debateBlockedMessage != null && !isCompleted;
     final hintsLeft = challenge.hintTiers.length - uc.hintsUsed;
 
     return Scaffold(
@@ -163,7 +166,7 @@ class _DebateScreenState extends State<DebateScreen> {
         title: Text(challenge.title,
             style: const TextStyle(fontSize: 16), overflow: TextOverflow.ellipsis),
         actions: [
-          if (!isCompleted && uc.responseCount >= 2)
+          if (uc.status == ChallengeStatus.inProgress && uc.responseCount >= 2)
             TextButton.icon(
               onPressed: _markComplete,
               icon: const Icon(Icons.check, size: 16),
@@ -254,7 +257,9 @@ class _DebateScreenState extends State<DebateScreen> {
 
           // Chat messages
           Expanded(
-            child: uc.conversation.isEmpty
+            child: isBlocked
+                ? _buildBlockedState(stateCopy, typeColor)
+                : uc.conversation.isEmpty
                 ? _buildEmptyState(challenge.typeLabel, typeColor)
                 : ListView.builder(
                     controller: _scrollCtrl,
@@ -270,8 +275,32 @@ class _DebateScreenState extends State<DebateScreen> {
           ),
 
           // Bottom bar
-          _buildBottomBar(isCompleted, hintsLeft, typeColor),
+          _buildBottomBar(uc.status, hintsLeft, typeColor),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBlockedState(ChallengeStateCopy stateCopy, Color typeColor) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.block_outlined, color: typeColor, size: 48),
+            const SizedBox(height: 16),
+            Text(stateCopy.badge,
+                style: Theme.of(context).textTheme.titleMedium,
+                textAlign: TextAlign.center),
+            const SizedBox(height: 8),
+            Text(
+              stateCopy.debateBlockedMessage ?? '',
+              style: Theme.of(context).textTheme.bodyMedium,
+              textAlign: TextAlign.center,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -411,8 +440,12 @@ class _DebateScreenState extends State<DebateScreen> {
     );
   }
 
-  Widget _buildBottomBar(bool isCompleted, int hintsLeft, Color typeColor) {
-    if (isCompleted) {
+  Widget _buildBottomBar(
+    ChallengeStatus status,
+    int hintsLeft,
+    Color typeColor,
+  ) {
+    if (status == ChallengeStatus.completed) {
       return Container(
         padding: const EdgeInsets.all(16),
         color: AppTheme.surface,
@@ -424,6 +457,31 @@ class _DebateScreenState extends State<DebateScreen> {
             Text('Challenge Completed!',
                 style: TextStyle(
                     color: AppTheme.successColor, fontWeight: FontWeight.bold)),
+          ],
+        ),
+      );
+    }
+
+    final stateCopy = ChallengeStateCopy.forStatus(status);
+    if (stateCopy.debateBlockedMessage != null) {
+      return Container(
+        padding: const EdgeInsets.all(16),
+        color: AppTheme.surface,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.block_outlined, color: AppTheme.textSecondary),
+            const SizedBox(width: 8),
+            Flexible(
+              child: Text(
+                stateCopy.debateBlockedMessage!,
+                style: TextStyle(
+                  color: AppTheme.textSecondary,
+                  fontWeight: FontWeight.w600,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
           ],
         ),
       );

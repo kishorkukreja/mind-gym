@@ -6,6 +6,7 @@ import 'storage_service.dart';
 import 'schedule_service.dart';
 import 'openrouter_service.dart';
 import 'challenge_library.dart';
+import '../utils/challenge_state_copy.dart';
 
 class AppProvider extends ChangeNotifier {
   static const _uuid = Uuid();
@@ -94,7 +95,7 @@ class AppProvider extends ChangeNotifier {
   // ===== CHALLENGES =====
   Future<void> _loadWeekChallenges() async {
     if (_currentUser == null) return;
-    await ScheduleService.processExpiredChallenges(_currentUser!);
+    await ScheduleService.refreshChallengeStates(_currentUser!);
     _weekChallenges = ScheduleService.getThisWeekChallenges(_currentUser!);
     notifyListeners();
   }
@@ -116,21 +117,31 @@ class AppProvider extends ChangeNotifier {
     }
   }
 
-  Future<void> openChallenge(String ucId) async {
-    final uc = getChallenge(ucId);
-    if (uc == null || _currentUser == null) return;
-    if (uc.status == ChallengeStatus.pending || uc.status == ChallengeStatus.open) {
+  Future<bool> openChallenge(String ucId) async {
+    final uc = await _refreshAndGetChallenge(ucId);
+    if (uc == null || _currentUser == null) return false;
+    if (uc.status == ChallengeStatus.ready) {
       uc.status = ChallengeStatus.inProgress;
       uc.openedAt = DateTime.now();
       await StorageService.saveUserChallenge(uc);
+      _syncWeekChallenge(uc);
       notifyListeners();
+      return true;
+    } else if (uc.status == ChallengeStatus.inProgress) {
+      notifyListeners();
+      return true;
     }
+    notifyListeners();
+    return false;
   }
 
   /// Send a message in the Socratic debate
   Future<String> sendDebateMessage(String ucId, String userMessage) async {
-    final uc = getChallenge(ucId);
+    final uc = await _refreshAndGetChallenge(ucId);
     if (uc == null || _currentUser == null) return 'Challenge not found';
+    if (!uc.canEnterDebate) {
+      return ChallengeStateCopy.mutationBlockedMessage(uc.status);
+    }
     if (_currentUser!.openRouterApiKey == null ||
         _currentUser!.openRouterApiKey!.isEmpty) {
       return '⚠️ No API key set. Please add your OpenRouter key in Settings.';
@@ -145,6 +156,7 @@ class AppProvider extends ChangeNotifier {
     uc.responseCount++;
     uc.status = ChallengeStatus.inProgress;
     await StorageService.saveUserChallenge(uc);
+    _syncWeekChallenge(uc);
     notifyListeners();
 
     _isDebating = true;
@@ -171,6 +183,7 @@ class AppProvider extends ChangeNotifier {
       timestamp: DateTime.now(),
     ));
     await StorageService.saveUserChallenge(uc);
+    _syncWeekChallenge(uc);
 
     _isDebating = false;
     notifyListeners();
@@ -178,8 +191,11 @@ class AppProvider extends ChangeNotifier {
   }
 
   Future<String> requestHint(String ucId) async {
-    final uc = getChallenge(ucId);
+    final uc = await _refreshAndGetChallenge(ucId);
     if (uc == null) return 'Challenge not found';
+    if (!uc.canEnterDebate) {
+      return ChallengeStateCopy.mutationBlockedMessage(uc.status);
+    }
     final challenge = ChallengeLibrary.getById(uc.challengeId);
     if (challenge == null) return 'Challenge definition not found';
 
@@ -190,19 +206,22 @@ class AppProvider extends ChangeNotifier {
     final hintMessage =
         '💡 Hint ${uc.hintsUsed + 1} of ${challenge.hintTiers.length}:\n\n${challenge.hintTiers[uc.hintsUsed]}';
     uc.hintsUsed++;
+    uc.status = ChallengeStatus.inProgress;
     uc.conversation.add(ChallengeMessage(
       role: 'assistant',
       content: hintMessage,
       timestamp: DateTime.now(),
     ));
     await StorageService.saveUserChallenge(uc);
+    _syncWeekChallenge(uc);
     notifyListeners();
     return hintMessage;
   }
 
   Future<int> markChallengeComplete(String ucId) async {
-    final uc = getChallenge(ucId);
+    final uc = await _refreshAndGetChallenge(ucId);
     if (uc == null || _currentUser == null) return 0;
+    if (uc.status != ChallengeStatus.inProgress) return 0;
 
     final challenge = ChallengeLibrary.getById(uc.challengeId);
     final xp = ScheduleService.calculateXpReward(
@@ -248,6 +267,7 @@ class AppProvider extends ChangeNotifier {
 
     await StorageService.saveUserChallenge(uc);
     await StorageService.saveUser(_currentUser!);
+    _syncWeekChallenge(uc);
     notifyListeners();
     return xp;
   }
@@ -292,6 +312,21 @@ class AppProvider extends ChangeNotifier {
   void _setLoading(bool val) {
     _isLoading = val;
     notifyListeners();
+  }
+
+  void _syncWeekChallenge(UserChallenge updated) {
+    final idx =
+        _weekChallenges.indexWhere((challenge) => challenge.id == updated.id);
+    if (idx >= 0) {
+      _weekChallenges[idx] = updated;
+    }
+  }
+
+  Future<UserChallenge?> _refreshAndGetChallenge(String ucId) async {
+    if (_currentUser == null) return null;
+    await ScheduleService.refreshChallengeStates(_currentUser!);
+    _weekChallenges = ScheduleService.getThisWeekChallenges(_currentUser!);
+    return getChallenge(ucId);
   }
 
   List<UserModel> getAllUsers() => StorageService.getAllUsers();

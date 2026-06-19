@@ -4,6 +4,7 @@ import '../services/app_provider.dart';
 import '../models/challenge_model.dart';
 import '../services/challenge_library.dart';
 import '../utils/theme.dart';
+import '../utils/challenge_state_copy.dart';
 import '../widgets/brain_logo.dart';
 import 'debate_screen.dart';
 
@@ -208,10 +209,11 @@ class _HomeScreenState extends State<HomeScreen> {
     final challenge = ChallengeLibrary.getById(uc.challengeId);
     if (challenge == null) return const SizedBox.shrink();
 
-    final isAvailable = DateTime.now().isAfter(uc.scheduledFor) ||
-        uc.status == ChallengeStatus.inProgress;
+    final stateCopy = ChallengeStateCopy.forStatus(uc.status);
+    final canEnterDebate = uc.canEnterDebate;
     final isCompleted = uc.status == ChallengeStatus.completed;
     final isSkipped = uc.status == ChallengeStatus.skipped;
+    final isExpired = uc.status == ChallengeStatus.expired;
     final isPhilo = challenge.type == ChallengeType.philosophy;
     final typeColor = isPhilo ? AppTheme.philosophyColor : AppTheme.biasColor;
 
@@ -221,12 +223,12 @@ class _HomeScreenState extends State<HomeScreen> {
         color: AppTheme.surface,
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
-          color: isAvailable && !isCompleted && !isSkipped
+          color: canEnterDebate && !isCompleted && !isSkipped && !isExpired
               ? typeColor.withValues(alpha: 0.4)
               : AppTheme.border,
-          width: isAvailable && !isCompleted ? 1.5 : 1,
+          width: canEnterDebate && !isCompleted ? 1.5 : 1,
         ),
-        boxShadow: isAvailable && !isCompleted
+        boxShadow: canEnterDebate && !isCompleted
             ? [
                 BoxShadow(
                     color: typeColor.withValues(alpha: 0.08),
@@ -240,18 +242,24 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(18),
         child: InkWell(
           borderRadius: BorderRadius.circular(18),
-          onTap: isCompleted || isSkipped
+          onTap: uc.isTerminal
               ? null
-              : () {
-                  if (isAvailable) {
-                    provider.openChallenge(uc.id);
+              : () async {
+                  if (canEnterDebate) {
+                    final canOpen = await provider.openChallenge(uc.id);
+                    if (!mounted) return;
+                    if (!canOpen) {
+                      _showBlockedDialog(
+                          context, provider.getChallenge(uc.id) ?? uc);
+                      return;
+                    }
                     Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (_) => DebateScreen(ucId: uc.id)),
                     );
                   } else {
-                    _showLockedDialog(context, uc);
+                    _showBlockedDialog(context, uc);
                   }
                 },
           child: Padding(
@@ -276,7 +284,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(width: 8),
                     _difficultyDots(challenge.difficulty, typeColor),
                     const Spacer(),
-                    _statusBadge(uc.status, isAvailable),
+                    _statusBadge(uc.status),
                   ],
                 ),
                 const SizedBox(height: 12),
@@ -307,25 +315,27 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: TextStyle(
                             color: AppTheme.textSecondary, fontSize: 12)),
                     const Spacer(),
-                    if (!isCompleted && !isSkipped)
+                    if (!isCompleted && !isSkipped && !isExpired)
                       Row(
                         children: [
-                          if (isAvailable)
-                            Text('Tap to debate',
+                          if (canEnterDebate)
+                            Text(stateCopy.homeAction,
                                 style: TextStyle(
                                     color: typeColor,
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600))
                           else
-                            Text('Opens ${_timeUntil(uc.scheduledFor)}',
+                            Text(uc.status == ChallengeStatus.pending
+                                ? 'Opens ${_timeUntil(uc.scheduledFor)}'
+                                : stateCopy.homeAction,
                                 style: TextStyle(
                                     color: AppTheme.textSecondary,
                                     fontSize: 12)),
                           const SizedBox(width: 4),
                           Icon(
-                            isAvailable ? Icons.arrow_forward : Icons.lock_outline,
+                            canEnterDebate ? Icons.arrow_forward : Icons.lock_outline,
                             size: 14,
-                            color: isAvailable ? typeColor : AppTheme.textSecondary,
+                            color: canEnterDebate ? typeColor : AppTheme.textSecondary,
                           ),
                         ],
                       ),
@@ -337,6 +347,19 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text('+${uc.xpEarned} XP',
                               style: TextStyle(
                                   color: AppTheme.successColor,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 12)),
+                        ],
+                      ),
+                    if (isExpired)
+                      Row(
+                        children: [
+                          Icon(Icons.timer_off_outlined,
+                              color: AppTheme.errorColor, size: 16),
+                          const SizedBox(width: 4),
+                          Text('Missed window',
+                              style: TextStyle(
+                                  color: AppTheme.errorColor,
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12)),
                         ],
@@ -369,7 +392,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _statusBadge(ChallengeStatus status, bool isAvailable) {
+  Widget _statusBadge(ChallengeStatus status) {
+    final copy = ChallengeStateCopy.forStatus(status);
     switch (status) {
       case ChallengeStatus.completed:
         return Container(
@@ -378,18 +402,19 @@ class _HomeScreenState extends State<HomeScreen> {
             color: AppTheme.successColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Text('Done',
+          child: Text(copy.badge,
               style: TextStyle(
                   color: AppTheme.successColor, fontSize: 11, fontWeight: FontWeight.w700)),
         );
       case ChallengeStatus.skipped:
+      case ChallengeStatus.expired:
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
             color: AppTheme.errorColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Text('Skipped',
+          child: Text(copy.badge,
               style: TextStyle(
                   color: AppTheme.errorColor, fontSize: 11, fontWeight: FontWeight.w700)),
         );
@@ -400,22 +425,33 @@ class _HomeScreenState extends State<HomeScreen> {
             color: AppTheme.warningColor.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Text('Open',
+          child: Text(copy.badge,
               style: TextStyle(
                   color: AppTheme.warningColor, fontSize: 11, fontWeight: FontWeight.w700)),
         );
-      default:
+      case ChallengeStatus.ready:
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
           decoration: BoxDecoration(
-            color: isAvailable
-                ? AppTheme.primary.withValues(alpha: 0.1)
-                : AppTheme.border,
+            color: AppTheme.primary.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(20),
           ),
-          child: Text(isAvailable ? 'Ready' : 'Upcoming',
+          child: Text(copy.badge,
               style: TextStyle(
-                  color: isAvailable ? AppTheme.primary : AppTheme.textSecondary,
+                  color: AppTheme.primary,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700)),
+        );
+      case ChallengeStatus.pending:
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+          decoration: BoxDecoration(
+            color: AppTheme.border,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Text(copy.badge,
+              style: TextStyle(
+                  color: AppTheme.textSecondary,
                   fontSize: 11,
                   fontWeight: FontWeight.w700)),
         );
@@ -489,16 +525,22 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showLockedDialog(BuildContext context, UserChallenge uc) {
+  void _showBlockedDialog(BuildContext context, UserChallenge uc) {
+    final copy = ChallengeStateCopy.forStatus(uc.status);
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
-        title: const Row(
+        title: Row(
           children: [
-            Icon(Icons.lock_outline, color: AppTheme.primary),
-            SizedBox(width: 8),
-            Text('Challenge Locked'),
+            Icon(
+              uc.status == ChallengeStatus.pending
+                  ? Icons.lock_outline
+                  : Icons.block_outlined,
+              color: AppTheme.primary,
+            ),
+            const SizedBox(width: 8),
+            Text(copy.badge),
           ],
         ),
         content: Column(
@@ -506,11 +548,15 @@ class _HomeScreenState extends State<HomeScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-                'This challenge opens on ${_formatSchedule(uc.scheduledFor)}.'),
-            const SizedBox(height: 8),
-            Text('Opens in: ${_timeUntil(uc.scheduledFor)}',
-                style: TextStyle(
-                    color: AppTheme.primary, fontWeight: FontWeight.w600)),
+              copy.debateBlockedMessage ??
+                  'This challenge opens on ${_formatSchedule(uc.scheduledFor)}.',
+            ),
+            if (uc.status == ChallengeStatus.pending) ...[
+              const SizedBox(height: 8),
+              Text('Opens in: ${_timeUntil(uc.scheduledFor)}',
+                  style: TextStyle(
+                      color: AppTheme.primary, fontWeight: FontWeight.w600)),
+            ],
           ],
         ),
         actions: [

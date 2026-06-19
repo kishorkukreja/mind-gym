@@ -34,7 +34,10 @@ class ScheduleService {
           result.add(allUc.firstWhere((uc) => uc.id == id));
         } catch (_) {}
       }
-      if (result.length == 2) return result;
+      if (result.length == 2) {
+        _refreshChallengeStatesSync(user, now, challenges: result);
+        return result;
+      }
     }
 
     // Pick new challenges
@@ -92,24 +95,82 @@ class ScheduleService {
     });
   }
 
-  /// Check and mark expired challenges as skipped (with XP penalty)
+  /// Reconcile time-based challenge state changes and persist progress effects.
+  static Future<void> refreshChallengeStates(
+    UserModel user, {
+    DateTime? now,
+  }) async {
+    await _refreshChallengeStates(user, now ?? DateTime.now());
+  }
+
+  /// Check and mark expired challenges as missed (with XP penalty).
   static Future<void> processExpiredChallenges(UserModel user) async {
-    final challenges = StorageService.getUserChallenges(user.id);
-    bool changed = false;
-    for (final uc in challenges) {
-      if (uc.isExpired && uc.status == ChallengeStatus.pending) {
-        uc.status = ChallengeStatus.skipped;
-        user.totalChallengesSkipped++;
-        // XP penalty: -50 per skip
-        user.xp = (user.xp - 50).clamp(0, 999999);
-        user.currentStreak = 0;
-        changed = true;
-        await StorageService.saveUserChallenge(uc);
-      }
+    await refreshChallengeStates(user);
+  }
+
+  static Future<void> _refreshChallengeStates(
+    UserModel user,
+    DateTime now,
+  ) async {
+    final changes = _applyChallengeStateTransitions(user, now);
+    for (final challenge in changes.changedChallenges) {
+      await StorageService.saveUserChallenge(challenge);
     }
-    if (changed) {
+    if (changes.userChanged) {
       await StorageService.saveUser(user);
     }
+  }
+
+  static void _refreshChallengeStatesSync(
+    UserModel user,
+    DateTime now, {
+    List<UserChallenge>? challenges,
+  }) {
+    final changes = _applyChallengeStateTransitions(
+      user,
+      now,
+      challenges: challenges,
+    );
+    for (final challenge in changes.changedChallenges) {
+      StorageService.saveUserChallenge(challenge);
+    }
+    if (changes.userChanged) {
+      StorageService.saveUser(user);
+    }
+  }
+
+  static _ChallengeStateChanges _applyChallengeStateTransitions(
+    UserModel user,
+    DateTime now, {
+    List<UserChallenge>? challenges,
+  }) {
+    final effectiveChallenges =
+        challenges ?? StorageService.getUserChallenges(user.id);
+    final changedChallenges = <UserChallenge>[];
+    var userChanged = false;
+
+    for (final challenge in effectiveChallenges) {
+      if (challenge.shouldExpire(now)) {
+        challenge.status = ChallengeStatus.expired;
+        changedChallenges.add(challenge);
+
+        if (!user.expiredChallengeIds.contains(challenge.id)) {
+          user.expiredChallengeIds.add(challenge.id);
+          user.totalChallengesSkipped++;
+          user.xp = (user.xp - 50).clamp(0, 999999).toInt();
+          user.currentStreak = 0;
+          userChanged = true;
+        }
+      } else if (challenge.shouldBecomeReady(now)) {
+        challenge.status = ChallengeStatus.ready;
+        changedChallenges.add(challenge);
+      }
+    }
+
+    return _ChallengeStateChanges(
+      changedChallenges: changedChallenges,
+      userChanged: userChanged,
+    );
   }
 
   /// Award XP and level up
@@ -161,7 +222,11 @@ class ScheduleService {
         uc.scheduledFor.isBefore(weekStart)).toList();
 
     int thisCompleted = thisWeekUc.where((uc) => uc.status == ChallengeStatus.completed).length;
-    int thisSkipped = thisWeekUc.where((uc) => uc.status == ChallengeStatus.skipped).length;
+    int thisSkipped = thisWeekUc.where((uc) =>
+        uc.status == ChallengeStatus.skipped ||
+        uc.status == ChallengeStatus.expired).length;
+    int thisExpired =
+        thisWeekUc.where((uc) => uc.status == ChallengeStatus.expired).length;
     int thisTotal = thisWeekUc.length;
 
     int prevCompleted = prevWeekUc.where((uc) => uc.status == ChallengeStatus.completed).length;
@@ -183,6 +248,7 @@ class ScheduleService {
       'grade': grade,
       'thisCompleted': thisCompleted,
       'thisSkipped': thisSkipped,
+      'thisExpired': thisExpired,
       'thisTotal': thisTotal,
       'thisRate': thisRate,
       'prevCompleted': prevCompleted,
@@ -209,4 +275,14 @@ class ScheduleService {
       return "Exceptional. This is what committed minds look like. Now the question is: can you maintain it? Consistency is the only thing that compounds.";
     }
   }
+}
+
+class _ChallengeStateChanges {
+  final List<UserChallenge> changedChallenges;
+  final bool userChanged;
+
+  const _ChallengeStateChanges({
+    required this.changedChallenges,
+    required this.userChanged,
+  });
 }
