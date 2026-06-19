@@ -195,7 +195,8 @@ class _DebateScreenState extends State<DebateScreen> {
             child: Column(
               children: [
                 InkWell(
-                  onTap: () => setState(() => _showChallenge = !_showChallenge),
+                  onTap: () =>
+                      setState(() => _showChallenge = !_showChallenge),
                   child: Padding(
                     padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
                     child: SingleChildScrollView(
@@ -235,7 +236,9 @@ class _DebateScreenState extends State<DebateScreen> {
                               color: AppTheme.primary.withValues(alpha: 0.08),
                               borderRadius: BorderRadius.circular(20),
                               border: Border.all(
-                                color: AppTheme.primary.withValues(alpha: 0.18),
+                                color: AppTheme.primary.withValues(
+                                  alpha: 0.18,
+                                ),
                               ),
                             ),
                             child: Text(
@@ -277,7 +280,9 @@ class _DebateScreenState extends State<DebateScreen> {
                       ),
                       child: Text(
                         challenge.question,
-                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                        style: Theme.of(
+                          context,
+                        ).textTheme.bodyMedium?.copyWith(
                           color: AppTheme.textPrimary,
                           height: 1.7,
                           fontSize: 14,
@@ -320,7 +325,12 @@ class _DebateScreenState extends State<DebateScreen> {
           ),
 
           // Bottom bar
-          _buildBottomBar(isCompleted, hintsLeft, typeColor, requiredResponses),
+          _buildBottomBar(
+            isCompleted,
+            hintsLeft,
+            typeColor,
+            requiredResponses,
+          ),
         ],
       ),
     );

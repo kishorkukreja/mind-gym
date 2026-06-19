@@ -392,7 +392,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   child: const Text('Cancel'),
                                 ),
                                 ElevatedButton(
-                                  onPressed: () => Navigator.pop(context, true),
+                                  onPressed: () =>
+                                      Navigator.pop(context, true),
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppTheme.errorColor,
                                   ),

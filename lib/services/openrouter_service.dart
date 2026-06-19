@@ -160,7 +160,7 @@ Tone: Like a brilliant, ruthless mentor who genuinely wants them to succeed but 
         body: jsonEncode({
           'model': _model,
           'messages': [
-            {'role': 'user', 'content': prompt}
+            {'role': 'user', 'content': prompt},
           ],
           'max_tokens': 300,
           'temperature': 0.9,
