@@ -107,7 +107,10 @@ class _DebateScreenState extends State<DebateScreen> {
                 textAlign: TextAlign.center),
             const SizedBox(height: 16),
             Container(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+                vertical: 10,
+              ),
               decoration: BoxDecoration(
                 color: AppTheme.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(30),
@@ -166,15 +169,20 @@ class _DebateScreenState extends State<DebateScreen> {
     return Scaffold(
       backgroundColor: AppTheme.background,
       appBar: AppBar(
-        title: Text(challenge.title,
-            style: const TextStyle(fontSize: 16), overflow: TextOverflow.ellipsis),
+        title: Text(
+          challenge.title,
+          style: const TextStyle(fontSize: 16),
+          overflow: TextOverflow.ellipsis,
+        ),
         actions: [
           if (!isCompleted && uc.responseCount >= requiredResponses)
             TextButton.icon(
               onPressed: _markComplete,
               icon: const Icon(Icons.check, size: 16),
               label: const Text('Complete'),
-              style: TextButton.styleFrom(foregroundColor: AppTheme.successColor),
+              style: TextButton.styleFrom(
+                foregroundColor: AppTheme.successColor,
+              ),
             ),
         ],
       ),
@@ -193,51 +201,60 @@ class _DebateScreenState extends State<DebateScreen> {
                     child: SingleChildScrollView(
                       scrollDirection: Axis.horizontal,
                       child: Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: typeColor.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Text(challenge.typeLabel,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: typeColor.withValues(alpha: 0.1),
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                            child: Text(
+                              challenge.typeLabel,
                               style: TextStyle(
-                                  color: typeColor,
-                                  fontSize: 11,
-                                  fontWeight: FontWeight.w700)),
-                        ),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Difficulty: ${'●' * challenge.difficulty}${'○' * (5 - challenge.difficulty)}',
-                          style: TextStyle(color: typeColor, fontSize: 12),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                          decoration: BoxDecoration(
-                            color: AppTheme.primary.withValues(alpha: 0.08),
-                            borderRadius: BorderRadius.circular(20),
-                            border: Border.all(
-                              color: AppTheme.primary.withValues(alpha: 0.18),
+                                color: typeColor,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
-                          child: Text(
-                            '${activeDifficulty.label} debate',
-                            style: TextStyle(
-                              color: AppTheme.primary,
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
+                          const SizedBox(width: 8),
+                          Text(
+                            'Difficulty: ${'●' * challenge.difficulty}${'○' * (5 - challenge.difficulty)}',
+                            style: TextStyle(color: typeColor, fontSize: 12),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppTheme.primary.withValues(alpha: 0.08),
+                              borderRadius: BorderRadius.circular(20),
+                              border: Border.all(
+                                color: AppTheme.primary.withValues(alpha: 0.18),
+                              ),
+                            ),
+                            child: Text(
+                              '${activeDifficulty.label} debate',
+                              style: TextStyle(
+                                color: AppTheme.primary,
+                                fontSize: 11,
+                                fontWeight: FontWeight.w700,
+                              ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Icon(
-                          _showChallenge
-                              ? Icons.keyboard_arrow_up
-                              : Icons.keyboard_arrow_down,
-                          color: AppTheme.textSecondary,
-                        ),
-                      ],
+                          const SizedBox(width: 8),
+                          Icon(
+                            _showChallenge
+                                ? Icons.keyboard_arrow_up
+                                : Icons.keyboard_arrow_down,
+                            color: AppTheme.textSecondary,
+                          ),
+                        ],
                       ),
                     ),
                   ),
@@ -254,14 +271,18 @@ class _DebateScreenState extends State<DebateScreen> {
                       decoration: BoxDecoration(
                         color: typeColor.withValues(alpha: 0.05),
                         borderRadius: BorderRadius.circular(14),
-                        border: Border.all(color: typeColor.withValues(alpha: 0.2)),
+                        border: Border.all(
+                          color: typeColor.withValues(alpha: 0.2),
+                        ),
                       ),
-                      child: Text(challenge.question,
-                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: AppTheme.textPrimary,
-                                height: 1.7,
-                                fontSize: 14,
-                              )),
+                      child: Text(
+                        challenge.question,
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          color: AppTheme.textPrimary,
+                          height: 1.7,
+                          fontSize: 14,
+                        ),
+                      ),
                     ),
                   ),
                   secondChild: Padding(
@@ -287,7 +308,8 @@ class _DebateScreenState extends State<DebateScreen> {
                 : ListView.builder(
                     controller: _scrollCtrl,
                     padding: const EdgeInsets.all(16),
-                    itemCount: uc.conversation.length + (provider.isDebating ? 1 : 0),
+                    itemCount:
+                        uc.conversation.length + (provider.isDebating ? 1 : 0),
                     itemBuilder: (context, index) {
                       if (index == uc.conversation.length) {
                         return _buildTypingIndicator();
@@ -455,8 +477,11 @@ class _DebateScreenState extends State<DebateScreen> {
             Icon(Icons.check_circle, color: AppTheme.successColor),
             const SizedBox(width: 8),
             Text('Challenge Completed!',
-                style: TextStyle(
-                    color: AppTheme.successColor, fontWeight: FontWeight.bold)),
+                  style: TextStyle(
+                    color: AppTheme.successColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
           ],
         ),
       );
@@ -479,7 +504,10 @@ class _DebateScreenState extends State<DebateScreen> {
                         style: const TextStyle(fontSize: 12)),
                     style: TextButton.styleFrom(
                       foregroundColor: AppTheme.warningColor,
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
                     ),
                   ),
                 if (hintsLeft == 0)
@@ -488,8 +516,13 @@ class _DebateScreenState extends State<DebateScreen> {
                           color: AppTheme.textSecondary, fontSize: 12)),
                 const Spacer(),
                 Text(
-                  'Responses: ${context.watch<AppProvider>().getChallenge(widget.ucId)?.responseCount ?? 0}/$requiredResponses',
-                  style: TextStyle(color: AppTheme.textSecondary, fontSize: 11),
+                  'Responses: '
+                  '${context.watch<AppProvider>().getChallenge(widget.ucId)?.responseCount ?? 0}'
+                  '/$requiredResponses',
+                  style: TextStyle(
+                    color: AppTheme.textSecondary,
+                    fontSize: 11,
+                  ),
                 ),
               ],
             ),
@@ -502,7 +535,10 @@ class _DebateScreenState extends State<DebateScreen> {
                     maxLines: 3,
                     minLines: 1,
                     textInputAction: TextInputAction.newline,
-                    style: TextStyle(color: AppTheme.textPrimary, fontSize: 14),
+                    style: TextStyle(
+                      color: AppTheme.textPrimary,
+                      fontSize: 14,
+                    ),
                     decoration: InputDecoration(
                       hintText: 'Share your thinking...',
                       hintStyle: TextStyle(color: AppTheme.textSecondary),
@@ -519,7 +555,9 @@ class _DebateScreenState extends State<DebateScreen> {
                         borderSide: BorderSide(color: typeColor, width: 2),
                       ),
                       contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 10),
+                        horizontal: 14,
+                        vertical: 10,
+                      ),
                       filled: true,
                       fillColor: AppTheme.background,
                     ),

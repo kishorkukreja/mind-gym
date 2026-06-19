@@ -172,6 +172,9 @@ Tone: Like a brilliant, ruthless mentor who genuinely wants them to succeed but 
         return (data['choices'][0]['message']['content'] as String).trim();
       }
     } catch (_) {}
-    return ScheduleService.getBrutalComment(stats['grade'] as String, stats['thisSkipped'] as int);
+    return ScheduleService.getBrutalComment(
+      stats['grade'] as String,
+      stats['thisSkipped'] as int,
+    );
   }
 }

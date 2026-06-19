@@ -89,7 +89,8 @@ class UserModel {
             List<String>.from((json['completedChallengeIds'] as List?) ?? []),
         skippedChallengeIds:
             List<String>.from((json['skippedChallengeIds'] as List?) ?? []),
-        weeklyStats: Map<String, dynamic>.from((json['weeklyStats'] as Map?) ?? {}),
+        weeklyStats:
+            Map<String, dynamic>.from((json['weeklyStats'] as Map?) ?? {}),
         createdAt: json['createdAt'] != null
             ? DateTime.parse(json['createdAt'] as String)
             : DateTime.now(),
@@ -116,7 +117,8 @@ class UserModel {
   }
 
   int get xpForNextLevel => level * 150;
-  double get xpProgress => xpForNextLevel > 0 ? (xp % xpForNextLevel) / xpForNextLevel : 0.0;
+  double get xpProgress =>
+      xpForNextLevel > 0 ? (xp % xpForNextLevel) / xpForNextLevel : 0.0;
   int get currentLevelXp => xp % xpForNextLevel;
 
   double get brainDevelopmentPercent {

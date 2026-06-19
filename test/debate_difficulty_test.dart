@@ -54,29 +54,32 @@ void main() {
   });
 
   group('debate difficulty inheritance', () {
-    test('inherits beginner, intermediate, and advanced from challenge difficulty', () {
-      expect(
-        DebateDifficulty.resolve(
-          preference: DebateDifficultyPreference.inherit,
-          challenge: _challenge(difficulty: 2),
-        ),
-        DebateDifficulty.beginner,
-      );
-      expect(
-        DebateDifficulty.resolve(
-          preference: DebateDifficultyPreference.inherit,
-          challenge: _challenge(difficulty: 3),
-        ),
-        DebateDifficulty.intermediate,
-      );
-      expect(
-        DebateDifficulty.resolve(
-          preference: DebateDifficultyPreference.inherit,
-          challenge: _challenge(difficulty: 4),
-        ),
-        DebateDifficulty.advanced,
-      );
-    });
+    test(
+      'inherits beginner, intermediate, and advanced from challenge difficulty',
+      () {
+        expect(
+          DebateDifficulty.resolve(
+            preference: DebateDifficultyPreference.inherit,
+            challenge: _challenge(difficulty: 2),
+          ),
+          DebateDifficulty.beginner,
+        );
+        expect(
+          DebateDifficulty.resolve(
+            preference: DebateDifficultyPreference.inherit,
+            challenge: _challenge(difficulty: 3),
+          ),
+          DebateDifficulty.intermediate,
+        );
+        expect(
+          DebateDifficulty.resolve(
+            preference: DebateDifficultyPreference.inherit,
+            challenge: _challenge(difficulty: 4),
+          ),
+          DebateDifficulty.advanced,
+        );
+      },
+    );
 
     test('explicit preference overrides challenge difficulty', () {
       expect(
@@ -98,19 +101,22 @@ void main() {
   });
 
   group('debate difficulty prompt behavior', () {
-    test('beginner prompt uses accessible scaffolding and lower completion expectation', () {
-      final prompt = OpenRouterService.buildSocraticSystemPrompt(
-        _challenge(difficulty: 1),
-        hintsUsed: 0,
-        userLevel: 1,
-        debateDifficulty: DebateDifficulty.beginner,
-      );
+    test(
+      'beginner prompt uses accessible scaffolding and lower completion expectation',
+      () {
+        final prompt = OpenRouterService.buildSocraticSystemPrompt(
+          _challenge(difficulty: 1),
+          hintsUsed: 0,
+          userLevel: 1,
+          debateDifficulty: DebateDifficulty.beginner,
+        );
 
-      expect(prompt, contains('Debate mode: Beginner'));
-      expect(prompt, contains('Use plain language'));
-      expect(prompt, contains('avoid technical terminology'));
-      expect(prompt, contains('At least 2 substantive user responses'));
-    });
+        expect(prompt, contains('Debate mode: Beginner'));
+        expect(prompt, contains('Use plain language'));
+        expect(prompt, contains('avoid technical terminology'));
+        expect(prompt, contains('At least 2 substantive user responses'));
+      },
+    );
 
     test('intermediate prompt balances rigor and accessibility', () {
       final prompt = OpenRouterService.buildSocraticSystemPrompt(

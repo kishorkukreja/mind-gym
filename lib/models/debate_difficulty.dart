@@ -68,7 +68,8 @@ enum DebateDifficulty {
     required DebateDifficultyPreference preference,
     required Challenge challenge,
   }) {
-    return preference.explicitDifficulty ?? DebateDifficulty.fromChallenge(challenge);
+    return preference.explicitDifficulty ??
+        DebateDifficulty.fromChallenge(challenge);
   }
 
   String get label {
