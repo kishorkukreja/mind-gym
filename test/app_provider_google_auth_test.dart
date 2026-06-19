@@ -38,44 +38,49 @@ void main() {
     expect(StorageService.getCurrentUser()!.id, 'firebase-uid-1');
   });
 
-  test('restores an existing local profile for a returning Google user', () async {
-    final returningUser = UserModel(
-      id: 'firebase-uid-2',
-      username: 'Grace Hopper',
-      pinHash: '',
-      authProvider: AuthProvider.google,
-      email: 'grace@example.com',
-      xp: 450,
-      level: 4,
-    );
-    await StorageService.saveUser(returningUser);
+  test(
+    'restores an existing local profile for a returning Google user',
+    () async {
+      final returningUser = UserModel(
+        id: 'firebase-uid-2',
+        username: 'Grace Hopper',
+        pinHash: '',
+        authProvider: AuthProvider.google,
+        email: 'grace@example.com',
+        xp: 450,
+        level: 4,
+      );
+      await StorageService.saveUser(returningUser);
 
-    final provider = AppProvider(
-      googleAuthService: FakeGoogleAuthService(
-        profile: const GoogleAuthProfile(
-          uid: 'firebase-uid-2',
-          email: 'grace@example.com',
-          displayName: 'Grace Hopper',
+      final provider = AppProvider(
+        googleAuthService: FakeGoogleAuthService(
+          profile: const GoogleAuthProfile(
+            uid: 'firebase-uid-2',
+            email: 'grace@example.com',
+            displayName: 'Grace Hopper',
+          ),
         ),
-      ),
-    );
-    await provider.init();
+      );
+      await provider.init();
 
-    final success = await provider.signInWithGoogle();
+      final success = await provider.signInWithGoogle();
 
-    expect(success, isTrue);
-    expect(provider.currentUser!.id, 'firebase-uid-2');
-    expect(provider.currentUser!.xp, 450);
-    expect(provider.currentUser!.level, 4);
-    expect(StorageService.getAllUsers(), hasLength(1));
-  });
+      expect(success, isTrue);
+      expect(provider.currentUser!.id, 'firebase-uid-2');
+      expect(provider.currentUser!.xp, 450);
+      expect(provider.currentUser!.level, 4);
+      expect(StorageService.getAllUsers(), hasLength(1));
+    },
+  );
 
   test('keeps local PIN login working for existing local users', () async {
-    await StorageService.saveUser(UserModel(
-      id: 'local-user-1',
-      username: 'local_user',
-      pinHash: StorageService.hashPin('1234'),
-    ));
+    await StorageService.saveUser(
+      UserModel(
+        id: 'local-user-1',
+        username: 'local_user',
+        pinHash: StorageService.hashPin('1234'),
+      ),
+    );
     final provider = AppProvider(
       googleAuthService: FakeGoogleAuthService(
         profile: const GoogleAuthProfile(uid: 'unused'),

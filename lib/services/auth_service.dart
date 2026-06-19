@@ -60,7 +60,9 @@ class FirebaseGoogleAuthService implements GoogleAuthService {
 
       final user = credential.user;
       if (user == null) {
-        throw GoogleAuthException('Google sign-in did not return a Firebase user.');
+        throw GoogleAuthException(
+          'Google sign-in did not return a Firebase user.',
+        );
       }
 
       return GoogleAuthProfile(

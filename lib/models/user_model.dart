@@ -90,18 +90,23 @@ class UserModel {
         photoUrl: json['photoUrl'] as String?,
         xp: (json['xp'] as int?) ?? 0,
         level: (json['level'] as int?) ?? 1,
-        totalChallengesCompleted: (json['totalChallengesCompleted'] as int?) ?? 0,
+        totalChallengesCompleted:
+            (json['totalChallengesCompleted'] as int?) ?? 0,
         totalChallengesSkipped: (json['totalChallengesSkipped'] as int?) ?? 0,
         currentStreak: (json['currentStreak'] as int?) ?? 0,
         bestStreak: (json['bestStreak'] as int?) ?? 0,
         lastActiveDate: json['lastActiveDate'] != null
             ? DateTime.parse(json['lastActiveDate'] as String)
             : null,
-        completedChallengeIds:
-            List<String>.from((json['completedChallengeIds'] as List?) ?? []),
-        skippedChallengeIds:
-            List<String>.from((json['skippedChallengeIds'] as List?) ?? []),
-        weeklyStats: Map<String, dynamic>.from((json['weeklyStats'] as Map?) ?? {}),
+        completedChallengeIds: List<String>.from(
+          (json['completedChallengeIds'] as List?) ?? [],
+        ),
+        skippedChallengeIds: List<String>.from(
+          (json['skippedChallengeIds'] as List?) ?? [],
+        ),
+        weeklyStats: Map<String, dynamic>.from(
+          (json['weeklyStats'] as Map?) ?? {},
+        ),
         createdAt: json['createdAt'] != null
             ? DateTime.parse(json['createdAt'] as String)
             : DateTime.now(),
@@ -125,7 +130,8 @@ class UserModel {
   }
 
   int get xpForNextLevel => level * 150;
-  double get xpProgress => xpForNextLevel > 0 ? (xp % xpForNextLevel) / xpForNextLevel : 0.0;
+  double get xpProgress =>
+      xpForNextLevel > 0 ? (xp % xpForNextLevel) / xpForNextLevel : 0.0;
   int get currentLevelXp => xp % xpForNextLevel;
 
   double get brainDevelopmentPercent {
