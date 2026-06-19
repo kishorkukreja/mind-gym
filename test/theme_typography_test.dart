@@ -3,6 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mind_gym/utils/theme.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   test('theme exposes deliberate UI and reading typography roles', () {
     final uiStyle = AppTheme.sectionLabelStyle;
     final readingStyle = AppTheme.challengePromptTextStyle;
