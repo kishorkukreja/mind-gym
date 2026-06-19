@@ -56,15 +56,21 @@ void main() {
 
   test('provides debate terminal copy for blocked states', () {
     expect(
-      ChallengeStateCopy.forStatus(ChallengeStatus.pending).debateBlockedMessage,
+      ChallengeStateCopy.forStatus(
+        ChallengeStatus.pending,
+      ).debateBlockedMessage,
       'This challenge is still pending.',
     );
     expect(
-      ChallengeStateCopy.forStatus(ChallengeStatus.skipped).debateBlockedMessage,
+      ChallengeStateCopy.forStatus(
+        ChallengeStatus.skipped,
+      ).debateBlockedMessage,
       'This challenge was skipped.',
     );
     expect(
-      ChallengeStateCopy.forStatus(ChallengeStatus.expired).debateBlockedMessage,
+      ChallengeStateCopy.forStatus(
+        ChallengeStatus.expired,
+      ).debateBlockedMessage,
       'This challenge expired before it was completed.',
     );
     expect(

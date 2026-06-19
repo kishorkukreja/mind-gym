@@ -23,8 +23,9 @@ void main() {
 
     final didOpen = await provider.openChallenge(challenge.id);
 
-    final stored = StorageService.getUserChallenges('user-1')
-        .firstWhere((storedChallenge) => storedChallenge.id == challenge.id);
+    final stored = StorageService.getUserChallenges(
+      'user-1',
+    ).firstWhere((storedChallenge) => storedChallenge.id == challenge.id);
     expect(didOpen, isTrue);
     expect(stored.status, ChallengeStatus.inProgress);
     expect(stored.openedAt, isNotNull);
@@ -61,29 +62,32 @@ void main() {
     );
   });
 
-  test('message, hint, and complete actions do not mutate expired challenge',
-      () async {
-    final now = DateTime.now();
-    final challenge = await _seedProviderChallenge(
-      status: ChallengeStatus.expired,
-      scheduledFor: now.subtract(const Duration(days: 5)),
-    );
-    final provider = AppProvider();
-    await provider.init();
+  test(
+    'message, hint, and complete actions do not mutate expired challenge',
+    () async {
+      final now = DateTime.now();
+      final challenge = await _seedProviderChallenge(
+        status: ChallengeStatus.expired,
+        scheduledFor: now.subtract(const Duration(days: 5)),
+      );
+      final provider = AppProvider();
+      await provider.init();
 
-    expect(
-      await provider.sendDebateMessage(challenge.id, 'My argument'),
-      'Challenge is expired.',
-    );
-    expect(await provider.requestHint(challenge.id), 'Challenge is expired.');
-    expect(await provider.markChallengeComplete(challenge.id), 0);
+      expect(
+        await provider.sendDebateMessage(challenge.id, 'My argument'),
+        'Challenge is expired.',
+      );
+      expect(await provider.requestHint(challenge.id), 'Challenge is expired.');
+      expect(await provider.markChallengeComplete(challenge.id), 0);
 
-    final stored = StorageService.getUserChallenges('user-1')
-        .firstWhere((storedChallenge) => storedChallenge.id == challenge.id);
-    expect(stored.status, ChallengeStatus.expired);
-    expect(stored.conversation, isEmpty);
-    expect(stored.responseCount, 0);
-  });
+      final stored = StorageService.getUserChallenges(
+        'user-1',
+      ).firstWhere((storedChallenge) => storedChallenge.id == challenge.id);
+      expect(stored.status, ChallengeStatus.expired);
+      expect(stored.conversation, isEmpty);
+      expect(stored.responseCount, 0);
+    },
+  );
 }
 
 Future<UserChallenge> _seedProviderChallenge({
@@ -103,7 +107,8 @@ Future<UserChallenge> _seedProviderChallenge({
     status: status,
     scheduledFor: scheduledFor,
   );
-  final other = second ??
+  final other =
+      second ??
       _challenge(
         id: 'uc-other',
         status: ChallengeStatus.pending,

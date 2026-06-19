@@ -56,7 +56,11 @@ class AppProvider extends ChangeNotifier {
     return true;
   }
 
-  Future<String?> register(String username, String pin, {String? apiKey}) async {
+  Future<String?> register(
+    String username,
+    String pin, {
+    String? apiKey,
+  }) async {
     _setLoading(true);
     if (username.trim().isEmpty) {
       _setLoading(false);
@@ -148,11 +152,13 @@ class AppProvider extends ChangeNotifier {
     }
 
     // Add user message
-    uc.conversation.add(ChallengeMessage(
-      role: 'user',
-      content: userMessage,
-      timestamp: DateTime.now(),
-    ));
+    uc.conversation.add(
+      ChallengeMessage(
+        role: 'user',
+        content: userMessage,
+        timestamp: DateTime.now(),
+      ),
+    );
     uc.responseCount++;
     uc.status = ChallengeStatus.inProgress;
     await StorageService.saveUserChallenge(uc);
@@ -177,11 +183,13 @@ class AppProvider extends ChangeNotifier {
       userLevel: _currentUser!.level,
     );
 
-    uc.conversation.add(ChallengeMessage(
-      role: 'assistant',
-      content: aiResponse,
-      timestamp: DateTime.now(),
-    ));
+    uc.conversation.add(
+      ChallengeMessage(
+        role: 'assistant',
+        content: aiResponse,
+        timestamp: DateTime.now(),
+      ),
+    );
     await StorageService.saveUserChallenge(uc);
     _syncWeekChallenge(uc);
 
@@ -207,11 +215,13 @@ class AppProvider extends ChangeNotifier {
         '💡 Hint ${uc.hintsUsed + 1} of ${challenge.hintTiers.length}:\n\n${challenge.hintTiers[uc.hintsUsed]}';
     uc.hintsUsed++;
     uc.status = ChallengeStatus.inProgress;
-    uc.conversation.add(ChallengeMessage(
-      role: 'assistant',
-      content: hintMessage,
-      timestamp: DateTime.now(),
-    ));
+    uc.conversation.add(
+      ChallengeMessage(
+        role: 'assistant',
+        content: hintMessage,
+        timestamp: DateTime.now(),
+      ),
+    );
     await StorageService.saveUserChallenge(uc);
     _syncWeekChallenge(uc);
     notifyListeners();
@@ -228,8 +238,9 @@ class AppProvider extends ChangeNotifier {
       hintsUsed: uc.hintsUsed,
       responseCount: uc.responseCount,
       difficulty: challenge?.difficulty ?? 3,
-      onTime: DateTime.now()
-          .isBefore(uc.scheduledFor.add(const Duration(days: 2))),
+      onTime: DateTime.now().isBefore(
+        uc.scheduledFor.add(const Duration(days: 2)),
+      ),
     );
 
     uc.status = ChallengeStatus.completed;
@@ -315,8 +326,9 @@ class AppProvider extends ChangeNotifier {
   }
 
   void _syncWeekChallenge(UserChallenge updated) {
-    final idx =
-        _weekChallenges.indexWhere((challenge) => challenge.id == updated.id);
+    final idx = _weekChallenges.indexWhere(
+      (challenge) => challenge.id == updated.id,
+    );
     if (idx >= 0) {
       _weekChallenges[idx] = updated;
     }

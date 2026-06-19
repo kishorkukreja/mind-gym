@@ -25,10 +25,7 @@ void main() {
       final json = _challengeWith(status: ChallengeStatus.ready).toJson()
         ..['status'] = 'open';
 
-      expect(
-        UserChallenge.fromJson(json).status,
-        ChallengeStatus.ready,
-      );
+      expect(UserChallenge.fromJson(json).status, ChallengeStatus.ready);
     });
 
     test('exposes state helpers for debate entry and terminal states', () {
@@ -50,11 +47,7 @@ void main() {
 
   group('UserModel expired challenge persistence', () {
     test('defaults expired challenge IDs to an empty list', () {
-      final user = UserModel(
-        id: 'user-1',
-        username: 'Ada',
-        pinHash: 'hash',
-      );
+      final user = UserModel(id: 'user-1', username: 'Ada', pinHash: 'hash');
 
       expect(user.expiredChallengeIds, isEmpty);
       expect(UserModel.fromJson(user.toJson()).expiredChallengeIds, isEmpty);
@@ -68,10 +61,10 @@ void main() {
         expiredChallengeIds: ['uc-1', 'uc-2'],
       );
 
-      expect(
-        UserModel.fromJson(user.toJson()).expiredChallengeIds,
-        ['uc-1', 'uc-2'],
-      );
+      expect(UserModel.fromJson(user.toJson()).expiredChallengeIds, [
+        'uc-1',
+        'uc-2',
+      ]);
     });
   });
 }

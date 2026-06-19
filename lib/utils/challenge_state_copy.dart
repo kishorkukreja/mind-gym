@@ -45,7 +45,8 @@ class ChallengeStateCopy {
         return const ChallengeStateCopy(
           badge: 'Expired',
           homeAction: 'Expired',
-          debateBlockedMessage: 'This challenge expired before it was completed.',
+          debateBlockedMessage:
+              'This challenge expired before it was completed.',
         );
     }
   }
