@@ -1,3 +1,5 @@
+import 'debate_difficulty.dart';
+
 class UserModel {
   final String id;
   final String username;
@@ -19,6 +21,7 @@ class UserModel {
   int weekendHour; // 17 = 5pm
   int weekdayChallengeDay; // 1=Mon,2=Tue,...5=Fri (default: Wednesday=3)
   int weekendChallengeDay; // 6=Sat, 7=Sun (default: Saturday=6)
+  DebateDifficultyPreference debateDifficultyPreference;
 
   UserModel({
     required this.id,
@@ -40,6 +43,7 @@ class UserModel {
     this.weekendHour = 17,
     this.weekdayChallengeDay = 3,
     this.weekendChallengeDay = 6,
+    this.debateDifficultyPreference = DebateDifficultyPreference.inherit,
   })  : completedChallengeIds = completedChallengeIds ?? [],
         skippedChallengeIds = skippedChallengeIds ?? [],
         weeklyStats = weeklyStats ?? {},
@@ -65,6 +69,7 @@ class UserModel {
         'weekendHour': weekendHour,
         'weekdayChallengeDay': weekdayChallengeDay,
         'weekendChallengeDay': weekendChallengeDay,
+        'debateDifficultyPreference': debateDifficultyPreference.name,
       };
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
@@ -73,8 +78,10 @@ class UserModel {
         pinHash: json['pinHash'] as String,
         xp: (json['xp'] as int?) ?? 0,
         level: (json['level'] as int?) ?? 1,
-        totalChallengesCompleted: (json['totalChallengesCompleted'] as int?) ?? 0,
-        totalChallengesSkipped: (json['totalChallengesSkipped'] as int?) ?? 0,
+        totalChallengesCompleted:
+            (json['totalChallengesCompleted'] as int?) ?? 0,
+        totalChallengesSkipped:
+            (json['totalChallengesSkipped'] as int?) ?? 0,
         currentStreak: (json['currentStreak'] as int?) ?? 0,
         bestStreak: (json['bestStreak'] as int?) ?? 0,
         lastActiveDate: json['lastActiveDate'] != null
@@ -84,7 +91,9 @@ class UserModel {
             List<String>.from((json['completedChallengeIds'] as List?) ?? []),
         skippedChallengeIds:
             List<String>.from((json['skippedChallengeIds'] as List?) ?? []),
-        weeklyStats: Map<String, dynamic>.from((json['weeklyStats'] as Map?) ?? {}),
+        weeklyStats: Map<String, dynamic>.from(
+          (json['weeklyStats'] as Map?) ?? {},
+        ),
         createdAt: json['createdAt'] != null
             ? DateTime.parse(json['createdAt'] as String)
             : DateTime.now(),
@@ -93,6 +102,9 @@ class UserModel {
         weekendHour: (json['weekendHour'] as int?) ?? 17,
         weekdayChallengeDay: (json['weekdayChallengeDay'] as int?) ?? 3,
         weekendChallengeDay: (json['weekendChallengeDay'] as int?) ?? 6,
+        debateDifficultyPreference: DebateDifficultyPreference.fromStorage(
+          json['debateDifficultyPreference'] as String?,
+        ),
       );
 
   String get levelTitle {
@@ -108,7 +120,8 @@ class UserModel {
   }
 
   int get xpForNextLevel => level * 150;
-  double get xpProgress => xpForNextLevel > 0 ? (xp % xpForNextLevel) / xpForNextLevel : 0.0;
+  double get xpProgress =>
+      xpForNextLevel > 0 ? (xp % xpForNextLevel) / xpForNextLevel : 0.0;
   int get currentLevelXp => xp % xpForNextLevel;
 
   double get brainDevelopmentPercent {
