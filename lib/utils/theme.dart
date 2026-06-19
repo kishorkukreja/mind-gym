@@ -16,7 +16,9 @@ class AppTheme {
   static const Color errorColor = Color(0xFFB00020);
   static const Color successColor = Color(0xFF2E7D32);
   static const Color warningColor = Color(0xFFE65100);
-  static const Color philosophyColor = Color(0xFF5C6BC0); // Indigo for philosophy
+  static const Color philosophyColor = Color(
+    0xFF5C6BC0,
+  ); // Indigo for philosophy
   static const Color biasColor = Color(0xFF00897B); // Teal for cognitive bias
 
   static const double radius = 8;
@@ -25,51 +27,51 @@ class AppTheme {
   static const double cardPadding = 18;
 
   static TextStyle get brandTextStyle => GoogleFonts.inter(
-        fontSize: 28,
-        fontWeight: FontWeight.w900,
-        letterSpacing: 3.2,
-        color: primary,
-      );
+    fontSize: 28,
+    fontWeight: FontWeight.w900,
+    letterSpacing: 3.2,
+    color: primary,
+  );
 
   static TextStyle get sectionLabelStyle => GoogleFonts.inter(
-        fontSize: 11,
-        fontWeight: FontWeight.w800,
-        letterSpacing: 1.1,
-        color: textSecondary,
-      );
+    fontSize: 11,
+    fontWeight: FontWeight.w800,
+    letterSpacing: 1.1,
+    color: textSecondary,
+  );
 
   static TextStyle get metricStyle => GoogleFonts.inter(
-        fontSize: 18,
-        fontWeight: FontWeight.w800,
-        color: textPrimary,
-      );
+    fontSize: 18,
+    fontWeight: FontWeight.w800,
+    color: textPrimary,
+  );
 
   static TextStyle get ctaTextStyle => GoogleFonts.inter(
-        fontSize: 15,
-        fontWeight: FontWeight.w800,
-        letterSpacing: 0,
-      );
+    fontSize: 15,
+    fontWeight: FontWeight.w800,
+    letterSpacing: 0,
+  );
 
   static TextStyle get readingTextStyle => GoogleFonts.lora(
-        fontSize: 15,
-        height: 1.65,
-        fontWeight: FontWeight.w500,
-        color: textPrimary,
-      );
+    fontSize: 15,
+    height: 1.65,
+    fontWeight: FontWeight.w500,
+    color: textPrimary,
+  );
 
   static TextStyle get challengePromptTextStyle => GoogleFonts.lora(
-        fontSize: 16,
-        height: 1.7,
-        fontWeight: FontWeight.w500,
-        color: textPrimary,
-      );
+    fontSize: 16,
+    height: 1.7,
+    fontWeight: FontWeight.w500,
+    color: textPrimary,
+  );
 
   static TextStyle get messageTextStyle => GoogleFonts.lora(
-        fontSize: 14.5,
-        height: 1.6,
-        fontWeight: FontWeight.w500,
-        color: textPrimary,
-      );
+    fontSize: 14.5,
+    height: 1.6,
+    fontWeight: FontWeight.w500,
+    color: textPrimary,
+  );
 
   static ThemeData get theme {
     return ThemeData(
@@ -118,10 +120,7 @@ class AppTheme {
           color: textSecondary,
           height: 1.5,
         ),
-        bodySmall: GoogleFonts.inter(
-          fontSize: 12,
-          color: textSecondary,
-        ),
+        bodySmall: GoogleFonts.inter(fontSize: 12, color: textSecondary),
       ),
       cardTheme: CardThemeData(
         color: surface,

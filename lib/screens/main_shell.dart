@@ -23,10 +23,7 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: IndexedStack(
-        index: _currentIndex,
-        children: _screens,
-      ),
+      body: IndexedStack(index: _currentIndex, children: _screens),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: AppTheme.surface,
@@ -45,8 +42,18 @@ class _MainShellState extends State<MainShell> {
             child: Row(
               children: [
                 _navItem(0, Icons.home_outlined, Icons.home, 'Home'),
-                _navItem(1, Icons.psychology_outlined, Icons.psychology, 'Progress'),
-                _navItem(2, Icons.settings_outlined, Icons.settings, 'Settings'),
+                _navItem(
+                  1,
+                  Icons.psychology_outlined,
+                  Icons.psychology,
+                  'Progress',
+                ),
+                _navItem(
+                  2,
+                  Icons.settings_outlined,
+                  Icons.settings,
+                  'Settings',
+                ),
               ],
             ),
           ),
@@ -68,7 +75,10 @@ class _MainShellState extends State<MainShell> {
             children: [
               AnimatedContainer(
                 duration: const Duration(milliseconds: 200),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: isActive
                       ? AppTheme.primary.withValues(alpha: 0.12)

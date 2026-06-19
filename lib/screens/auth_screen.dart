@@ -26,8 +26,13 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
   void initState() {
     super.initState();
     _slideCtrl = AnimationController(
-        vsync: this, duration: const Duration(milliseconds: 400));
-    _slideAnim = CurvedAnimation(parent: _slideCtrl, curve: Curves.easeOutCubic);
+      vsync: this,
+      duration: const Duration(milliseconds: 400),
+    );
+    _slideAnim = CurvedAnimation(
+      parent: _slideCtrl,
+      curve: Curves.easeOutCubic,
+    );
     _slideCtrl.forward();
   }
 
@@ -57,29 +62,34 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     if (_isLogin) {
       final success = await provider.login(username, pin);
       if (!success && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(provider.error ?? 'Login failed'),
-          backgroundColor: AppTheme.errorColor,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(provider.error ?? 'Login failed'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
       }
     } else {
       if (_pinCtrl.text != _confirmPinCtrl.text) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('PINs do not match'),
-          backgroundColor: AppTheme.errorColor,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('PINs do not match'),
+            backgroundColor: AppTheme.errorColor,
+          ),
+        );
         return;
       }
       final err = await provider.register(
         username,
         pin,
-        apiKey: _apiKeyCtrl.text.trim().isNotEmpty ? _apiKeyCtrl.text.trim() : null,
+        apiKey: _apiKeyCtrl.text.trim().isNotEmpty
+            ? _apiKeyCtrl.text.trim()
+            : null,
       );
       if (err != null && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(err),
-          backgroundColor: AppTheme.errorColor,
-        ));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(err), backgroundColor: AppTheme.errorColor),
+        );
       }
     }
   }
@@ -108,11 +118,13 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                 const BrainLogo(size: 90),
                 const SizedBox(height: 16),
                 Text('MIND GYM', style: AppTheme.brandTextStyle),
-                Text('Sharpen Your Thinking',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                          color: AppTheme.textSecondary,
-                          letterSpacing: 0,
-                        )),
+                Text(
+                  'Sharpen Your Thinking',
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: AppTheme.textSecondary,
+                    letterSpacing: 0,
+                  ),
+                ),
                 const SizedBox(height: 14),
                 Text(
                   'Scheduled reasoning challenges, Socratic debate, and progress you can actually read.',
@@ -146,9 +158,9 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                       Text(
                         _isLogin ? 'Welcome Back' : 'Create Account',
                         style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                              color: AppTheme.textPrimary,
-                              fontWeight: FontWeight.bold,
-                            ),
+                          color: AppTheme.textPrimary,
+                          fontWeight: FontWeight.bold,
+                        ),
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 24),
@@ -157,7 +169,9 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                         label: 'Username',
                         icon: Icons.person_outline,
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_]')),
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'[a-zA-Z0-9_]'),
+                          ),
                           LengthLimitingTextInputFormatter(20),
                         ],
                       ),
@@ -197,7 +211,9 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                         Text(
                           'You can add/update your API key later in Settings',
                           style: TextStyle(
-                              color: AppTheme.textSecondary, fontSize: 12),
+                            color: AppTheme.textSecondary,
+                            fontSize: 12,
+                          ),
                           textAlign: TextAlign.center,
                         ),
                       ],
@@ -210,8 +226,9 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                             backgroundColor: AppTheme.primary,
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.circular(AppTheme.radius),
+                              borderRadius: BorderRadius.circular(
+                                AppTheme.radius,
+                              ),
                             ),
                           ),
                           child: provider.isLoading
@@ -219,7 +236,10 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                                   width: 20,
                                   height: 20,
                                   child: CircularProgressIndicator(
-                                      color: Colors.white, strokeWidth: 2))
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
                               : Text(
                                   _isLogin ? 'Enter the Gym' : 'Begin Training',
                                   style: AppTheme.ctaTextStyle,
@@ -252,8 +272,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Quick Login',
-            style: AppTheme.sectionLabelStyle),
+        Text('Quick Login', style: AppTheme.sectionLabelStyle),
         const SizedBox(height: 10),
         SizedBox(
           height: 70,
@@ -277,20 +296,24 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                     children: [
                       CircleAvatar(
                         radius: 18,
-                        backgroundColor: AppTheme.primary.withValues(alpha: 0.2),
+                        backgroundColor: AppTheme.primary.withValues(
+                          alpha: 0.2,
+                        ),
                         child: Text(
                           u.username[0].toUpperCase(),
                           style: TextStyle(
-                              color: AppTheme.primary,
-                              fontWeight: FontWeight.bold),
+                            color: AppTheme.primary,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
                         u.username,
                         style: TextStyle(
-                            color: AppTheme.textPrimary,
-                            fontSize: 10),
+                          color: AppTheme.textPrimary,
+                          fontSize: 10,
+                        ),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
@@ -323,13 +346,17 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        hintStyle: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.5)),
+        hintStyle: TextStyle(
+          color: AppTheme.textSecondary.withValues(alpha: 0.5),
+        ),
         labelStyle: TextStyle(color: AppTheme.textSecondary),
         prefixIcon: Icon(icon, color: AppTheme.primary, size: 20),
         suffixIcon: isPin
             ? IconButton(
                 icon: Icon(
-                  _obscurePin ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                  _obscurePin
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
                   color: AppTheme.textSecondary,
                   size: 20,
                 ),
@@ -355,14 +382,18 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
   }
 
   Widget _buildDivider(String label) {
-    return Row(children: [
-      Expanded(child: Divider(color: AppTheme.border)),
-      Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12),
-        child: Text(label,
-            style: TextStyle(color: AppTheme.textSecondary, fontSize: 12)),
-      ),
-      Expanded(child: Divider(color: AppTheme.border)),
-    ]);
+    return Row(
+      children: [
+        Expanded(child: Divider(color: AppTheme.border)),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          child: Text(
+            label,
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 12),
+          ),
+        ),
+        Expanded(child: Divider(color: AppTheme.border)),
+      ],
+    );
   }
 }
