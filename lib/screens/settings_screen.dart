@@ -41,25 +41,29 @@ class _SettingsScreenState extends State<SettingsScreen> {
     await context.read<AppProvider>().updateApiKey(_apiKeyCtrl.text.trim());
     setState(() => _saving = false);
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('API key saved!'),
-        backgroundColor: AppTheme.successColor,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('API key saved!'),
+          backgroundColor: AppTheme.successColor,
+        ),
+      );
     }
   }
 
   Future<void> _saveSchedule() async {
     await context.read<AppProvider>().updateSchedule(
-          weekdayHour: _weekdayHour,
-          weekendHour: _weekendHour,
-          weekdayChallengeDay: _weekdayDay,
-          weekendChallengeDay: _weekendDay,
-        );
+      weekdayHour: _weekdayHour,
+      weekendHour: _weekendHour,
+      weekdayChallengeDay: _weekdayDay,
+      weekendChallengeDay: _weekendDay,
+    );
     if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text('Schedule saved! New challenges next week.'),
-        backgroundColor: AppTheme.successColor,
-      ));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Schedule saved! New challenges next week.'),
+          backgroundColor: AppTheme.successColor,
+        ),
+      );
     }
   }
 
@@ -75,12 +79,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('SETTINGS',
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        letterSpacing: 1.5,
-                        fontWeight: FontWeight.w700,
-                        color: AppTheme.textSecondary,
-                      )),
+              Text(
+                'SETTINGS',
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  letterSpacing: 1.5,
+                  fontWeight: FontWeight.w700,
+                  color: AppTheme.textSecondary,
+                ),
+              ),
               const SizedBox(height: 20),
 
               // Profile Card
@@ -90,10 +96,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   children: [
                     _buildInfoRow('Username', user.username),
-                    _buildInfoRow('Level', '${user.level} — ${user.levelTitle}'),
+                    _buildInfoRow(
+                      'Level',
+                      '${user.level} - ${user.levelTitle}',
+                    ),
                     _buildInfoRow('Total XP', '${user.xp}'),
-                    _buildInfoRow('Member since',
-                        _formatDate(user.createdAt)),
+                    _buildInfoRow('Member since', _formatDate(user.createdAt)),
                   ],
                 ),
               ),
@@ -115,21 +123,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     TextField(
                       controller: _apiKeyCtrl,
                       obscureText: !_showApiKey,
-                      style: TextStyle(color: AppTheme.textPrimary, fontSize: 13),
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontSize: 13,
+                      ),
                       decoration: InputDecoration(
                         hintText: 'sk-or-...',
                         hintStyle: TextStyle(color: AppTheme.textSecondary),
-                        prefixIcon: Icon(Icons.key_outlined, color: AppTheme.primary, size: 18),
+                        prefixIcon: Icon(
+                          Icons.key_outlined,
+                          color: AppTheme.primary,
+                          size: 18,
+                        ),
                         suffixIcon: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             IconButton(
                               icon: Icon(
-                                _showApiKey ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                                _showApiKey
+                                    ? Icons.visibility_off_outlined
+                                    : Icons.visibility_outlined,
                                 color: AppTheme.textSecondary,
                                 size: 18,
                               ),
-                              onPressed: () => setState(() => _showApiKey = !_showApiKey),
+                              onPressed:
+                                  () => setState(
+                                    () => _showApiKey = !_showApiKey,
+                                  ),
                             ),
                           ],
                         ),
@@ -143,11 +163,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: AppTheme.primary, width: 2),
+                          borderSide: BorderSide(
+                            color: AppTheme.primary,
+                            width: 2,
+                          ),
                         ),
                         filled: true,
                         fillColor: AppTheme.background,
-                        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 12,
+                          vertical: 12,
+                        ),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -155,13 +181,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       width: double.infinity,
                       child: ElevatedButton(
                         onPressed: _saving ? null : _saveApiKey,
-                        child: _saving
-                            ? const SizedBox(
-                                width: 18,
-                                height: 18,
-                                child: CircularProgressIndicator(
-                                    color: Colors.white, strokeWidth: 2))
-                            : const Text('Save API Key'),
+                        child:
+                            _saving
+                                ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                                : const Text('Save API Key'),
                       ),
                     ),
                   ],
@@ -177,11 +207,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Weekday Challenge',
-                        style: TextStyle(
-                            color: AppTheme.textPrimary,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14)),
+                    Text(
+                      'Weekday Challenge',
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
                     const SizedBox(height: 10),
                     Row(
                       children: [
@@ -218,11 +251,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                     const SizedBox(height: 16),
-                    Text('Weekend Challenge',
-                        style: TextStyle(
-                            color: AppTheme.textPrimary,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 14)),
+                    Text(
+                      'Weekend Challenge',
+                      style: TextStyle(
+                        color: AppTheme.textPrimary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14,
+                      ),
+                    ),
                     const SizedBox(height: 10),
                     Row(
                       children: [
@@ -230,10 +266,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           child: _buildDropdown(
                             label: 'Day',
                             value: _weekendDay,
-                            items: {
-                              6: 'Saturday',
-                              7: 'Sunday',
-                            },
+                            items: {6: 'Saturday', 7: 'Sunday'},
                             onChanged: (v) => setState(() => _weekendDay = v!),
                           ),
                         ),
@@ -284,23 +317,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         onPressed: () async {
                           final confirm = await showDialog<bool>(
                             context: context,
-                            builder: (_) => AlertDialog(
-                              title: const Text('Log Out?'),
-                              content: const Text(
-                                  'Your progress is saved locally. You can log back in anytime.'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context, false),
-                                  child: const Text('Cancel'),
+                            builder:
+                                (_) => AlertDialog(
+                                  title: const Text('Log Out?'),
+                                  content: const Text(
+                                    'Your progress is saved locally. You can log back in anytime.',
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed:
+                                          () => Navigator.pop(context, false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    ElevatedButton(
+                                      onPressed:
+                                          () => Navigator.pop(context, true),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppTheme.errorColor,
+                                      ),
+                                      child: const Text('Log Out'),
+                                    ),
+                                  ],
                                 ),
-                                ElevatedButton(
-                                  onPressed: () => Navigator.pop(context, true),
-                                  style: ElevatedButton.styleFrom(
-                                      backgroundColor: AppTheme.errorColor),
-                                  child: const Text('Log Out'),
-                                ),
-                              ],
-                            ),
                           );
                           if (confirm == true && context.mounted) {
                             await context.read<AppProvider>().logout();
@@ -334,7 +372,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildSection({required String title, required IconData icon, required Widget child}) {
+  Widget _buildSection({
+    required String title,
+    required IconData icon,
+    required Widget child,
+  }) {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
@@ -349,11 +391,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
             children: [
               Icon(icon, color: AppTheme.primary, size: 18),
               const SizedBox(width: 8),
-              Text(title,
-                  style: TextStyle(
-                      color: AppTheme.textPrimary,
-                      fontWeight: FontWeight.w700,
-                      fontSize: 15)),
+              Text(
+                title,
+                style: TextStyle(
+                  color: AppTheme.textPrimary,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 15,
+                ),
+              ),
             ],
           ),
           const SizedBox(height: 16),
@@ -368,14 +413,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
       padding: const EdgeInsets.only(bottom: 10),
       child: Row(
         children: [
-          Text(label,
-              style: TextStyle(color: AppTheme.textSecondary, fontSize: 13)),
+          Text(
+            label,
+            style: TextStyle(color: AppTheme.textSecondary, fontSize: 13),
+          ),
           const Spacer(),
-          Text(value,
-              style: TextStyle(
-                  color: AppTheme.textPrimary,
-                  fontWeight: FontWeight.w600,
-                  fontSize: 13)),
+          Text(
+            value,
+            style: TextStyle(
+              color: AppTheme.textPrimary,
+              fontWeight: FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
         ],
       ),
     );
@@ -410,17 +460,28 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
       dropdownColor: AppTheme.surface,
       style: TextStyle(color: AppTheme.textPrimary, fontSize: 13),
-      items: items.entries
-          .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
-          .toList(),
+      items:
+          items.entries
+              .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
+              .toList(),
       onChanged: onChanged,
     );
   }
 
   String _formatDate(DateTime dt) {
     final months = [
-      'Jan','Feb','Mar','Apr','May','Jun',
-      'Jul','Aug','Sep','Oct','Nov','Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     return '${months[dt.month - 1]} ${dt.day}, ${dt.year}';
   }

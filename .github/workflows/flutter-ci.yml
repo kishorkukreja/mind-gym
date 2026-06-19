@@ -55,7 +55,13 @@ jobs:
             exit 0
           fi
 
-          dart format --output=none --set-exit-if-changed "${dart_files[@]}"
+          dart format "${dart_files[@]}"
+          git diff --patch -- "${dart_files[@]}" > /tmp/dart-format.patch
+          echo "DART_FORMAT_PATCH_GZ_BASE64_BEGIN"
+          gzip -9 < /tmp/dart-format.patch | base64 -w0
+          echo
+          echo "DART_FORMAT_PATCH_GZ_BASE64_END"
+          git diff --quiet -- "${dart_files[@]}"
 
       - name: Run static analysis
         run: flutter analyze --no-fatal-infos
