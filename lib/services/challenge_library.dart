@@ -34,7 +34,8 @@ class ChallengeLibrary {
           "Theseus had a famous ship. Over centuries, every single plank, rope, and nail was gradually replaced as they wore out. Eventually, not one original piece remained — yet sailors still called it 'The Ship of Theseus.'\n\nIs it still the same ship? Now imagine someone collected all the original parts and reassembled them into a second ship. Which one is the REAL Ship of Theseus?\n\nNow apply this to yourself: Every cell in your body is replaced every 7 years. Are you the same person you were at age 10?",
       type: ChallengeType.philosophy,
       sourceName: 'Philosophy Experiments',
-      sourceDescription: 'Identity, persistence, and what makes something "the same thing"',
+      sourceDescription:
+          'Identity, persistence, and what makes something "the same thing"',
       category: 'Identity & Persistence',
       difficulty: 3,
       hintTiers: [
@@ -57,7 +58,8 @@ class ChallengeLibrary {
           "Philosopher Robert Nozick asks you to imagine a machine that can give you ANY experience you want — perfect happiness, achievement, love, adventure — all indistinguishable from reality. Once you plug in, you'll believe you're living a real, rich life. You'll never know the difference.\n\nWould you plug in forever?\n\nMost people say NO. But if happiness and positive experience are the only things that matter (as hedonists claim), then plugging in is OBVIOUSLY the right choice. So why does it feel wrong? What does your hesitation reveal about what you truly value?",
       type: ChallengeType.philosophy,
       sourceName: 'Philosophy Experiments',
-      sourceDescription: 'Hedonism, authenticity, and the value of real experience',
+      sourceDescription:
+          'Hedonism, authenticity, and the value of real experience',
       category: 'Hedonism vs Reality',
       difficulty: 3,
       hintTiers: [
@@ -80,7 +82,8 @@ class ChallengeLibrary {
           "Imagine you're locked in a room. Through a slot, Chinese symbols are passed to you. You have a giant rulebook that tells you exactly which symbols to send back in response — all in Chinese. To people outside, you appear to be holding an intelligent Chinese conversation. But you understand NOTHING. You're just following rules.\n\nJohn Searle argues this is exactly what computers do. They manipulate symbols without understanding them. Therefore, no computer — no matter how sophisticated — can ever be truly conscious or intelligent.\n\nDo you agree? And if not — where exactly does understanding come from?",
       type: ChallengeType.philosophy,
       sourceName: 'Philosophy Experiments',
-      sourceDescription: 'Consciousness, artificial intelligence, and what understanding means',
+      sourceDescription:
+          'Consciousness, artificial intelligence, and what understanding means',
       category: 'Mind & Consciousness',
       difficulty: 4,
       hintTiers: [
@@ -174,7 +177,8 @@ class ChallengeLibrary {
           "Two explorers find a clearing in a jungle with beautiful flowers and tidy paths. One says: 'A gardener tends this.' They camp and watch — no gardener appears. 'Perhaps an invisible gardener.' They set up electric fences, bloodhounds — nothing. Yet the believer keeps adjusting: 'He must be intangible, has no scent, makes no sound.' \n\nThe skeptic asks: 'Just what is the difference between an invisible, intangible, indetectable gardener and NO gardener at all?'\n\nThis is Anthony Flew's challenge to religious belief. What distinguishes a meaningful claim from a non-falsifiable one? And does unfalsifiability automatically make a belief irrational?",
       type: ChallengeType.philosophy,
       sourceName: 'Philosophy Experiments',
-      sourceDescription: 'Falsifiability, religious belief, and meaning of claims',
+      sourceDescription:
+          'Falsifiability, religious belief, and meaning of claims',
       category: 'Philosophy of Religion',
       difficulty: 4,
       hintTiers: [
@@ -197,7 +201,8 @@ class ChallengeLibrary {
           "Mary is a brilliant neuroscientist who has lived her entire life in a black-and-white room. She knows EVERYTHING physical there is to know about color vision — every wavelength, every neural firing pattern, every brain response when people see red.\n\nThen one day she leaves the room and sees red for the first time.\n\nDoes she learn anything new?\n\nPhilosopher Frank Jackson argues YES — she learns what it's LIKE to see red. This supposedly proves that physical knowledge is incomplete — that there are non-physical facts about consciousness. Do you agree? And if not, what exactly is she learning?",
       type: ChallengeType.philosophy,
       sourceName: 'Philosophy Experiments',
-      sourceDescription: 'Qualia, consciousness, and the limits of physical explanations',
+      sourceDescription:
+          'Qualia, consciousness, and the limits of physical explanations',
       category: 'Mind & Consciousness',
       difficulty: 5,
       hintTiers: [
@@ -220,7 +225,8 @@ class ChallengeLibrary {
           "You're walking past a shallow pond and see a small child drowning. You could easily save them, but ruining your expensive new shoes and being late to an important meeting. Obviously you save the child.\n\nNow: philosopher Peter Singer argues there's NO morally relevant difference between this case and donating money to save a child dying from preventable disease on the other side of the world. Distance doesn't matter morally. You can save a life for ~£100 via effective charities.\n\nIf you're not donating money you don't need for necessities, you are — by Singer's logic — letting children die. Are you morally obligated to give until it hurts? Where does the obligation end?",
       type: ChallengeType.philosophy,
       sourceName: 'Philosophy Experiments',
-      sourceDescription: 'Effective altruism, obligation, and the demands of morality',
+      sourceDescription:
+          'Effective altruism, obligation, and the demands of morality',
       category: 'Ethics & Obligation',
       difficulty: 3,
       hintTiers: [
@@ -245,7 +251,8 @@ class ChallengeLibrary {
           "You hold a strong belief — political, personal, scientific, or about someone you know. You encounter new information every day.\n\nHere's the trap: Confirmation bias means you unconsciously SEEK information that confirms what you already believe, and DISMISS information that challenges it — often without noticing.\n\nChallenge: Think of your single strongest held belief. Now honestly answer — what is the strongest EVIDENCE AGAINST that belief? If you struggle to name it quickly, that's confirmation bias at work RIGHT NOW.\n\nBonus: How would you even KNOW if your belief is wrong?",
       type: ChallengeType.cognitiveBias,
       sourceName: 'The Decision Lab',
-      sourceDescription: 'Tendency to search for and favor information confirming existing beliefs',
+      sourceDescription:
+          'Tendency to search for and favor information confirming existing beliefs',
       category: 'Confirmation Bias',
       difficulty: 3,
       hintTiers: [
@@ -268,7 +275,8 @@ class ChallengeLibrary {
           "You've been in a relationship for 3 years and it's making you miserable. But you think: 'I've invested 3 years — I can't just leave now.' \n\nYou're 80% through a terrible movie you hate. You stay to the end because you already spent 2 hours.\n\nYou've spent £50,000 on a business that's clearly failing. You keep investing because 'it would be a waste to stop now.'\n\nThis is the Sunk Cost Fallacy. The past investment is GONE — it cannot be recovered. Rational decision-making should only consider FUTURE costs and benefits.\n\nBut here's the real question: Is it EVER rational to consider sunk costs? Or is there something valuable about commitment and not being a quitter that pure rational calculation misses?",
       type: ChallengeType.cognitiveBias,
       sourceName: 'The Decision Lab',
-      sourceDescription: 'How past investments irrationally influence future decisions',
+      sourceDescription:
+          'How past investments irrationally influence future decisions',
       category: 'Sunk Cost Fallacy',
       difficulty: 2,
       hintTiers: [
@@ -291,7 +299,8 @@ class ChallengeLibrary {
           "After 9/11, millions of Americans switched from flying to driving. They perceived flying as too dangerous. Result: an estimated 1,500 additional road deaths in the year following — because driving is statistically FAR more dangerous than flying.\n\nThe Availability Heuristic: We judge the probability of events by how easily examples come to mind. Dramatic, vivid, recent events (plane crashes, shark attacks, terrorist attacks) get OVERWEIGHTED. Mundane common risks (car accidents, heart disease) get ignored.\n\nChallenge: Name three things you are genuinely afraid of. Now look up the actual statistical probability. Are your fears calibrated to reality — or to memorable news stories?",
       type: ChallengeType.cognitiveBias,
       sourceName: 'The Decision Lab',
-      sourceDescription: 'Judging probability by how easily examples come to mind',
+      sourceDescription:
+          'Judging probability by how easily examples come to mind',
       category: 'Availability Heuristic',
       difficulty: 2,
       hintTiers: [
@@ -314,7 +323,8 @@ class ChallengeLibrary {
           "Research by David Dunning and Justin Kruger showed: people with LOW competence in a domain consistently OVERESTIMATE their ability. People with HIGH competence consistently UNDERESTIMATE it.\n\nThe brutal implication: The less you know, the more confident you are. The more you know, the more you realize how much you don't know.\n\nHere's your challenge: Pick a domain where you consider yourself expert or highly knowledgeable. Now answer these: What is the single hardest UNSOLVED problem in that domain? What is the most serious CHALLENGE to your main view? What do top experts in the field DISAGREE about?\n\nIf you can't answer these fluently, recalibrate.",
       type: ChallengeType.cognitiveBias,
       sourceName: 'The Decision Lab',
-      sourceDescription: 'Why incompetent people overestimate and experts underestimate',
+      sourceDescription:
+          'Why incompetent people overestimate and experts underestimate',
       category: 'Dunning-Kruger Effect',
       difficulty: 3,
       hintTiers: [
@@ -337,7 +347,8 @@ class ChallengeLibrary {
           "Experiment: Two groups are asked whether Gandhi died before or after age 9 (Group A) or age 140 (Group B). Both numbers are clearly ridiculous. But then both groups are asked: 'How old WAS Gandhi when he died?'\n\nGroup A consistently guesses younger. Group B consistently guesses older. An irrelevant, obviously wrong number ANCHORED their estimate.\n\nThis affects salary negotiations, judicial sentences, medical diagnoses, and every major decision you make.\n\nChallenge: In your last 3 significant decisions (purchase, negotiation, evaluation of someone), what was the ANCHOR? Did you adjust enough from it? And the meta-question: now that you KNOW about anchoring, does knowing protect you from it?",
       type: ChallengeType.cognitiveBias,
       sourceName: 'The Decision Lab',
-      sourceDescription: 'The first piece of information disproportionately influences judgments',
+      sourceDescription:
+          'The first piece of information disproportionately influences judgments',
       category: 'Anchoring Effect',
       difficulty: 2,
       hintTiers: [
@@ -360,7 +371,8 @@ class ChallengeLibrary {
           "A waiter is rude to you. Your immediate thought: 'What a jerk.' But the waiter just received devastating personal news an hour ago.\n\nYou cut someone off in traffic because you're rushing to a hospital. Others think: 'Terrible driver.'\n\nThe Fundamental Attribution Error: We over-attribute others' behavior to their CHARACTER (dispositional), while under-weighting SITUATIONAL factors. For ourselves, we do the opposite — we blame our bad behavior on the situation.\n\nThe deeper challenge: If most human behavior is situationally driven, what does this mean for how we hold people morally responsible? Does the situation ever fully excuse the behavior?",
       type: ChallengeType.cognitiveBias,
       sourceName: 'The Decision Lab',
-      sourceDescription: 'Over-attributing others behavior to character, underweighting situations',
+      sourceDescription:
+          'Over-attributing others behavior to character, underweighting situations',
       category: 'Fundamental Attribution Error',
       difficulty: 3,
       hintTiers: [
@@ -383,7 +395,8 @@ class ChallengeLibrary {
           "During WWII, the Allies analyzed bullet holes in planes returning from missions to determine where to add extra armor. The data showed hits concentrated on the fuselage and wings. The obvious conclusion: reinforce those areas.\n\nStatistician Abraham Wald said: WRONG. Reinforce the engines and cockpit. Why? Because the planes that were HIT THERE didn't RETURN. You're only studying survivors.\n\nSurvivorship bias affects everything: 'Successful entrepreneurs dropped out of college' (ignoring the thousands who dropped out and failed), 'Old buildings are better quality' (the bad ones fell down), 'This investment strategy worked' (ignoring all the funds that used it and went bust).\n\nWhere in YOUR life are you studying only the planes that came back?",
       type: ChallengeType.cognitiveBias,
       sourceName: 'The Decision Lab',
-      sourceDescription: 'Focusing on survivors while ignoring those who did not make it',
+      sourceDescription:
+          'Focusing on survivors while ignoring those who did not make it',
       category: 'Survivorship Bias',
       difficulty: 3,
       hintTiers: [
@@ -406,7 +419,8 @@ class ChallengeLibrary {
           "Two doctors describe the same surgery:\nDoctor A: 'This surgery has a 90% survival rate.'\nDoctor B: 'This surgery has a 10% mortality rate.'\n\nIdentical information. But people consistently rate Doctor A's surgery as preferable and are more likely to consent.\n\nThe Framing Effect: how information is PRESENTED changes our decisions, independent of the actual content. Marketers, politicians, and lawyers exploit this constantly.\n\nYour challenge: Take a decision you've made recently. Now reframe the key information in the OPPOSITE frame (losses as gains, gains as losses). Does the decision still feel right? What does this tell you about YOUR reasoning process?",
       type: ChallengeType.cognitiveBias,
       sourceName: 'The Decision Lab',
-      sourceDescription: 'How presentation of identical information changes decisions',
+      sourceDescription:
+          'How presentation of identical information changes decisions',
       category: 'Framing Effect',
       difficulty: 2,
       hintTiers: [
@@ -452,7 +466,8 @@ class ChallengeLibrary {
           "Research consistently shows humans are terrible at predicting how long tasks will take. Students estimate essays will take 3 days — average actual time: 10 days. Building projects, software launches, government initiatives — almost all overrun their initial estimates, often by 100-300%.\n\nDaniel Kahneman calls this the Planning Fallacy: we plan based on best-case scenarios (inside view) while ignoring base rates of similar projects (outside view).\n\nBut here's the twist: even KNOWING this, we still do it. And there's a paradox — if everyone builds in extra time, nothing gets done efficiently. Is there a rational case for optimistic planning? Or is it pure bias all the way down?",
       type: ChallengeType.cognitiveBias,
       sourceName: 'The Decision Lab',
-      sourceDescription: 'Underestimating time and costs while overestimating benefits of plans',
+      sourceDescription:
+          'Underestimating time and costs while overestimating benefits of plans',
       category: 'Planning Fallacy',
       difficulty: 3,
       hintTiers: [
@@ -476,7 +491,8 @@ class ChallengeLibrary {
           "In 1964, Kitty Genovese was murdered outside her New York apartment while (reportedly) 38 witnesses watched and did nothing. This launched research into the Bystander Effect: the more people present in an emergency, the LESS likely any individual is to help.\n\nTwo mechanisms: (1) Diffusion of responsibility — 'someone else will handle it.' (2) Pluralistic ignorance — everyone looks at others for cues, sees no one acting, concludes it must not be an emergency.\n\nThe disturbing implication: you are statistically less safe collapsing in Times Square than on a quiet country road. What does this say about collective moral responsibility? And does knowing this change how YOU would act?",
       type: ChallengeType.cognitiveBias,
       sourceName: 'The Decision Lab',
-      sourceDescription: 'Individuals are less likely to help when others are present',
+      sourceDescription:
+          'Individuals are less likely to help when others are present',
       category: 'Bystander Effect',
       difficulty: 3,
       hintTiers: [
@@ -499,7 +515,8 @@ class ChallengeLibrary {
           "A predictor with an extraordinary track record places two boxes before you:\n- Box A: Transparent, contains £1,000\n- Box B: Opaque — contains £1,000,000 if the predictor predicted you would take ONLY Box B, or empty if they predicted you'd take BOTH.\n\nThe predictor has been right 99.9% of the time. The prediction is already made — you cannot change it.\n\nDo you take both boxes (guaranteed £1,000 + whatever is in B) or only Box B?\n\nTwo brilliant principles give opposite answers:\n- DOMINANCE: Taking both boxes always gets you more (regardless of what's in B, two boxes > one box)\n- EXPECTED VALUE: Taking only Box B has vastly higher expected value given the predictor's accuracy\n\nWhich principle do you trust — and why?",
       type: ChallengeType.philosophy,
       sourceName: 'Philosophy Experiments',
-      sourceDescription: 'Decision theory, free will, and causation vs. correlation',
+      sourceDescription:
+          'Decision theory, free will, and causation vs. correlation',
       category: 'Decision Theory',
       difficulty: 5,
       hintTiers: [
@@ -522,7 +539,8 @@ class ChallengeLibrary {
           "A fair coin has landed heads 8 times in a row. What's the probability it lands heads on the 9th flip?\n\nMost people feel strongly it 'must' be tails now — the universe owes a correction. This is the Gambler's Fallacy: believing independent random events are connected and 'balance out' over time.\n\nThe coin doesn't remember its history. P(heads) = 0.5 every single time.\n\nBut here's the twist: after 8 consecutive heads, a RATIONAL person should actually update their belief that the coin might be BIASED toward heads. So the error isn't just the gambler's fallacy — it's treating a potentially non-random system as random.\n\nWhen is it rational to believe in 'runs' vs independent events?",
       type: ChallengeType.cognitiveBias,
       sourceName: 'The Decision Lab',
-      sourceDescription: 'Believing past random events affect future independent outcomes',
+      sourceDescription:
+          'Believing past random events affect future independent outcomes',
       category: "Gambler's Fallacy",
       difficulty: 3,
       hintTiers: [
@@ -577,7 +595,8 @@ class ChallengeLibrary {
           'You must choose between two jobs. Job A pays more and has a known culture. Job B pays less today but offers faster learning. You can leave either job after six months, but switching has emotional and reputational costs.\n\nChallenge: Decide using expected value, reversibility, and regret. Which information would change your choice most, and how much would you pay in time or effort to learn it?',
       type: ChallengeType.decisionTheory,
       sourceName: 'Mind Gym Decision Lab',
-      sourceDescription: 'Expected value, optionality, and decision reversibility',
+      sourceDescription:
+          'Expected value, optionality, and decision reversibility',
       category: 'Decision Theory',
       tags: ['expected value', 'optionality', 'regret'],
       difficulty: 3,
@@ -665,7 +684,8 @@ class ChallengeLibrary {
           'A viral chart shows a dramatic rise in crime after a new policy. The y-axis starts at 94 instead of 0, the chart uses monthly counts without population adjustment, and it omits the previous five years.\n\nChallenge: Decide what the chart proves, what it merely suggests, and what you would need before sharing it. How could the same data be visualized honestly?',
       type: ChallengeType.mediaLiteracy,
       sourceName: 'Mind Gym Media Lab',
-      sourceDescription: 'Chart literacy, missing context, and sharing discipline',
+      sourceDescription:
+          'Chart literacy, missing context, and sharing discipline',
       category: 'Media Literacy',
       tags: ['media literacy', 'charts', 'context'],
       difficulty: 2,
@@ -687,8 +707,9 @@ class ChallengeLibrary {
   static List<Challenge> getPhilosophyChallenges() =>
       allChallenges.where((c) => c.type == ChallengeType.philosophy).toList();
 
-  static List<Challenge> getCognitiveBiasChallenges() =>
-      allChallenges.where((c) => c.type == ChallengeType.cognitiveBias).toList();
+  static List<Challenge> getCognitiveBiasChallenges() => allChallenges
+      .where((c) => c.type == ChallengeType.cognitiveBias)
+      .toList();
 
   static List<Challenge> getPhilosophyStyleChallenges() =>
       allChallenges.where((c) => c.isPhilosophyStyle).toList();
@@ -714,11 +735,9 @@ class ChallengeLibrary {
       recent,
       const {},
     );
-    final second = _pickFromPool(
-      getCognitiveBiasStyleChallenges(),
-      recent,
-      {first.category},
-    );
+    final second = _pickFromPool(getCognitiveBiasStyleChallenges(), recent, {
+      first.category,
+    });
 
     return [first, second];
   }
@@ -738,19 +757,23 @@ class ChallengeLibrary {
     }
 
     eligible.sort((a, b) {
-      final categoryCompare = _categoryScore(a, usedCategories)
-          .compareTo(_categoryScore(b, usedCategories));
+      final categoryCompare = _categoryScore(
+        a,
+        usedCategories,
+      ).compareTo(_categoryScore(b, usedCategories));
       if (categoryCompare != 0) return categoryCompare;
 
-      final difficultyCompare =
-          _difficultyScore(a).compareTo(_difficultyScore(b));
+      final difficultyCompare = _difficultyScore(
+        a,
+      ).compareTo(_difficultyScore(b));
       if (difficultyCompare != 0) return difficultyCompare;
 
       final tagCompare = b.tags.length.compareTo(a.tags.length);
       if (tagCompare != 0) return tagCompare;
 
-      final timeCompare =
-          a.estimatedTimeMinutes.compareTo(b.estimatedTimeMinutes);
+      final timeCompare = a.estimatedTimeMinutes.compareTo(
+        b.estimatedTimeMinutes,
+      );
       if (timeCompare != 0) return timeCompare;
 
       return a.id.compareTo(b.id);

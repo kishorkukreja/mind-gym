@@ -6,24 +6,48 @@ void main() {
   group('ChallengeLibrary metadata', () {
     test('every challenge exposes complete product metadata', () {
       for (final challenge in ChallengeLibrary.allChallenges) {
-        expect(challenge.category.trim(), isNotEmpty,
-            reason: '${challenge.id} must have a category');
-        expect(challenge.tags, isNotEmpty,
-            reason: '${challenge.id} must have tags');
-        expect(challenge.difficulty, inInclusiveRange(1, 5),
-            reason: '${challenge.id} must have a 1-5 difficulty');
-        expect(challenge.estimatedTimeMinutes, greaterThan(0),
-            reason: '${challenge.id} must estimate session time');
-        expect(challenge.typeLabel, isNotEmpty,
-            reason: '${challenge.id} must have a type label');
-        expect(challenge.difficultyLabel, isNotEmpty,
-            reason: '${challenge.id} must have a difficulty label');
-        expect(challenge.hintTiers.length, 3,
-            reason: '${challenge.id} should keep three progressive hints');
+        expect(
+          challenge.category.trim(),
+          isNotEmpty,
+          reason: '${challenge.id} must have a category',
+        );
+        expect(
+          challenge.tags,
+          isNotEmpty,
+          reason: '${challenge.id} must have tags',
+        );
+        expect(
+          challenge.difficulty,
+          inInclusiveRange(1, 5),
+          reason: '${challenge.id} must have a 1-5 difficulty',
+        );
+        expect(
+          challenge.estimatedTimeMinutes,
+          greaterThan(0),
+          reason: '${challenge.id} must estimate session time',
+        );
+        expect(
+          challenge.typeLabel,
+          isNotEmpty,
+          reason: '${challenge.id} must have a type label',
+        );
+        expect(
+          challenge.difficultyLabel,
+          isNotEmpty,
+          reason: '${challenge.id} must have a difficulty label',
+        );
+        expect(
+          challenge.hintTiers.length,
+          3,
+          reason: '${challenge.id} should keep three progressive hints',
+        );
 
         for (final variant in challenge.variants) {
-          expect(variant.id, isNot(challenge.id),
-              reason: '${challenge.id} variant IDs must be distinct');
+          expect(
+            variant.id,
+            isNot(challenge.id),
+            reason: '${challenge.id} variant IDs must be distinct',
+          );
           expect(variant.title.trim(), isNotEmpty);
           expect(variant.question.trim(), isNotEmpty);
         }
@@ -70,7 +94,10 @@ void main() {
 
         expect(picks, hasLength(2));
         expect(picks.any((challenge) => challenge.isPhilosophyStyle), isTrue);
-        expect(picks.any((challenge) => challenge.isCognitiveBiasStyle), isTrue);
+        expect(
+          picks.any((challenge) => challenge.isCognitiveBiasStyle),
+          isTrue,
+        );
       },
     );
 
