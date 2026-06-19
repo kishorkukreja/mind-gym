@@ -343,6 +343,29 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                   ],
                 ),
+                if (isCompleted && uc.xpBreakdown != null) ...[
+                  const SizedBox(height: 8),
+                  Row(
+                    children: [
+                      Icon(Icons.receipt_long_outlined,
+                          size: 13, color: AppTheme.textSecondary),
+                      const SizedBox(width: 4),
+                      Expanded(
+                        child: Text(
+                          uc.xpBreakdown!.antiFarmingTriggered
+                              ? 'XP breakdown saved - anti-farming applied'
+                              : 'XP breakdown saved',
+                          style: TextStyle(
+                            color: AppTheme.textSecondary,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ],
             ),
           ),

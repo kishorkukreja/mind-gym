@@ -6,6 +6,7 @@ import 'storage_service.dart';
 import 'schedule_service.dart';
 import 'openrouter_service.dart';
 import 'challenge_library.dart';
+import 'xp_scoring_service.dart';
 
 class AppProvider extends ChangeNotifier {
   static const _uuid = Uuid();
@@ -203,25 +204,28 @@ class AppProvider extends ChangeNotifier {
   Future<int> markChallengeComplete(String ucId) async {
     final uc = getChallenge(ucId);
     if (uc == null || _currentUser == null) return 0;
+    if (uc.status == ChallengeStatus.completed) return uc.xpEarned;
 
+    final now = DateTime.now();
     final challenge = ChallengeLibrary.getById(uc.challengeId);
-    final xp = ScheduleService.calculateXpReward(
-      hintsUsed: uc.hintsUsed,
-      responseCount: uc.responseCount,
+    final xpBreakdown = XpScoringService.calculateBreakdown(
       difficulty: challenge?.difficulty ?? 3,
-      onTime: DateTime.now()
-          .isBefore(uc.scheduledFor.add(const Duration(days: 2))),
+      hintsUsed: uc.hintsUsed,
+      scheduledFor: uc.scheduledFor,
+      completedAt: now,
+      conversation: uc.conversation,
     );
+    final xp = xpBreakdown.totalXp;
 
     uc.status = ChallengeStatus.completed;
-    uc.completedAt = DateTime.now();
+    uc.completedAt = now;
     uc.xpEarned = xp;
+    uc.xpBreakdown = xpBreakdown;
 
     _currentUser!.xp += xp;
     _currentUser!.totalChallengesCompleted++;
 
     // Streak logic
-    final now = DateTime.now();
     final lastActive = _currentUser!.lastActiveDate;
     if (lastActive != null) {
       final diff = now.difference(lastActive).inDays;
