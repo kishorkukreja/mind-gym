@@ -561,9 +561,10 @@ class ChallengeLibrary {
   static List<Challenge> getPhilosophyChallenges() =>
       allChallenges.where((c) => c.type == ChallengeType.philosophy).toList();
 
-  static List<Challenge> getCognitiveBiasChallenges() => allChallenges
-      .where((c) => c.type == ChallengeType.cognitiveBias)
-      .toList();
+  static List<Challenge> getCognitiveBiasChallenges() =>
+      allChallenges
+          .where((c) => c.type == ChallengeType.cognitiveBias)
+          .toList();
 
   static Challenge? getById(String id) {
     try {
@@ -576,12 +577,14 @@ class ChallengeLibrary {
   /// Picks two challenges for the week: one philosophy, one cognitive bias
   /// Avoids recently used challenges
   static List<Challenge> pickWeeklyChallenges(List<String> recentIds) {
-    var philo = getPhilosophyChallenges()
-        .where((c) => !recentIds.contains(c.id))
-        .toList();
-    var cogn = getCognitiveBiasChallenges()
-        .where((c) => !recentIds.contains(c.id))
-        .toList();
+    var philo =
+        getPhilosophyChallenges()
+            .where((c) => !recentIds.contains(c.id))
+            .toList();
+    var cogn =
+        getCognitiveBiasChallenges()
+            .where((c) => !recentIds.contains(c.id))
+            .toList();
 
     // Fallback to full list if all have been used
     if (philo.isEmpty) {
