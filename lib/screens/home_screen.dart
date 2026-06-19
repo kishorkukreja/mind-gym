@@ -28,6 +28,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final provider = context.watch<AppProvider>();
     final user = provider.currentUser!;
     final challenges = provider.weekChallenges;
+    final starterChallenges = challenges
+        .where((uc) => uc.challengeId == ChallengeLibrary.starterChallengeId)
+        .toList();
+    final scheduledChallenges = challenges
+        .where((uc) => uc.challengeId != ChallengeLibrary.starterChallengeId)
+        .toList();
     final countdown = provider.getCountdownToNextChallenge();
 
     return Scaffold(
@@ -46,6 +52,18 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 20),
                 _buildXpCard(user, context),
                 const SizedBox(height: 20),
+                if (starterChallenges.isNotEmpty) ...[
+                  Text('STARTER CHALLENGE',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            letterSpacing: 1.5,
+                            fontWeight: FontWeight.w700,
+                            color: AppTheme.textSecondary,
+                          )),
+                  const SizedBox(height: 12),
+                  ...starterChallenges
+                      .map((uc) => _buildChallengeCard(uc, context, provider)),
+                  const SizedBox(height: 20),
+                ],
                 if (countdown != null) _buildCountdown(countdown),
                 if (countdown != null) const SizedBox(height: 20),
                 Text('THIS WEEK\'S CHALLENGES',
@@ -55,10 +73,11 @@ class _HomeScreenState extends State<HomeScreen> {
                           color: AppTheme.textSecondary,
                         )),
                 const SizedBox(height: 12),
-                if (challenges.isEmpty)
+                if (scheduledChallenges.isEmpty)
                   _buildNoChallenges()
                 else
-                  ...challenges.map((uc) => _buildChallengeCard(uc, context, provider)),
+                  ...scheduledChallenges
+                      .map((uc) => _buildChallengeCard(uc, context, provider)),
                 const SizedBox(height: 20),
                 _buildQuickStats(user, context),
               ],
@@ -92,7 +111,9 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: BoxDecoration(
               color: AppTheme.warningColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: AppTheme.warningColor.withValues(alpha: 0.3)),
+              border: Border.all(
+                color: AppTheme.warningColor.withValues(alpha: 0.3),
+              ),
             ),
             child: Row(
               children: [
@@ -204,7 +225,11 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildChallengeCard(UserChallenge uc, BuildContext context, AppProvider provider) {
+  Widget _buildChallengeCard(
+    UserChallenge uc,
+    BuildContext context,
+    AppProvider provider,
+  ) {
     final challenge = ChallengeLibrary.getById(uc.challengeId);
     if (challenge == null) return const SizedBox.shrink();
 
@@ -282,7 +307,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(height: 12),
                 Text(challenge.title,
                     style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                          color: isSkipped ? AppTheme.textSecondary : AppTheme.textPrimary,
+                          color: isSkipped
+                              ? AppTheme.textSecondary
+                              : AppTheme.textPrimary,
                           decoration: isSkipped ? TextDecoration.lineThrough : null,
                         )),
                 const SizedBox(height: 6),
@@ -332,7 +359,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     if (isCompleted)
                       Row(
                         children: [
-                          Icon(Icons.check_circle, color: AppTheme.successColor, size: 16),
+                          Icon(
+                            Icons.check_circle,
+                            color: AppTheme.successColor,
+                            size: 16,
+                          ),
                           const SizedBox(width: 4),
                           Text('+${uc.xpEarned} XP',
                               style: TextStyle(
@@ -380,7 +411,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           child: Text('Done',
               style: TextStyle(
-                  color: AppTheme.successColor, fontSize: 11, fontWeight: FontWeight.w700)),
+                  color: AppTheme.successColor,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                )),
         );
       case ChallengeStatus.skipped:
         return Container(
@@ -391,7 +425,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           child: Text('Skipped',
               style: TextStyle(
-                  color: AppTheme.errorColor, fontSize: 11, fontWeight: FontWeight.w700)),
+                  color: AppTheme.errorColor,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                )),
         );
       case ChallengeStatus.inProgress:
         return Container(
@@ -402,7 +439,10 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           child: Text('Open',
               style: TextStyle(
-                  color: AppTheme.warningColor, fontSize: 11, fontWeight: FontWeight.w700)),
+                  color: AppTheme.warningColor,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w700,
+                )),
         );
       default:
         return Container(
@@ -526,8 +566,18 @@ class _HomeScreenState extends State<HomeScreen> {
   String _formatSchedule(DateTime dt) {
     final days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
     final months = [
-      'Jan','Feb','Mar','Apr','May','Jun',
-      'Jul','Aug','Sep','Oct','Nov','Dec'
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
     ];
     final hour = dt.hour;
     final ampm = hour >= 12 ? 'pm' : 'am';

@@ -84,6 +84,21 @@ class AppProvider extends ChangeNotifier {
     return null;
   }
 
+  Future<void> startGuestSession() async {
+    _setLoading(true);
+    _error = null;
+    final user = UserModel(
+      id: _uuid.v4(),
+      username: _nextGuestUsername(),
+      pinHash: StorageService.hashPin(_uuid.v4()),
+    );
+    await StorageService.saveUser(user);
+    await StorageService.setCurrentUser(user.id);
+    _currentUser = user;
+    await _loadWeekChallenges();
+    _setLoading(false);
+  }
+
   Future<void> logout() async {
     await StorageService.clearCurrentUser();
     _currentUser = null;
@@ -95,7 +110,15 @@ class AppProvider extends ChangeNotifier {
   Future<void> _loadWeekChallenges() async {
     if (_currentUser == null) return;
     await ScheduleService.processExpiredChallenges(_currentUser!);
-    _weekChallenges = ScheduleService.getThisWeekChallenges(_currentUser!);
+    final starterChallenge = await _ensureStarterChallenge();
+    final scheduledChallenges =
+        ScheduleService.getThisWeekChallenges(_currentUser!)
+        .where((uc) => uc.challengeId != ChallengeLibrary.starterChallengeId)
+        .toList();
+    _weekChallenges = [
+      if (starterChallenge != null) starterChallenge,
+      ...scheduledChallenges,
+    ];
     notifyListeners();
   }
 
@@ -133,9 +156,33 @@ class AppProvider extends ChangeNotifier {
     if (uc == null || _currentUser == null) return 'Challenge not found';
     if (_currentUser!.openRouterApiKey == null ||
         _currentUser!.openRouterApiKey!.isEmpty) {
-      return '⚠️ No API key set. Please add your OpenRouter key in Settings.';
-    }
+      final challenge = ChallengeLibrary.getById(uc.challengeId);
+      if (challenge == null) {
+        return 'Challenge definition not found.';
+      }
 
+      uc.conversation.add(ChallengeMessage(
+        role: 'user',
+        content: userMessage,
+        timestamp: DateTime.now(),
+      ));
+      uc.responseCount++;
+      uc.status = ChallengeStatus.inProgress;
+
+      final aiResponse = _buildOfflineDebateResponse(
+        challenge: challenge,
+        userMessage: userMessage,
+        responseCount: uc.responseCount,
+      );
+      uc.conversation.add(ChallengeMessage(
+        role: 'assistant',
+        content: aiResponse,
+        timestamp: DateTime.now(),
+      ));
+      await StorageService.saveUserChallenge(uc);
+      notifyListeners();
+      return aiResponse;
+    }
     // Add user message
     uc.conversation.add(ChallengeMessage(
       role: 'user',
@@ -298,5 +345,56 @@ class AppProvider extends ChangeNotifier {
   void clearError() {
     _error = null;
     notifyListeners();
+  }
+
+  Future<UserChallenge?> _ensureStarterChallenge() async {
+    if (_currentUser == null) return null;
+    final existing = StorageService.getUserChallenges(_currentUser!.id)
+        .where((uc) => uc.challengeId == ChallengeLibrary.starterChallengeId)
+        .toList();
+    if (existing.isNotEmpty) {
+      existing.sort((a, b) => a.scheduledFor.compareTo(b.scheduledFor));
+      return existing.first;
+    }
+
+    final starter = UserChallenge(
+      id: _uuid.v4(),
+      challengeId: ChallengeLibrary.starterChallengeId,
+      userId: _currentUser!.id,
+      status: ChallengeStatus.open,
+      scheduledFor: DateTime.now(),
+    );
+    await StorageService.saveUserChallenge(starter);
+    return starter;
+  }
+
+  String _nextGuestUsername() {
+    final users = StorageService.getAllUsers();
+    if (!users.any((user) => user.username == 'Guest')) return 'Guest';
+
+    var index = 2;
+    while (users.any((user) => user.username == 'Guest $index')) {
+      index++;
+    }
+    return 'Guest $index';
+  }
+
+  String _buildOfflineDebateResponse({
+    required Challenge challenge,
+    required String userMessage,
+    required int responseCount,
+  }) {
+    if (challenge.id == ChallengeLibrary.starterChallengeId) {
+      return 'Local starter coach: good. Now make the idea harder to hide '
+          'from. What is the strongest objection to "$userMessage", and what '
+          'evidence would actually change your mind?';
+    }
+
+    final angle = challenge.thinkingAngles.isNotEmpty
+        ? challenge.thinkingAngles[
+            (responseCount - 1).clamp(0, challenge.thinkingAngles.length - 1)]
+        : 'your reasoning';
+    return 'Local debate coach: no API key is set, so I will keep this offline. '
+        'Pressure-test $angle. What assumption in your answer would a careful critic attack first?';
   }
 }

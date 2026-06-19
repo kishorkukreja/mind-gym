@@ -73,7 +73,9 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
       final err = await provider.register(
         username,
         pin,
-        apiKey: _apiKeyCtrl.text.trim().isNotEmpty ? _apiKeyCtrl.text.trim() : null,
+        apiKey: _apiKeyCtrl.text.trim().isNotEmpty
+            ? _apiKeyCtrl.text.trim()
+            : null,
       );
       if (err != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -82,6 +84,10 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
         ));
       }
     }
+  }
+
+  Future<void> _startGuest() async {
+    await context.read<AppProvider>().startGuestSession();
   }
 
   @override
@@ -118,7 +124,26 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                           color: AppTheme.textSecondary,
                           letterSpacing: 1.5,
                         )),
-                const SizedBox(height: 40),
+                const SizedBox(height: 24),
+                _buildOnboardingCard(),
+                const SizedBox(height: 16),
+                SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: OutlinedButton.icon(
+                    onPressed: provider.isLoading ? null : _startGuest,
+                    icon: const Icon(Icons.play_arrow_rounded),
+                    label: const Text('Try Starter Challenge as Guest'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppTheme.primary,
+                      side: BorderSide(color: AppTheme.primary),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
 
                 // User switcher if users exist
                 if (users.isNotEmpty && _isLogin) ...[
@@ -153,7 +178,9 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                         label: 'Username',
                         icon: Icons.person_outline,
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_]')),
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'[a-zA-Z0-9_]'),
+                          ),
                           LengthLimitingTextInputFormatter(20),
                         ],
                       ),
@@ -277,12 +304,14 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                     children: [
                       CircleAvatar(
                         radius: 18,
-                        backgroundColor: AppTheme.primary.withValues(alpha: 0.2),
+                        backgroundColor:
+                            AppTheme.primary.withValues(alpha: 0.2),
                         child: Text(
                           u.username[0].toUpperCase(),
                           style: TextStyle(
                               color: AppTheme.primary,
-                              fontWeight: FontWeight.bold),
+                              fontWeight: FontWeight.bold,
+                            ),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -290,7 +319,8 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                         u.username,
                         style: TextStyle(
                             color: AppTheme.textPrimary,
-                            fontSize: 10),
+                            fontSize: 10,
+                          ),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
@@ -302,6 +332,55 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
           ),
         ),
       ],
+    );
+  }
+
+  Widget _buildOnboardingCard() {
+    final items = [
+      (Icons.event_available_outlined, 'Scheduled weekly challenges'),
+      (Icons.forum_outlined, 'Debate your reasoning'),
+      (Icons.bolt_outlined, 'Earn XP for completing sessions'),
+      (Icons.insights_outlined, 'Track progress over time'),
+    ];
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppTheme.surface,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: AppTheme.border),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Train with one challenge now. New weekly drills unlock on your schedule.',
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: 12),
+          ...items.map(
+            (item) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: Row(
+                children: [
+                  Icon(item.$1, color: AppTheme.primary, size: 18),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      item.$2,
+                      style: TextStyle(
+                        color: AppTheme.textSecondary,
+                        fontSize: 13,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -323,13 +402,17 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        hintStyle: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.5)),
+        hintStyle: TextStyle(
+          color: AppTheme.textSecondary.withValues(alpha: 0.5),
+        ),
         labelStyle: TextStyle(color: AppTheme.textSecondary),
         prefixIcon: Icon(icon, color: AppTheme.primary, size: 20),
         suffixIcon: isPin
             ? IconButton(
                 icon: Icon(
-                  _obscurePin ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                  _obscurePin
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
                   color: AppTheme.textSecondary,
                   size: 20,
                 ),
