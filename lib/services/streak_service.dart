@@ -49,9 +49,11 @@ class StreakService {
         .toList();
 
     if (currentChallenges.isEmpty) return PerfectWeekStatus.notStarted;
-    if (currentChallenges.any((uc) =>
-        uc.status == ChallengeStatus.skipped ||
-        uc.status == ChallengeStatus.expired)) {
+    if (currentChallenges.any(
+      (uc) =>
+          uc.status == ChallengeStatus.skipped ||
+          uc.status == ChallengeStatus.expired,
+    )) {
       return PerfectWeekStatus.broken;
     }
     if (currentChallenges.every(
@@ -93,8 +95,9 @@ class StreakService {
       );
       final dayDiff = activityDate.difference(normalizedLast).inDays;
       if (dayDiff == 0) {
-        user.activityStreak =
-            user.activityStreak == 0 ? 1 : user.activityStreak;
+        user.activityStreak = user.activityStreak == 0
+            ? 1
+            : user.activityStreak;
       } else if (dayDiff == 1) {
         user.activityStreak++;
       } else {
@@ -119,8 +122,9 @@ class StreakService {
   }) {
     if (user.lastCompletedWeekKey == weekKey) return;
 
-    final previousWeekKey =
-        ScheduleService.weekKey(scheduledFor.subtract(const Duration(days: 7)));
+    final previousWeekKey = ScheduleService.weekKey(
+      scheduledFor.subtract(const Duration(days: 7)),
+    );
     if (user.lastCompletedWeekKey == previousWeekKey) {
       user.weeklyCompletionStreak++;
     } else {

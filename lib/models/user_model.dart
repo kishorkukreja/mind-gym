@@ -52,92 +52,91 @@ class UserModel {
     this.weekendHour = 17,
     this.weekdayChallengeDay = 3,
     this.weekendChallengeDay = 6,
-  })  : completedChallengeIds = completedChallengeIds ?? [],
-        skippedChallengeIds = skippedChallengeIds ?? [],
-        weeklyStats = weeklyStats ?? {},
-        createdAt = createdAt ?? DateTime.now();
+  }) : completedChallengeIds = completedChallengeIds ?? [],
+       skippedChallengeIds = skippedChallengeIds ?? [],
+       weeklyStats = weeklyStats ?? {},
+       createdAt = createdAt ?? DateTime.now();
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'username': username,
-        'pinHash': pinHash,
-        'xp': xp,
-        'level': level,
-        'totalChallengesCompleted': totalChallengesCompleted,
-        'totalChallengesSkipped': totalChallengesSkipped,
-        'currentStreak': currentStreak,
-        'bestStreak': bestStreak,
-        'activityStreak': activityStreak,
-        'bestActivityStreak': bestActivityStreak,
-        'weeklyCompletionStreak': weeklyCompletionStreak,
-        'bestWeeklyCompletionStreak': bestWeeklyCompletionStreak,
-        'lastActiveDate': lastActiveDate?.toIso8601String(),
-        'lastActivityDate': lastActivityDate?.toIso8601String(),
-        'lastCompletedWeekKey': lastCompletedWeekKey,
-        'completedChallengeIds': completedChallengeIds,
-        'skippedChallengeIds': skippedChallengeIds,
-        'weeklyStats': weeklyStats,
-        'createdAt': createdAt.toIso8601String(),
-        'openRouterApiKey': openRouterApiKey,
-        'weekdayHour': weekdayHour,
-        'weekendHour': weekendHour,
-        'weekdayChallengeDay': weekdayChallengeDay,
-        'weekendChallengeDay': weekendChallengeDay,
-      };
+    'id': id,
+    'username': username,
+    'pinHash': pinHash,
+    'xp': xp,
+    'level': level,
+    'totalChallengesCompleted': totalChallengesCompleted,
+    'totalChallengesSkipped': totalChallengesSkipped,
+    'currentStreak': currentStreak,
+    'bestStreak': bestStreak,
+    'activityStreak': activityStreak,
+    'bestActivityStreak': bestActivityStreak,
+    'weeklyCompletionStreak': weeklyCompletionStreak,
+    'bestWeeklyCompletionStreak': bestWeeklyCompletionStreak,
+    'lastActiveDate': lastActiveDate?.toIso8601String(),
+    'lastActivityDate': lastActivityDate?.toIso8601String(),
+    'lastCompletedWeekKey': lastCompletedWeekKey,
+    'completedChallengeIds': completedChallengeIds,
+    'skippedChallengeIds': skippedChallengeIds,
+    'weeklyStats': weeklyStats,
+    'createdAt': createdAt.toIso8601String(),
+    'openRouterApiKey': openRouterApiKey,
+    'weekdayHour': weekdayHour,
+    'weekendHour': weekendHour,
+    'weekdayChallengeDay': weekdayChallengeDay,
+    'weekendChallengeDay': weekendChallengeDay,
+  };
 
   factory UserModel.fromJson(Map<String, dynamic> json) => UserModel(
-        id: json['id'] as String,
-        username: json['username'] as String,
-        pinHash: json['pinHash'] as String,
-        xp: (json['xp'] as int?) ?? 0,
-        level: (json['level'] as int?) ?? 1,
-        totalChallengesCompleted:
-            (json['totalChallengesCompleted'] as int?) ?? 0,
-        totalChallengesSkipped: (json['totalChallengesSkipped'] as int?) ?? 0,
-        currentStreak:
-            (json['currentStreak'] as int?) ??
-            (json['activityStreak'] as int?) ??
-            0,
-        bestStreak:
-            (json['bestStreak'] as int?) ??
-            (json['bestActivityStreak'] as int?) ??
-            0,
-        activityStreak:
-            (json['activityStreak'] as int?) ??
-            (json['currentStreak'] as int?) ??
-            0,
-        bestActivityStreak:
-            (json['bestActivityStreak'] as int?) ??
-            (json['bestStreak'] as int?) ??
-            0,
-        weeklyCompletionStreak: (json['weeklyCompletionStreak'] as int?) ?? 0,
-        bestWeeklyCompletionStreak:
-            (json['bestWeeklyCompletionStreak'] as int?) ?? 0,
-        lastActiveDate: json['lastActiveDate'] != null
-            ? DateTime.parse(json['lastActiveDate'] as String)
-            : null,
-        lastActivityDate: json['lastActivityDate'] != null
-            ? DateTime.parse(json['lastActivityDate'] as String)
-            : (json['lastActiveDate'] != null
-                ? DateTime.parse(json['lastActiveDate'] as String)
-                : null),
-        lastCompletedWeekKey: json['lastCompletedWeekKey'] as String?,
-        completedChallengeIds:
-            List<String>.from((json['completedChallengeIds'] as List?) ?? []),
-        skippedChallengeIds:
-            List<String>.from((json['skippedChallengeIds'] as List?) ?? []),
-        weeklyStats: Map<String, dynamic>.from(
-          (json['weeklyStats'] as Map?) ?? {},
-        ),
-        createdAt: json['createdAt'] != null
-            ? DateTime.parse(json['createdAt'] as String)
-            : DateTime.now(),
-        openRouterApiKey: json['openRouterApiKey'] as String?,
-        weekdayHour: (json['weekdayHour'] as int?) ?? 22,
-        weekendHour: (json['weekendHour'] as int?) ?? 17,
-        weekdayChallengeDay: (json['weekdayChallengeDay'] as int?) ?? 3,
-        weekendChallengeDay: (json['weekendChallengeDay'] as int?) ?? 6,
-      );
+    id: json['id'] as String,
+    username: json['username'] as String,
+    pinHash: json['pinHash'] as String,
+    xp: (json['xp'] as int?) ?? 0,
+    level: (json['level'] as int?) ?? 1,
+    totalChallengesCompleted: (json['totalChallengesCompleted'] as int?) ?? 0,
+    totalChallengesSkipped: (json['totalChallengesSkipped'] as int?) ?? 0,
+    currentStreak:
+        (json['currentStreak'] as int?) ??
+        (json['activityStreak'] as int?) ??
+        0,
+    bestStreak:
+        (json['bestStreak'] as int?) ??
+        (json['bestActivityStreak'] as int?) ??
+        0,
+    activityStreak:
+        (json['activityStreak'] as int?) ??
+        (json['currentStreak'] as int?) ??
+        0,
+    bestActivityStreak:
+        (json['bestActivityStreak'] as int?) ??
+        (json['bestStreak'] as int?) ??
+        0,
+    weeklyCompletionStreak: (json['weeklyCompletionStreak'] as int?) ?? 0,
+    bestWeeklyCompletionStreak:
+        (json['bestWeeklyCompletionStreak'] as int?) ?? 0,
+    lastActiveDate: json['lastActiveDate'] != null
+        ? DateTime.parse(json['lastActiveDate'] as String)
+        : null,
+    lastActivityDate: json['lastActivityDate'] != null
+        ? DateTime.parse(json['lastActivityDate'] as String)
+        : (json['lastActiveDate'] != null
+              ? DateTime.parse(json['lastActiveDate'] as String)
+              : null),
+    lastCompletedWeekKey: json['lastCompletedWeekKey'] as String?,
+    completedChallengeIds: List<String>.from(
+      (json['completedChallengeIds'] as List?) ?? [],
+    ),
+    skippedChallengeIds: List<String>.from(
+      (json['skippedChallengeIds'] as List?) ?? [],
+    ),
+    weeklyStats: Map<String, dynamic>.from((json['weeklyStats'] as Map?) ?? {}),
+    createdAt: json['createdAt'] != null
+        ? DateTime.parse(json['createdAt'] as String)
+        : DateTime.now(),
+    openRouterApiKey: json['openRouterApiKey'] as String?,
+    weekdayHour: (json['weekdayHour'] as int?) ?? 22,
+    weekendHour: (json['weekendHour'] as int?) ?? 17,
+    weekdayChallengeDay: (json['weekdayChallengeDay'] as int?) ?? 3,
+    weekendChallengeDay: (json['weekendChallengeDay'] as int?) ?? 6,
+  );
 
   String get levelTitle {
     if (level <= 2) return 'Sleeping Mind';

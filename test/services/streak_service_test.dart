@@ -10,11 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 void main() {
   group('StreakService.recordCompletion', () {
     test('updates activity streak and credits a completed week once', () {
-      final user = UserModel(
-        id: 'user-1',
-        username: 'Ada',
-        pinHash: 'pin',
-      );
+      final user = UserModel(id: 'user-1', username: 'Ada', pinHash: 'pin');
       final monday = DateTime(2026, 6, 15, 20);
       final first = _challenge(
         id: 'first',
@@ -110,10 +106,10 @@ void main() {
       expect(user.weeklyCompletionStreak, 0);
       expect(user.bestWeeklyCompletionStreak, 4);
       expect(
-        StreakService.getPerfectWeekStatus(
-          [missed, completed],
-          now: DateTime(2026, 6, 20),
-        ),
+        StreakService.getPerfectWeekStatus([
+          missed,
+          completed,
+        ], now: DateTime(2026, 6, 20)),
         PerfectWeekStatus.broken,
       );
     });
@@ -148,37 +144,45 @@ void main() {
       final xp = await provider.markChallengeComplete(challenge.id);
 
       expect(xp, 0);
-      expect(provider.getChallenge(challenge.id)!.status, ChallengeStatus.skipped);
+      expect(
+        provider.getChallenge(challenge.id)!.status,
+        ChallengeStatus.skipped,
+      );
       expect(provider.currentUser!.totalChallengesCompleted, 0);
     });
 
-    test('expiry persists as expired and breaks weekly completion streak', () async {
-      final user = UserModel(
-        id: 'user-1',
-        username: 'Ada',
-        pinHash: 'pin',
-        xp: 75,
-        weeklyCompletionStreak: 2,
-      );
-      await StorageService.saveUser(user);
-      final stale = _challenge(
-        id: 'stale',
-        userId: user.id,
-        scheduledFor: DateTime.now().subtract(const Duration(days: 5)),
-        status: ChallengeStatus.pending,
-      );
-      await StorageService.saveUserChallenge(stale);
+    test(
+      'expiry persists as expired and breaks weekly completion streak',
+      () async {
+        final user = UserModel(
+          id: 'user-1',
+          username: 'Ada',
+          pinHash: 'pin',
+          xp: 75,
+          weeklyCompletionStreak: 2,
+        );
+        await StorageService.saveUser(user);
+        final stale = _challenge(
+          id: 'stale',
+          userId: user.id,
+          scheduledFor: DateTime.now().subtract(const Duration(days: 5)),
+          status: ChallengeStatus.pending,
+        );
+        await StorageService.saveUserChallenge(stale);
 
-      await ScheduleService.processExpiredChallenges(user);
+        await ScheduleService.processExpiredChallenges(user);
 
-      final storedChallenge = StorageService.getUserChallenges(user.id).single;
-      final storedUser = StorageService.getAllUsers().single;
-      expect(storedChallenge.status, ChallengeStatus.expired);
-      expect(storedUser.totalChallengesSkipped, 1);
-      expect(storedUser.weeklyCompletionStreak, 0);
-      expect(storedUser.xp, 25);
-      expect(storedUser.skippedChallengeIds, contains(stale.id));
-    });
+        final storedChallenge = StorageService.getUserChallenges(
+          user.id,
+        ).single;
+        final storedUser = StorageService.getAllUsers().single;
+        expect(storedChallenge.status, ChallengeStatus.expired);
+        expect(storedUser.totalChallengesSkipped, 1);
+        expect(storedUser.weeklyCompletionStreak, 0);
+        expect(storedUser.xp, 25);
+        expect(storedUser.skippedChallengeIds, contains(stale.id));
+      },
+    );
   });
 }
 

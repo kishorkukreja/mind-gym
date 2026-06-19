@@ -56,7 +56,11 @@ class AppProvider extends ChangeNotifier {
     return true;
   }
 
-  Future<String?> register(String username, String pin, {String? apiKey}) async {
+  Future<String?> register(
+    String username,
+    String pin, {
+    String? apiKey,
+  }) async {
     _setLoading(true);
     if (username.trim().isEmpty) {
       _setLoading(false);
@@ -139,11 +143,13 @@ class AppProvider extends ChangeNotifier {
     }
 
     // Add user message
-    uc.conversation.add(ChallengeMessage(
-      role: 'user',
-      content: userMessage,
-      timestamp: DateTime.now(),
-    ));
+    uc.conversation.add(
+      ChallengeMessage(
+        role: 'user',
+        content: userMessage,
+        timestamp: DateTime.now(),
+      ),
+    );
     uc.responseCount++;
     uc.status = ChallengeStatus.inProgress;
     await StorageService.saveUserChallenge(uc);
@@ -167,11 +173,13 @@ class AppProvider extends ChangeNotifier {
       userLevel: _currentUser!.level,
     );
 
-    uc.conversation.add(ChallengeMessage(
-      role: 'assistant',
-      content: aiResponse,
-      timestamp: DateTime.now(),
-    ));
+    uc.conversation.add(
+      ChallengeMessage(
+        role: 'assistant',
+        content: aiResponse,
+        timestamp: DateTime.now(),
+      ),
+    );
     await StorageService.saveUserChallenge(uc);
 
     _isDebating = false;
@@ -192,11 +200,13 @@ class AppProvider extends ChangeNotifier {
     final hintMessage =
         '💡 Hint ${uc.hintsUsed + 1} of ${challenge.hintTiers.length}:\n\n${challenge.hintTiers[uc.hintsUsed]}';
     uc.hintsUsed++;
-    uc.conversation.add(ChallengeMessage(
-      role: 'assistant',
-      content: hintMessage,
-      timestamp: DateTime.now(),
-    ));
+    uc.conversation.add(
+      ChallengeMessage(
+        role: 'assistant',
+        content: hintMessage,
+        timestamp: DateTime.now(),
+      ),
+    );
     await StorageService.saveUserChallenge(uc);
     notifyListeners();
     return hintMessage;
@@ -306,7 +316,8 @@ class AppProvider extends ChangeNotifier {
   bool get isWeeklyStreakAtRisk {
     final now = DateTime.now();
     return _weekChallenges.any((uc) {
-      final isTerminal = uc.status == ChallengeStatus.completed ||
+      final isTerminal =
+          uc.status == ChallengeStatus.completed ||
           uc.status == ChallengeStatus.skipped ||
           uc.status == ChallengeStatus.expired;
       return !isTerminal &&

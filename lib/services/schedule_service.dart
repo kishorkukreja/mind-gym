@@ -175,9 +175,11 @@ class ScheduleService {
   }) {
     final currentTime = now ?? DateTime.now();
     final pending = weekChallenges
-        .where((uc) =>
-            uc.status == ChallengeStatus.pending &&
-            uc.scheduledFor.isAfter(currentTime))
+        .where(
+          (uc) =>
+              uc.status == ChallengeStatus.pending &&
+              uc.scheduledFor.isAfter(currentTime),
+        )
         .toList();
     if (pending.isEmpty) return null;
     pending.sort((a, b) => a.scheduledFor.compareTo(b.scheduledFor));
@@ -212,9 +214,11 @@ class ScheduleService {
         .where((uc) => uc.status == ChallengeStatus.completed)
         .length;
     int thisSkipped = thisWeekUc
-        .where((uc) =>
-            uc.status == ChallengeStatus.skipped ||
-            uc.status == ChallengeStatus.expired)
+        .where(
+          (uc) =>
+              uc.status == ChallengeStatus.skipped ||
+              uc.status == ChallengeStatus.expired,
+        )
         .length;
     int thisTotal = thisWeekUc.length;
 
@@ -227,13 +231,20 @@ class ScheduleService {
     double prevRate = prevTotal > 0 ? prevCompleted / prevTotal : 0;
 
     String grade;
-    if (thisRate >= 0.9) grade = 'A+';
-    else if (thisRate >= 0.8) grade = 'A';
-    else if (thisRate >= 0.7) grade = 'B+';
-    else if (thisRate >= 0.6) grade = 'B';
-    else if (thisRate >= 0.5) grade = 'C';
-    else if (thisRate >= 0.3) grade = 'D';
-    else grade = 'F';
+    if (thisRate >= 0.9)
+      grade = 'A+';
+    else if (thisRate >= 0.8)
+      grade = 'A';
+    else if (thisRate >= 0.7)
+      grade = 'B+';
+    else if (thisRate >= 0.6)
+      grade = 'B';
+    else if (thisRate >= 0.5)
+      grade = 'C';
+    else if (thisRate >= 0.3)
+      grade = 'D';
+    else
+      grade = 'F';
 
     return {
       'grade': grade,
