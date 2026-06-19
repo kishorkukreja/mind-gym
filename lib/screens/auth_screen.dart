@@ -73,7 +73,9 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
       final err = await provider.register(
         username,
         pin,
-        apiKey: _apiKeyCtrl.text.trim().isNotEmpty ? _apiKeyCtrl.text.trim() : null,
+        apiKey: _apiKeyCtrl.text.trim().isNotEmpty
+            ? _apiKeyCtrl.text.trim()
+            : null,
       );
       if (err != null && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -176,7 +178,9 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                         label: 'Username',
                         icon: Icons.person_outline,
                         inputFormatters: [
-                          FilteringTextInputFormatter.allow(RegExp(r'[a-zA-Z0-9_]')),
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'[a-zA-Z0-9_]'),
+                          ),
                           LengthLimitingTextInputFormatter(20),
                         ],
                       ),
@@ -300,12 +304,14 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                     children: [
                       CircleAvatar(
                         radius: 18,
-                        backgroundColor: AppTheme.primary.withValues(alpha: 0.2),
+                        backgroundColor:
+                            AppTheme.primary.withValues(alpha: 0.2),
                         child: Text(
                           u.username[0].toUpperCase(),
                           style: TextStyle(
                               color: AppTheme.primary,
-                              fontWeight: FontWeight.bold),
+                              fontWeight: FontWeight.bold,
+                            ),
                         ),
                       ),
                       const SizedBox(height: 4),
@@ -313,7 +319,8 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                         u.username,
                         style: TextStyle(
                             color: AppTheme.textPrimary,
-                            fontSize: 10),
+                            fontSize: 10,
+                          ),
                         overflow: TextOverflow.ellipsis,
                         maxLines: 1,
                       ),
@@ -395,13 +402,17 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
-        hintStyle: TextStyle(color: AppTheme.textSecondary.withValues(alpha: 0.5)),
+        hintStyle: TextStyle(
+          color: AppTheme.textSecondary.withValues(alpha: 0.5),
+        ),
         labelStyle: TextStyle(color: AppTheme.textSecondary),
         prefixIcon: Icon(icon, color: AppTheme.primary, size: 20),
         suffixIcon: isPin
             ? IconButton(
                 icon: Icon(
-                  _obscurePin ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                  _obscurePin
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
                   color: AppTheme.textSecondary,
                   size: 20,
                 ),

@@ -111,7 +111,8 @@ class AppProvider extends ChangeNotifier {
     if (_currentUser == null) return;
     await ScheduleService.processExpiredChallenges(_currentUser!);
     final starterChallenge = await _ensureStarterChallenge();
-    final scheduledChallenges = ScheduleService.getThisWeekChallenges(_currentUser!)
+    final scheduledChallenges =
+        ScheduleService.getThisWeekChallenges(_currentUser!)
         .where((uc) => uc.challengeId != ChallengeLibrary.starterChallengeId)
         .toList();
     _weekChallenges = [
@@ -384,8 +385,9 @@ class AppProvider extends ChangeNotifier {
     required int responseCount,
   }) {
     if (challenge.id == ChallengeLibrary.starterChallengeId) {
-      return 'Local starter coach: good. Now make the idea harder to hide from. '
-          'What is the strongest objection to "$userMessage", and what evidence would actually change your mind?';
+      return 'Local starter coach: good. Now make the idea harder to hide '
+          'from. What is the strongest objection to "$userMessage", and what '
+          'evidence would actually change your mind?';
     }
 
     final angle = challenge.thinkingAngles.isNotEmpty

@@ -12,7 +12,8 @@ class ChallengeLibrary {
         'This is the Mind Gym starter challenge: not proving you are right, but proving your thinking can survive contact with a serious counterargument.',
     type: ChallengeType.cognitiveBias,
     sourceName: 'Mind Gym',
-    sourceDescription: 'Starter challenge for first-run critical thinking practice',
+    sourceDescription:
+        'Starter challenge for first-run critical thinking practice',
     category: 'First-Run Training',
     difficulty: 1,
     hintTiers: [
@@ -569,18 +570,18 @@ class ChallengeLibrary {
     ),
   ];
 
-  static List<Challenge> getPhilosophyChallenges() =>
-      allChallenges
-          .where((c) =>
-              c.type == ChallengeType.philosophy && c.id != starterChallengeId)
-          .toList();
+  static List<Challenge> getPhilosophyChallenges() => allChallenges
+      .where(
+        (c) => c.type == ChallengeType.philosophy && c.id != starterChallengeId,
+      )
+      .toList();
 
-  static List<Challenge> getCognitiveBiasChallenges() =>
-      allChallenges
-          .where((c) =>
-              c.type == ChallengeType.cognitiveBias &&
-              c.id != starterChallengeId)
-          .toList();
+  static List<Challenge> getCognitiveBiasChallenges() => allChallenges
+      .where(
+        (c) =>
+            c.type == ChallengeType.cognitiveBias && c.id != starterChallengeId,
+      )
+      .toList();
 
   static Challenge? getById(String id) {
     try {

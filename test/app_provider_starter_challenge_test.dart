@@ -13,70 +13,81 @@ void main() {
     await StorageService.init();
   });
 
-  test('new registration creates one immediately available starter challenge',
-      () async {
-    final provider = AppProvider();
+  test(
+    'new registration creates one immediately available starter challenge',
+    () async {
+      final provider = AppProvider();
 
-    final error = await provider.register('newthinker', '1234');
+      final error = await provider.register('newthinker', '1234');
 
-    expect(error, isNull);
-    expect(provider.currentUser, isNotNull);
+      expect(error, isNull);
+      expect(provider.currentUser, isNotNull);
 
-    final starter = provider.weekChallenges.singleWhere(
-      (challenge) => challenge.challengeId == ChallengeLibrary.starterChallengeId,
-    );
-    expect(starter.status, ChallengeStatus.open);
-    expect(starter.scheduledFor.isAfter(DateTime.now()), isFalse);
+      final starter = provider.weekChallenges.singleWhere(
+        (challenge) =>
+            challenge.challengeId == ChallengeLibrary.starterChallengeId,
+      );
+      expect(starter.status, ChallengeStatus.open);
+      expect(starter.scheduledFor.isAfter(DateTime.now()), isFalse);
 
-    final persisted =
-        StorageService.getUserChallenges(provider.currentUser!.id).singleWhere(
-      (challenge) => challenge.challengeId == ChallengeLibrary.starterChallengeId,
-    );
-    expect(persisted.id, starter.id);
-  });
+      final persisted =
+          StorageService.getUserChallenges(provider.currentUser!.id).singleWhere(
+        (challenge) =>
+            challenge.challengeId == ChallengeLibrary.starterChallengeId,
+      );
+      expect(persisted.id, starter.id);
+    },
+  );
 
-  test('guest session creates a local guest user with starter challenge',
-      () async {
-    final provider = AppProvider();
+  test(
+    'guest session creates a local guest user with starter challenge',
+    () async {
+      final provider = AppProvider();
 
-    await provider.startGuestSession();
+      await provider.startGuestSession();
 
-    expect(provider.currentUser, isNotNull);
-    expect(provider.currentUser!.username, startsWith('Guest'));
-    expect(provider.weekChallenges.first.challengeId,
-        ChallengeLibrary.starterChallengeId);
-    expect(provider.weekChallenges.first.status, ChallengeStatus.open);
-  });
+      expect(provider.currentUser, isNotNull);
+      expect(provider.currentUser!.username, startsWith('Guest'));
+      expect(
+        provider.weekChallenges.first.challengeId,
+        ChallengeLibrary.starterChallengeId,
+      );
+      expect(provider.weekChallenges.first.status, ChallengeStatus.open);
+    },
+  );
 
-  test('starter challenge can be debated, hinted, and completed offline',
-      () async {
-    final provider = AppProvider();
-    await provider.startGuestSession();
-    final starter = provider.weekChallenges.firstWhere(
-      (challenge) => challenge.challengeId == ChallengeLibrary.starterChallengeId,
-    );
+  test(
+    'starter challenge can be debated, hinted, and completed offline',
+    () async {
+      final provider = AppProvider();
+      await provider.startGuestSession();
+      final starter = provider.weekChallenges.firstWhere(
+        (challenge) =>
+            challenge.challengeId == ChallengeLibrary.starterChallengeId,
+      );
 
-    await provider.openChallenge(starter.id);
-    final firstReply = await provider.sendDebateMessage(
-      starter.id,
-      'I think the strongest belief should be tested against real objections.',
-    );
-    final hint = await provider.requestHint(starter.id);
-    final secondReply = await provider.sendDebateMessage(
-      starter.id,
-      'A useful test would name what evidence could change my mind.',
-    );
-    final xp = await provider.markChallengeComplete(starter.id);
+      await provider.openChallenge(starter.id);
+      final firstReply = await provider.sendDebateMessage(
+        starter.id,
+        'I think the strongest belief should be tested against real objections.',
+      );
+      final hint = await provider.requestHint(starter.id);
+      final secondReply = await provider.sendDebateMessage(
+        starter.id,
+        'A useful test would name what evidence could change my mind.',
+      );
+      final xp = await provider.markChallengeComplete(starter.id);
 
-    final completed = provider.getChallenge(starter.id)!;
-    expect(firstReply, contains('starter coach'));
-    expect(secondReply, contains('starter coach'));
-    expect(hint, contains('Hint 1'));
-    expect(completed.status, ChallengeStatus.completed);
-    expect(completed.hintsUsed, 1);
-    expect(completed.responseCount, 2);
-    expect(completed.xpEarned, xp);
-    expect(provider.currentUser!.totalChallengesCompleted, 1);
-    expect(provider.currentUser!.xp, xp);
-  });
+      final completed = provider.getChallenge(starter.id)!;
+      expect(firstReply, contains('starter coach'));
+      expect(secondReply, contains('starter coach'));
+      expect(hint, contains('Hint 1'));
+      expect(completed.status, ChallengeStatus.completed);
+      expect(completed.hintsUsed, 1);
+      expect(completed.responseCount, 2);
+      expect(completed.xpEarned, xp);
+      expect(provider.currentUser!.totalChallengesCompleted, 1);
+      expect(provider.currentUser!.xp, xp);
+    },
+  );
 }
